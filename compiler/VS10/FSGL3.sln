@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FSGL3", "FSGL3.vcxproj", "{C3F76E60-0B4F-48E3-BE0F-8E88B3BB6985}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextRender", "..\..\Demo\win32\TextRender.vcxproj", "{028D6214-CBFE-4C30-8D4E-9BD5AABC0DBF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C3F76E60-0B4F-48E3-BE0F-8E88B3BB6985}.Debug|Win32.ActiveCfg = Release|Win32
+		{C3F76E60-0B4F-48E3-BE0F-8E88B3BB6985}.Debug|Win32.Build.0 = Release|Win32
+		{C3F76E60-0B4F-48E3-BE0F-8E88B3BB6985}.Release|Win32.ActiveCfg = Release|Win32
+		{C3F76E60-0B4F-48E3-BE0F-8E88B3BB6985}.Release|Win32.Build.0 = Release|Win32
+		{028D6214-CBFE-4C30-8D4E-9BD5AABC0DBF}.Debug|Win32.ActiveCfg = Release|Win32
+		{028D6214-CBFE-4C30-8D4E-9BD5AABC0DBF}.Debug|Win32.Build.0 = Release|Win32
+		{028D6214-CBFE-4C30-8D4E-9BD5AABC0DBF}.Release|Win32.ActiveCfg = Release|Win32
+		{028D6214-CBFE-4C30-8D4E-9BD5AABC0DBF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

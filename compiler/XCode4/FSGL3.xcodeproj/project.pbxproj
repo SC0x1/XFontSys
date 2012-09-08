@@ -1,0 +1,342 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D8A8276915DD60C1005120D8 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8A8276815DD60C1005120D8 /* libfreetype.a */; };
+		D8ADB34F15C0880000239E31 /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8ADB34615C0880000239E31 /* Font.cpp */; };
+		D8ADB35015C0880000239E31 /* Font.h in Headers */ = {isa = PBXBuildFile; fileRef = D8ADB34715C0880000239E31 /* Font.h */; };
+		D8ADB35115C0880000239E31 /* FontManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8ADB34815C0880000239E31 /* FontManager.cpp */; };
+		D8ADB35215C0880000239E31 /* FontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D8ADB34915C0880000239E31 /* FontManager.h */; };
+		D8ADB35315C0880000239E31 /* FontSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8ADB34A15C0880000239E31 /* FontSystem.cpp */; };
+		D8ADB35415C0880000239E31 /* FontSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = D8ADB34B15C0880000239E31 /* FontSystem.h */; };
+		D8ADB35615C0880000239E31 /* FT_Lib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8ADB34D15C0880000239E31 /* FT_Lib.cpp */; };
+		D8ADB35715C0880000239E31 /* FT_Lib.h in Headers */ = {isa = PBXBuildFile; fileRef = D8ADB34E15C0880000239E31 /* FT_Lib.h */; };
+		D8ADB36215C0882D00239E31 /* gl_local.h in Headers */ = {isa = PBXBuildFile; fileRef = D8ADB35C15C0882D00239E31 /* gl_local.h */; };
+		D8ADB36415C0882D00239E31 /* ShaderSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8ADB35F15C0882D00239E31 /* ShaderSystem.cpp */; };
+		D8ADB36515C0882D00239E31 /* ShaderSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = D8ADB36015C0882D00239E31 /* ShaderSystem.h */; };
+		D8ADB36B15C0883700239E31 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8ADB36615C0883700239E31 /* common.cpp */; };
+		D8ADB36C15C0883700239E31 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = D8ADB36715C0883700239E31 /* common.h */; };
+		D8ADB36F15C0883700239E31 /* utlvector.h in Headers */ = {isa = PBXBuildFile; fileRef = D8ADB36A15C0883700239E31 /* utlvector.h */; };
+		D8E2B37215FBA6930029FF49 /* FontGlobal.h in Headers */ = {isa = PBXBuildFile; fileRef = D8E2B37115FBA6930029FF49 /* FontGlobal.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		D85DA07D15C0847C002BB325 /* libFSGL3.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFSGL3.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D8A8276815DD60C1005120D8 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../externals/freetype2/libUnix/libfreetype.a; sourceTree = "<group>"; };
+		D8ADB34615C0880000239E31 /* Font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Font.cpp; path = ../../source/Font.cpp; sourceTree = "<group>"; };
+		D8ADB34715C0880000239E31 /* Font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Font.h; path = ../../source/Font.h; sourceTree = "<group>"; };
+		D8ADB34815C0880000239E31 /* FontManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FontManager.cpp; path = ../../source/FontManager.cpp; sourceTree = "<group>"; };
+		D8ADB34915C0880000239E31 /* FontManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontManager.h; path = ../../source/FontManager.h; sourceTree = "<group>"; };
+		D8ADB34A15C0880000239E31 /* FontSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FontSystem.cpp; path = ../../source/FontSystem.cpp; sourceTree = "<group>"; };
+		D8ADB34B15C0880000239E31 /* FontSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontSystem.h; path = ../../source/FontSystem.h; sourceTree = "<group>"; };
+		D8ADB34D15C0880000239E31 /* FT_Lib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FT_Lib.cpp; path = ../../source/FT_Lib.cpp; sourceTree = "<group>"; };
+		D8ADB34E15C0880000239E31 /* FT_Lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FT_Lib.h; path = ../../source/FT_Lib.h; sourceTree = "<group>"; };
+		D8ADB35C15C0882D00239E31 /* gl_local.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gl_local.h; path = ../../source/shaders/gl_local.h; sourceTree = "<group>"; };
+		D8ADB35E15C0882D00239E31 /* shaders.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = shaders.inl; path = ../../source/shaders/shaders.inl; sourceTree = "<group>"; };
+		D8ADB35F15C0882D00239E31 /* ShaderSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ShaderSystem.cpp; path = ../../source/shaders/ShaderSystem.cpp; sourceTree = "<group>"; };
+		D8ADB36015C0882D00239E31 /* ShaderSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderSystem.h; path = ../../source/shaders/ShaderSystem.h; sourceTree = "<group>"; };
+		D8ADB36615C0883700239E31 /* common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = common.cpp; path = ../../source/public/common.cpp; sourceTree = "<group>"; };
+		D8ADB36715C0883700239E31 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = ../../source/public/common.h; sourceTree = "<group>"; };
+		D8ADB36A15C0883700239E31 /* utlvector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utlvector.h; path = ../../source/public/utlvector.h; sourceTree = "<group>"; };
+		D8E2B37115FBA6930029FF49 /* FontGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontGlobal.h; path = ../../source/FontGlobal.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D85DA07A15C0847C002BB325 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D8A8276915DD60C1005120D8 /* libfreetype.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D85DA07215C0847C002BB325 = {
+			isa = PBXGroup;
+			children = (
+				D8E2B37115FBA6930029FF49 /* FontGlobal.h */,
+				D8A8276815DD60C1005120D8 /* libfreetype.a */,
+				D8ADB35A15C0881D00239E31 /* Public */,
+				D8ADB35915C0881500239E31 /* Shaders */,
+				D8ADB35815C0880600239E31 /* FontSystem */,
+				D85DA07E15C0847C002BB325 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D85DA07E15C0847C002BB325 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D85DA07D15C0847C002BB325 /* libFSGL3.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D8ADB35815C0880600239E31 /* FontSystem */ = {
+			isa = PBXGroup;
+			children = (
+				D8ADB34615C0880000239E31 /* Font.cpp */,
+				D8ADB34715C0880000239E31 /* Font.h */,
+				D8ADB34815C0880000239E31 /* FontManager.cpp */,
+				D8ADB34915C0880000239E31 /* FontManager.h */,
+				D8ADB34A15C0880000239E31 /* FontSystem.cpp */,
+				D8ADB34B15C0880000239E31 /* FontSystem.h */,
+				D8ADB34D15C0880000239E31 /* FT_Lib.cpp */,
+				D8ADB34E15C0880000239E31 /* FT_Lib.h */,
+			);
+			name = FontSystem;
+			sourceTree = "<group>";
+		};
+		D8ADB35915C0881500239E31 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				D8ADB35C15C0882D00239E31 /* gl_local.h */,
+				D8ADB35E15C0882D00239E31 /* shaders.inl */,
+				D8ADB35F15C0882D00239E31 /* ShaderSystem.cpp */,
+				D8ADB36015C0882D00239E31 /* ShaderSystem.h */,
+			);
+			name = Shaders;
+			sourceTree = "<group>";
+		};
+		D8ADB35A15C0881D00239E31 /* Public */ = {
+			isa = PBXGroup;
+			children = (
+				D8ADB36615C0883700239E31 /* common.cpp */,
+				D8ADB36715C0883700239E31 /* common.h */,
+				D8ADB36A15C0883700239E31 /* utlvector.h */,
+			);
+			name = Public;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D85DA07B15C0847C002BB325 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D8ADB35015C0880000239E31 /* Font.h in Headers */,
+				D8ADB35215C0880000239E31 /* FontManager.h in Headers */,
+				D8ADB35415C0880000239E31 /* FontSystem.h in Headers */,
+				D8ADB35715C0880000239E31 /* FT_Lib.h in Headers */,
+				D8ADB36215C0882D00239E31 /* gl_local.h in Headers */,
+				D8ADB36515C0882D00239E31 /* ShaderSystem.h in Headers */,
+				D8ADB36C15C0883700239E31 /* common.h in Headers */,
+				D8ADB36F15C0883700239E31 /* utlvector.h in Headers */,
+				D8E2B37215FBA6930029FF49 /* FontGlobal.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		D85DA07C15C0847C002BB325 /* FSGL3 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D85DA08115C0847C002BB325 /* Build configuration list for PBXNativeTarget "FSGL3" */;
+			buildPhases = (
+				D85DA07915C0847C002BB325 /* Sources */,
+				D85DA07A15C0847C002BB325 /* Frameworks */,
+				D85DA07B15C0847C002BB325 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FSGL3;
+			productName = FSGL3;
+			productReference = D85DA07D15C0847C002BB325 /* libFSGL3.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D85DA07415C0847C002BB325 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+			};
+			buildConfigurationList = D85DA07715C0847C002BB325 /* Build configuration list for PBXProject "FSGL3" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = D85DA07215C0847C002BB325;
+			productRefGroup = D85DA07E15C0847C002BB325 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D85DA07C15C0847C002BB325 /* FSGL3 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D85DA07915C0847C002BB325 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D8ADB34F15C0880000239E31 /* Font.cpp in Sources */,
+				D8ADB35115C0880000239E31 /* FontManager.cpp in Sources */,
+				D8ADB35315C0880000239E31 /* FontSystem.cpp in Sources */,
+				D8ADB35615C0880000239E31 /* FT_Lib.cpp in Sources */,
+				D8ADB36415C0882D00239E31 /* ShaderSystem.cpp in Sources */,
+				D8ADB36B15C0883700239E31 /* common.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		D85DA07F15C0847C002BB325 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"..\\..\\externbals\\glew\\include",
+					"..\\..\\source",
+					"..\\..\\externals\\freetype2",
+				);
+				LIBRARY_SEARCH_PATHS = "..\\..\\externals\\freetype2\\libUnix";
+				LINK_WITH_STANDARD_LIBRARIES = NO;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = NO;
+				ORDER_FILE = "-Wl,-serch_paths_first";
+				SDKROOT = macosx10.7;
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Debug;
+		};
+		D85DA08015C0847C002BB325 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"..\\..\\externbals\\glew\\include",
+					"..\\..\\source",
+					"..\\..\\externals\\freetype2",
+				);
+				LIBRARY_SEARCH_PATHS = "..\\..\\externals\\freetype2\\libUnix";
+				LINK_WITH_STANDARD_LIBRARIES = NO;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				ORDER_FILE = "-Wl,-serch_paths_first";
+				SDKROOT = macosx10.7;
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Release;
+		};
+		D85DA08215C0847C002BB325 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(EFFECTIVE_PLATFORM_NAME)";
+				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../../externals/glew/include\"",
+					"\"$(SRCROOT)/../../externals/freetype2\"",
+					"\"$(SRCROOT)/../../source\"",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../build/osx\"",
+					"\"$(SRCROOT)/../../externals/freetype2/libUnix\"",
+					"\"$(SRCROOT)/../../externals/freetype2/libUnix/x64\"",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.7;
+				SYMROOT = ../../build/osx;
+				VALID_ARCHS = x86_64;
+			};
+			name = Debug;
+		};
+		D85DA08315C0847C002BB325 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(EFFECTIVE_PLATFORM_NAME)";
+				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../../externals/glew/include\"",
+					"\"$(SRCROOT)/../../externals/freetype2\"",
+					"\"$(SRCROOT)/../../source\"",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../build/osx\"",
+					"\"$(SRCROOT)/../../externals/freetype2/libUnix\"",
+					"\"$(SRCROOT)/../../externals/freetype2/libUnix/x64\"",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.7;
+				SYMROOT = ../../build/osx;
+				VALID_ARCHS = x86_64;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D85DA07715C0847C002BB325 /* Build configuration list for PBXProject "FSGL3" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D85DA07F15C0847C002BB325 /* Debug */,
+				D85DA08015C0847C002BB325 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D85DA08115C0847C002BB325 /* Build configuration list for PBXNativeTarget "FSGL3" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D85DA08215C0847C002BB325 /* Debug */,
+				D85DA08315C0847C002BB325 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D85DA07415C0847C002BB325 /* Project object */;
+}
