@@ -28,6 +28,10 @@ local.properties
 # PDT-specific
 .buildpath
 
+#################
+## Mine
+#################
+fontCache
 
 #################
 ## Visual Studio
@@ -137,7 +141,6 @@ Desktop.ini
 *.egg
 *.egg-info
 dist
-build
 eggs
 parts
 bin

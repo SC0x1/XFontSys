@@ -15,16 +15,16 @@ public:
 	CUtlVector( const CUtlVector<T> &other );
 	~CUtlVector( void );
 
-	void		Clear( void );						// удаляет все данные из вектора
-	int			Num( void ) const;					// возвращает количество элементов в векторе
+	void		Clear( void );                      // удаляет все данные из вектора
+	int			Num( void ) const;                  // возвращает количество элементов в векторе
 	void		SetGrowth( int growth );
 	int			GetGrowth( void );
 
-	T&			AddToTail( int *id_el = nullptr );	// возвращает ссылку на новый элемент в конце вектора id_el = m_NumElements 
-	int			Append( const T& obj );				// добав элемента
-	int			FindIndex( const T& obj ) const;	// возвращает индекс данного элемента
-	bool		RemoveIndex( int index );			// удаляет элемент по индексу
-	bool		Remove( const T & obj );			// удалить элемент
+	T&			AddToTail( int *id_el = nullptr );  // возвращает ссылку на новый элемент в конце вектора id_el = m_NumElements 
+	int			Append( const T& obj );             // добав элемента
+	int			FindIndex( const T& obj ) const;    // возвращает индекс данного элемента
+	bool		RemoveIndex( int index );           // удаляет элемент по индексу
+	bool		Remove( const T & obj );            // удалить элемент
 
 	CUtlVector<T>& operator=( const CUtlVector<T> & other );
 	const T&	operator[]( int index ) const;
