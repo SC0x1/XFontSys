@@ -61,7 +61,6 @@
 		D85DA07215C0847C002BB325 = {
 			isa = PBXGroup;
 			children = (
-				D8E2B37115FBA6930029FF49 /* FontGlobal.h */,
 				D8A8276815DD60C1005120D8 /* libfreetype.a */,
 				D8ADB35A15C0881D00239E31 /* Public */,
 				D8ADB35915C0881500239E31 /* Shaders */,
@@ -81,6 +80,7 @@
 		D8ADB35815C0880600239E31 /* FontSystem */ = {
 			isa = PBXGroup;
 			children = (
+				D8E2B37115FBA6930029FF49 /* FontGlobal.h */,
 				D8ADB34615C0880000239E31 /* Font.cpp */,
 				D8ADB34715C0880000239E31 /* Font.h */,
 				D8ADB34815C0880000239E31 /* FontManager.cpp */,

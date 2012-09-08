@@ -31,7 +31,10 @@ local.properties
 #################
 ## Mine
 #################
-fontCache
+intermediate
+ipch
+.cfnt
+.tga
 
 #################
 ## Visual Studio

@@ -7,11 +7,11 @@
 
 #pragma once
 
-//  glyph metrices
+// glyph metrices
 struct GlyphDesc_t
 {
 	// id in unicode table
-	int	glyphID;
+	int glyphID;
 
 	short advanceX;
 	short advanceY;
@@ -31,16 +31,16 @@ struct UnicodeCharRange_t
 };
 
 // globals ...
-extern	int DYNAMIC_CHARS;      // 256 define in FontSystem.cpp
-const	int MIN_DYNAMIC_CHARS	= 0;
-const	int MAX_DYNAMIC_CHARS	= 50000;
+extern int DYNAMIC_CHARS;      // 256 define in FontSystem.cpp
+const int MIN_DYNAMIC_CHARS = 0;
+const int MAX_DYNAMIC_CHARS = 50000;
 
-extern	int STATIC_CHARS;       // 4096 define in FontSystem.cpp
-const	int MIN_STATIC_CHARS	= 0;
-const	int MAX_STATIC_CHARS	= 50000;
+extern int STATIC_CHARS;       // 4096 define in FontSystem.cpp
+const int MIN_STATIC_CHARS = 0;
+const int MAX_STATIC_CHARS = 50000;
 
-extern	int FONT_TEXTURE_WIDTH; // 1024 define in FontManager.cpp
+extern int FONT_TEXTURE_WIDTH; // 1024 define in FontManager.cpp
 
-const	int MIN_TEXTURE_WIDTH	= 128;
-const	int MAX_TEXTURE_WIDTH	= 4096;
+const int MIN_TEXTURE_WIDTH = 128;
+const int MAX_TEXTURE_WIDTH = 4096;
 

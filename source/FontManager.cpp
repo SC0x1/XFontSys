@@ -16,7 +16,7 @@
 void UploadFontTextureToGL(int w, int h, unsigned char* pRawTex, GLuint &idTex);
 
 FontManager::FontManager()
-	: m_bIsBuildAllFonts(false)
+ : m_bIsBuildAllFonts(false)
 {
 	m_Fonts.Resize(4, 2);
 
@@ -26,7 +26,7 @@ FontManager::FontManager()
 FontManager::~FontManager()
 { }
 
-HFont	FontManager::Create_Font(const char* fontName, int size)
+HFont FontManager::Create_Font(const char* fontName, int size)
 {
 	// check whether there is already a font with the same name and size
 	for (int i = 0; i < m_Fonts.Num(); ++i)
@@ -36,7 +36,7 @@ HFont	FontManager::Create_Font(const char* fontName, int size)
 	}
 
 	HFont h = 0;
-	m_Fonts.AddToTail( &h );	// h == number of elements in the vector
+	m_Fonts.AddToTail( &h ); // h == number of elements in the vector
 
 	const int index = h - 1;
 

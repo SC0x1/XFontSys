@@ -120,7 +120,7 @@ BBox_t bbox;
 FontSystem().GetWTextBBox( wstr.c_str(), wstr.lenght(), bbox );
 
 // simply draws the entire contents of the file and its bbox
-FontSystem().DrawOutLinedRect( bbox );
+FontSystem().DrawOutLinedRect( bbox, 255, 0, 255 );
 FontSystem().PrintStaticText( idText );
 ```
 

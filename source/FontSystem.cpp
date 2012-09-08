@@ -198,20 +198,27 @@ public:
 	}
 
 	// displays a rectangle specified in screen space
-	void DrawOutLinedRect(const BBox_t& bbox)
+	void DrawOutLinedRect(const BBox_t& bbox, int r, int g, int b, int a)
 	{
-		DrawOutLinedRect(bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax);
+		DrawOutLinedRect(bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax, r, g, b, a);
 	}
 
-	void DrawFilledRect(const BBox_t& bbox)
+	void CFontSystem::DrawOutLinedRect(int x0, int y0, int x1, int y1, int r, int g, int b, int a)
 	{
-		DrawFilledRect(bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax);
+		DrawLine(x0,   y0,   x1,   y0+1, r, g, b, a);	//top
+		DrawLine(x0,   y1-1, x1,   y1,   r, g, b, a);	//bottom
+		DrawLine(x0,   y0,   x0+1, y1,   r, g, b, a);	//left
+		DrawLine(x1-1, y0,   x1,   y1,   r, g, b, a);	//right
 	}
 
-	void DrawFilledRect(int x0, int y0, int x1, int y1);
-	void DrawOutLinedRect(int x0,int y0, int x1, int y1);
+	void DrawFilledRect(const BBox_t& bbox, int r, int g, int b, int a)
+	{
+		DrawFilledRect(bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax, r, g, b, a);
+	}
 
-	void DrawLine(int pX0, int pY0, int pX1, int pY1);
+	void DrawFilledRect(int x0, int y0, int x1, int y1, int r, int g, int b, int a );
+
+	void DrawLine(int x0, int y0, int x1, int y1, int r, int g, int b, int a);
 
 	void EnableStateDraw( void );
 	void DisableStateDraw( void );
@@ -691,7 +698,7 @@ bool CFontSystem::DumpFontCache(HFont handle, const char* path)
 	return g_pFontManager.DumpFontCache(handle, path);
 }
 
-void CFontSystem::DrawFilledRect(int x0, int y0, int x1, int y1)
+void CFontSystem::DrawFilledRect(int x0, int y0, int x1, int y1, int r, int g, int b, int a)
 {
 	GLfloat vVerts[] =	{	(float)x0, (float)y1,	//	V1
 							(float)x1, (float)y1,	//	V2
@@ -707,6 +714,8 @@ void CFontSystem::DrawFilledRect(int x0, int y0, int x1, int y1)
 
 	glVertexAttribPointer(ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
+	SetColor(r, g, b, a);
+
 	// pass to the shader program the color data
 	m_fontShader.Set_Float4v(m_DrawColor, m_UnifColor);
 
@@ -715,18 +724,11 @@ void CFontSystem::DrawFilledRect(int x0, int y0, int x1, int y1)
 	glBindVertexArray(0);
 }
 
-void CFontSystem::DrawOutLinedRect(int x0, int y0, int x1, int y1)
-{
-	DrawLine(x0, y0, x1, y0+1);	//top
-	DrawLine(x0, y1-1, x1, y1);	//bottom
-	DrawLine(x0, y0, x0+1, y1);	//left
-	DrawLine(x1-1, y0, x1, y1);	//right
-}
 
 //-----------------------------------------------------------------------------
 // Draws the line
 //-----------------------------------------------------------------------------
-void CFontSystem::DrawLine(int x0, int y0, int x1, int y1)
+void CFontSystem::DrawLine(int x0, int y0, int x1, int y1, int r, int g, int b, int a)
 {
 	GLfloat vVerts[] = 	{	(float)x0, (float)y0,	//	V1
 							(float)x1, (float)y1,	//	V2
@@ -739,6 +741,8 @@ void CFontSystem::DrawLine(int x0, int y0, int x1, int y1)
 	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(float), vVerts, GL_DYNAMIC_DRAW);
 
 	glVertexAttribPointer(ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	SetColor(r, g, b, a);
 
 	m_fontShader.Set_Float4v(m_DrawColor, m_UnifColor);
 

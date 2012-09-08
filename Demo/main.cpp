@@ -293,18 +293,16 @@ int main( int argc, char* argv[] )
 
 		// (Static  text) Text from File
 
-		FontSystem().SetColor(255, 0, 255);
-		FontSystem().DrawOutLinedRect( bboxTextFromFile );
+		FontSystem().DrawOutLinedRect( bboxTextFromFile, 255, 0, 255 );
 
 		FontSystem().PrintStaticText( idTextFromFile );
 
 
 		// (Static  text) link
 
-		FontSystem().SetColor(255, 165, 0);
-		FontSystem().DrawFilledRect( bboxTextLink );
-		FontSystem().SetColor(0, 0, 255);
-		FontSystem().DrawOutLinedRect( bboxTextLink );
+		FontSystem().DrawFilledRect( bboxTextLink, 255, 165, 0 );
+
+		FontSystem().DrawOutLinedRect( bboxTextLink, 0, 0, 255 );
 
 		FontSystem().PrintStaticText( idTextLink );
 
@@ -332,11 +330,9 @@ int main( int argc, char* argv[] )
 		}
 
 		// color of the rectangle
-		FontSystem().SetColor(255, 165, 0);
-		FontSystem().DrawFilledRect( bboxTime );
+		FontSystem().DrawFilledRect( bboxTime, 255, 165, 0 );
 
-		FontSystem().SetColor(0, 0, 255);
-		FontSystem().DrawOutLinedRect( bboxTime );
+		FontSystem().DrawOutLinedRect( bboxTime, 0, 0, 255 );
 
 		FontSystem().SetTextPos( bboxTime.xMin, bboxTime.yMin );
 
