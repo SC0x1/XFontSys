@@ -147,11 +147,11 @@ bool Init( void )
 	if ( !isBuild )
 		return false;
 
-	assert( FontSystem().DumpFontCache( g_hFreeSans_14,		DIR_CACHE ) );
-	assert( FontSystem().DumpFontCache( g_hDejaVuSans_10,	DIR_CACHE ) );
-	assert( FontSystem().DumpFontCache( g_hVerdana_11,		DIR_CACHE ) );
-	assert( FontSystem().DumpFontCache( g_hVerdanaB_11,		DIR_CACHE ) );
-	assert( FontSystem().DumpFontCache( g_hVerdanaI_11,		DIR_CACHE ) );
+	FontSystem().DumpFontCache( g_hFreeSans_14, DIR_CACHE );
+	FontSystem().DumpFontCache( g_hDejaVuSans_10, DIR_CACHE );
+	FontSystem().DumpFontCache( g_hVerdana_11, DIR_CACHE );
+	FontSystem().DumpFontCache( g_hVerdanaB_11, DIR_CACHE );
+	FontSystem().DumpFontCache( g_hVerdanaI_11, DIR_CACHE );
 
 #else
 
@@ -179,7 +179,7 @@ bool Init( void )
 
 #endif
 
-	g_hFontCurrent = g_hVerdanaB_11;
+	g_hFontCurrent = g_hVerdana_11;
 
 	return true;
 }
@@ -259,8 +259,8 @@ int main( int argc, char* argv[] )
 	FontSystem().GetTextBBox(time.c_str(), time.length(), bboxTime);
 
 	const char pHelp[] = "F1 - F3 - change font for the text\n" \
-						 "\nKey Right / Space - show the next block of text\n" \
-						 "\nKey Left - show the previous block of text";
+						 "\nKey Right/Left Space - show the next/prev block of text\n" \
+						 "\nCtrl - use kerning";
 
 	FontSystem().BindFont(g_hDejaVuSans_10);
 
@@ -376,11 +376,11 @@ int main( int argc, char* argv[] )
 
 			FontSystem().ResetStaticText(); 
 
-			if ( (g_fileID >= 6) || (g_fileID < 0))
+			if ( (g_fileID >= 3) || (g_fileID < 0))
 			{
 				g_fileID = 0;
 			}
-
+			
 			sprintf(buffer, "%s%d.txt", NameFile, g_fileID);
 
 			if ( (idTextFromFile = InitStaticTextFromFile(buffer, bboxTextFromFile)) == -1 )
@@ -465,6 +465,14 @@ void events( int key, int action )
 		if ( glfwGetKey(GLFW_KEY_F3) == GLFW_RELEASE )
 		{
 			g_hFontCurrent = g_hVerdanaI_11;
+			g_bChangePage = true;
+		}
+		break;
+	case GLFW_KEY_LCTRL:
+		if ( glfwGetKey(GLFW_KEY_LCTRL) == GLFW_RELEASE )
+		{
+			static bool useKerning = false;
+			FontSystem().UseKerning(useKerning ? useKerning = false : useKerning = true);
 			g_bChangePage = true;
 		}
 		break;

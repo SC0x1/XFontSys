@@ -33,8 +33,9 @@ local.properties
 #################
 intermediate
 ipch
-.cfnt
-.tga
+*.cfnt
+*.tga
+logApp.txt
 
 #################
 ## Visual Studio

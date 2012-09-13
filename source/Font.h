@@ -31,7 +31,10 @@ public:
 	bool AddCharacterRange(const int lowerRange, const int upperRange);
 	bool Build( void );
 
-	bool AssignCacheForChar(const int wch);
+	bool AssignCacheForChar(const wchar_t wch)
+	{
+		return (this->*pAssignCacheForChar)( wch );
+	}
 
 	float const* GetTexCoords( void ) const
 	{
@@ -45,15 +48,21 @@ public:
 	}
 
 	// gets the glyph desc. for a character from the FreeType
-	bool GetGlyphDesc(int wch_prev, int  wch_next, GlyphDesc_t &desc) const;
+	bool GetGlyphDesc(wchar_t wch, GlyphDesc_t &desc) const;
+	
+	bool HasKerning( void );
 
-	unsigned char const* GetGlyphBitmap(int wch) const;
+	int GetKerningX(wchar_t wch_prev, wchar_t wch_next) const;
+
+	int GetKerningY(wchar_t wch_prev, wchar_t wch_next) const;
+
+	unsigned char const* GetGlyphBitmap(wchar_t wch) const;
 
 	// returns true, if equal the font name and its size
 	bool IsEqualTo(const char *fontName, int fontSize) const;
 	
 	// returns true, if the symbol is contained in the font
-	bool IsCharInFont(int wch) const;
+	bool IsCharInFont(wchar_t wch) const;
 	
 	// returns true, if this range is already contained
 	bool IsRange(const int lowerRange, const int upperRange) const;
@@ -125,11 +134,11 @@ private:
 
 private:
 
-	bool (CFont::*pAssignCacheForChar)(const int wch);
-	bool AssignCacheForUnicodeCharSet(const int wch);
-	bool AssignCacheForAsciCharSet(const int wch);
+	bool (CFont::*pAssignCacheForChar)(const wchar_t wch);
+	bool AssignCacheForUnicodeCharSet(const wchar_t wch);
+	bool AssignCacheForAsciCharSet(const wchar_t wch);
 
-	int FindCharInCache(int wch) const;
+	int FindCharInCache(wchar_t wch) const;
 
 	bool AllocateCacheData(void);
 	void FreeCacheData(void);
@@ -137,11 +146,6 @@ private:
 	void AssignPointerToCache( void );
 
 private:
-
-	bool m_bBuild;
-
-	// if a font contains only ASCII characters
-	bool m_bIsAsci;
 
 	char m_fontPath[256];
 	char m_fontName[32];
@@ -171,7 +175,8 @@ private:
 	CUtlVector<UCharacterRange>	m_UChRanges;
 	int m_iNumRange;
 
-	struct CaheItem_t   // cache group data
+	// cache group data
+	struct CaheItem_t  
 	{
 		GlyphDesc_t *pGlyph;
 		float *pTexcoords;
@@ -187,4 +192,9 @@ private:
 
 	// pointer to the UVs data
 	float *m_pTexCoords;
+
+	bool m_bBuild;
+
+	// if a font contains only ASCII characters
+	bool m_bIsAsci;
 };

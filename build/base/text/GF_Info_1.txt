@@ -1,27 +1,23 @@
 ﻿	<FileID:2>
 
-	История
+To protect your rights, we need to prevent others from denying you
+these rights or asking you to surrender the rights. Therefore,
+you have certain responsibilities if you distribute copies of the
+software, or if you modify it: responsibilities to respect the
+freedom of others.
 
-	В апреле 2004 года, НАСА начала отбор предложений по оснащению нового марсохода
-научным оборудованием, и 14 декабря 2004 года было принято решение об отборе восьми
-предложений. В конце того же 2004 года началась разработка и испытания составных
-частей системы, включая разработку однокомпонентного двигателя производства компании
-Aerojet, который способен выдавать тягу в диапазоне от 15 до 100 % максимальной при
-постоянном давлении наддува.
+For example, if you distribute copies of such a program, whether
+gratis or for a fee, you must pass on to the recipients the same
+freedoms that you received. You must make sure that they, too,
+receive or can get the source code. And you must show them these
+terms so they know their rights.
 
-	Создание всех компонентов ровера было завершено к ноябрю 2008 года, причем большая
-часть инструментов и программного обеспечения MSL продолжало испытываться.
-Перерасход бюджета миссии составил около 400 миллионов долларов. В следующем месяце
-НАСА отложило запуск MSL на конец 2011 года из-за недостатка времени для испытаний.
-С 23 по 29 марта 2009 года, проводилось голосование по выбору названия для марсохода,
-голосовали на сайте NASA, на выбор было дано 9 слов. 27 мая 2009 года, победителем было
-объявлено слово Кьюриосити. Оно было представлено шестиклассницей из Канзаса —
-Кларой Ма. Марсоход был запущен ракетой Атлас V с мыса Канаверал 26 ноября 2011 года.
-11 января 2012 года был проведён специальный манёвр, который эксперты называют
-«самым важным» для марсохода. В результате совершённого манёвра аппарат взял курс,
-который привёл его в оптимальную точку для десантирования на поверхность Марса.
-28 июля 2012 года была проведена четвёртая небольшая коррекция траектории, двигатели
-включили всего на шесть секунд. Операция прошла настолько успешно, что последняя
-коррекция, намеченная на 3 августа, уже не понадобилась. Посадка произошла успешно
-6 августа 2012 года, в 05:17 UTC. В силу того, что радиосигнал с Марса шёл 14 минут,
-земляне узнали о результате посадки только в 05:31 UTC.
+Developers that use the GNU GPL protect your rights with two steps:
+(1) assert copyright on the software, and (2) offer you this License
+giving you legal permission to copy, distribute and/or modify it.
+
+For the developers' and authors' protection, the GPL clearly explains
+that there is no warranty for this free software. For both users' and
+authors' sake, the GPL requires that modified versions be marked as
+changed, so that their problems will not be attributed erroneously to
+authors of previous versions.

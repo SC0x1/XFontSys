@@ -13,6 +13,7 @@
 // Forward declarations
 class CFont;
 struct GlyphDesc_t;
+struct CaheItem_t;
 
 class FontManager
 {
@@ -29,10 +30,18 @@ public:
 
 	void ClearAllFonts( void );
 
-	void GetGlyphDesc(HFont handle, wchar_t wch, GlyphDesc_t &desc) const;
+	bool GetGlyphDesc(HFont handle, int wch, GlyphDesc_t &desc) const;
+
+	bool AssignCacheForChar(HFont handle, int wch);
+
+	GlyphDesc_t const *GetGlyphDescFromCache(HFont handle, int wch) const;
+
+	float const * GetTexCoordsFromCache(HFont handle, int wch) const;
 
 	int GetFontHeight(HFont handle) const;
 	
+	bool HasKerning(HFont handle) const;
+
 	bool DumpFontCache(HFont handle, const char* path) const;
 	HFont LoadFontCache(const char* filename);
 

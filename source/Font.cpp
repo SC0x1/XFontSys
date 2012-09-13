@@ -173,9 +173,9 @@ bool CFont::Build( void )
 			GlyphDesc_t &g = m_pGlyphData[ charOffset + i ];
 
 			// gets data from the FreeType
-			if (!GetGlyphDesc(chId, 0, g))
+			if (!GetGlyphDesc(chId, g))
 			{
-				fprintf(stderr, "Failed loading char: %s", (wchar_t)chId);
+				fprintf(stderr, "\nFailed loading char: %s", (wchar_t)chId);
 				continue;
 			}
 
@@ -224,13 +224,13 @@ bool CFont::IsEqualTo(const char* fontName, int fontSize) const
 	return false;
 }
 
-unsigned char const* CFont::GetGlyphBitmap(int wch) const
+unsigned char const* CFont::GetGlyphBitmap(wchar_t wch) const
 {
 	if ( !IsValid() ) {
 		return nullptr;
 	}
 
-	if (!m_pFT_Face->Glyph(wch))
+	if (!m_pFT_Face->RenderGlyph(wch))
 	{
 		fprintf(stderr, "Failed loading char: %s", wch);
 		return nullptr;
@@ -344,12 +344,7 @@ bool CFont::GlyphTexSubImage(const int xoffset, const int yoffset, int width, in
 	return true;
 }
 
-bool CFont::AssignCacheForChar(const int wch)
-{
-	return (this->*pAssignCacheForChar)( wch );
-}
-
-bool CFont::AssignCacheForUnicodeCharSet(const int wch)
+bool CFont::AssignCacheForUnicodeCharSet(const wchar_t wch)
 {
 	if ( (m_CurrentIndex = FindCharInCache( wch )) != -1) {
 		return true;
@@ -360,7 +355,7 @@ bool CFont::AssignCacheForUnicodeCharSet(const int wch)
 	return false;
 }
 
-bool CFont::AssignCacheForAsciCharSet(const int wch)
+bool CFont::AssignCacheForAsciCharSet(const wchar_t wch)
 {
 	if ( (unsigned int)wch < 127 )
 	{
@@ -373,7 +368,7 @@ bool CFont::AssignCacheForAsciCharSet(const int wch)
 	return false;
 }
 
-int CFont::FindCharInCache(int wch) const
+int CFont::FindCharInCache(wchar_t wch) const
 {
 	for (int i = 0; i < m_iNumRange; ++i)
 	{
@@ -386,32 +381,46 @@ int CFont::FindCharInCache(int wch) const
 	return -1;
 }
 
-bool CFont::GetGlyphDesc(int wch_prev, int wch_next, GlyphDesc_t &desc) const
+bool CFont::GetGlyphDesc(wchar_t wch, GlyphDesc_t &desc) const
 {
-	if (!m_pFT_Face || !m_pFT_Face->Glyph(wch_prev)) {
+	if (!m_pFT_Face || !m_pFT_Face->RenderGlyph(wch)) {
 		return false;
 	}
 
 	ftLib::FTFace &f = *m_pFT_Face;
 
-	if (wch_next == 0)
-	{
-		desc.advanceX = f.GlyphAdvanceX();
-		desc.advanceY = f.GlyphAdvanceY();
-	} else	{
-		// use kerings
-		desc.advanceX = f.GlyphAdvanceX(wch_prev, wch_next);
-		desc.advanceY = f.GlyphAdvanceY(wch_prev, wch_next);
-	}
+	desc.advanceX = f.GlyphAdvanceX();
+	desc.advanceY = f.GlyphAdvanceY();
 
 	desc.bitmapWidth = f.GlyphBitmapWidth();
 	desc.bitmapHeight = f.GlyphBitmapHeight();
 	desc.bitmapLeft = f.GlyphBitmapLeft();
 	desc.bitmapTop = f.GlyphBitmapTop();
 
-	desc.glyphID = wch_prev;
+	desc.glyphID = wch;
 
 	return true;
+}
+
+bool CFont::HasKerning(void)
+{
+	return m_pFT_Face->HasKerning();
+}
+
+int CFont::GetKerningX(wchar_t wch_prev, wchar_t wch_next) const
+{
+	if (!m_pFT_Face)
+		return 0;
+
+	return m_pFT_Face->GetKerningX(wch_prev, wch_next);
+}
+
+int CFont::GetKerningY(wchar_t wch_prev, wchar_t wch_next) const
+{
+	if (!m_pFT_Face)
+		return 0;
+
+	return m_pFT_Face->GetKerningY(wch_prev, wch_next);
 }
 
 void CFont::AssignPointerToCache( void )
@@ -435,11 +444,11 @@ void CFont::AssignPointerToCache( void )
 
 struct FontInfo_s 
 {
-	char	fontName[64];
-	int		size;
-	int		numRanges;
-	int		absoluteValue;
-	int		maxTextureWidth;
+	char fontName[64];
+	int size;
+	int numRanges;
+	int absoluteValue;
+	int maxTextureWidth;
 };
 
 bool CFont::InitFromCache(const char* fileName)
@@ -550,6 +559,7 @@ bool CFont::DumpCache(const char* path) const
 {
 	if ( !path 	|| !m_fontName[0] || !m_bBuild )
 		return false;
+
 	FontInfo_s info;
 	char buffer[512];
 
@@ -566,7 +576,7 @@ bool CFont::DumpCache(const char* path) const
 
 	if ( !pFile )
 	{
-		fprintf(stderr, " Error open file for write: %s", buffer);
+		fprintf(stderr, "\nError open file for write: %s", buffer);
 		return false;
 	}
 
@@ -617,7 +627,7 @@ bool CFont::IsRange(const int lowerRange, const int upperRange) const
 	return false;
 }
 
-bool CFont::IsCharInFont(int wch) const
+bool CFont::IsCharInFont(wchar_t wch) const
 {
 	if ( FindCharInCache(wch) != -1) {
 		return true;

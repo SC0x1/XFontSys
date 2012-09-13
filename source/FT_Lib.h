@@ -23,13 +23,17 @@ namespace ftLib
 		void SetPixelSize(int fontSize, int horz_res = 96, int vert_res = 96);
 
 		// render the glyph
-		bool Glyph(const int wch);
+		bool RenderGlyph(const int wch);
 
 		// glyph metrics
 		int GlyphAdvanceX( void ) const;
-		int GlyphAdvanceX(const int wch_prev, const int wch_next);
+		
 		int GlyphAdvanceY( void ) const;
-		int GlyphAdvanceY(const int wch_prev, const int wch_next);
+
+		// kerning
+		bool HasKerning( void );
+		int GetKerningX(int wch_prev, int wch_next);
+		int GetKerningY(int wch_prev, int wch_next);
 
 		int GlyphHeight( void ) const;
 		int GlyphWidth( void ) const;
@@ -40,7 +44,6 @@ namespace ftLib
 		int GlyphAscender( void ) const;
 		int GlyphDescender( void ) const;
 
-		
 		int GlyphBitmapWidth( void ) const;
 		int GlyphBitmapHeight( void ) const;
 		int GlyphBitmapLeft( void ) const;

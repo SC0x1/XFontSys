@@ -10,15 +10,11 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include FT_GLYPH_H
-#include FT_SIZES_H
 
 // converts points to pixels
-inline float fix26d6ToPixel(const int p)
+inline int fix26d6ToPixel(const int p)
 {
-	//const int div = 1 << 6;
-	//return float(p) / div;
-	return (float)(p >> 6) + ( (p & 0x20) >> 5 );
+	return (p >> 6) + ( (p & 0x20) >> 5 );
 }
 
 namespace ftLib
@@ -54,43 +50,47 @@ namespace ftLib
 			return;
 	}
 
-	bool FTFace::Glyph(const int wch)
+	bool FTFace::RenderGlyph(const int wch)
 	{
 		if (FT_Load_Char(m_Face, wch, FT_LOAD_RENDER))
 		{
 			return false;
 		}
-
 		return true;
 	}
 
-	int FTFace::GlyphAdvanceX(const int wch_prev, const int wch_next)
+	bool FTFace::HasKerning(void)
 	{
-		if ((FT_UInt)wch_next && FT_HAS_KERNING(m_Face))
+		return FT_HAS_KERNING(m_Face);
+	}
+
+	int FTFace::GetKerningX(int wch_prev, int wch_next)
+	{
+		if ((FT_UInt)wch_next)
 		{
 			FT_Vector vKern;
-			FT_Get_Kerning(m_Face, (FT_UInt)wch_prev, (FT_UInt)wch_next, FT_KERNING_DEFAULT, &vKern);
-			return (GlyphAdvanceX() + fix26d6ToPixel(vKern.x));
+			
+			FT_Get_Kerning(m_Face, FT_Get_Char_Index(m_Face, wch_prev), FT_Get_Char_Index(m_Face, wch_next), FT_KERNING_DEFAULT, &vKern);
+
+			return fix26d6ToPixel(vKern.x);
 		}
-		else
-			return GlyphAdvanceX();
+		return 0;
+	}
+
+	int FTFace::GetKerningY(int wch_prev, int wch_next)
+	{
+		if ((FT_UInt)wch_next)
+		{
+			FT_Vector vKern;
+			FT_Get_Kerning(m_Face, FT_Get_Char_Index(m_Face, wch_prev), FT_Get_Char_Index(m_Face, wch_next), FT_KERNING_DEFAULT, &vKern);
+			return fix26d6ToPixel(vKern.y);
+		}
+		return 0;
 	}
 
 	int FTFace::GlyphAdvanceX() const
 	{
 		return fix26d6ToPixel(m_Face->glyph->advance.x);
-	}
-
-	int FTFace::GlyphAdvanceY(const int wch_prev, const int wch_next)
-	{
-		if (wch_next && FT_HAS_KERNING(m_Face))
-		{
-			FT_Vector vKern;
-			FT_Get_Kerning(m_Face, wch_prev, wch_next, FT_KERNING_DEFAULT, &vKern);
-			return (GlyphAdvanceY() + fix26d6ToPixel(vKern.y));
-		}
-		else
-			return GlyphAdvanceY();
 	}
 
 	int FTFace::GlyphAdvanceY() const

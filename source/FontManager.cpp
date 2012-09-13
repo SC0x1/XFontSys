@@ -136,6 +136,27 @@ void FontManager::ClearAllFonts()
 	}
 }
 
+bool FontManager::GetGlyphDesc(HFont handle, int wch, GlyphDesc_t &desc) const
+{
+	if (! m_Fonts[ handle - 1 ]->GetGlyphDesc(wch, desc))
+		return false;
+
+	return true;
+}
+
+bool FontManager::AssignCacheForChar(HFont handle, int wch)
+{
+	if (!m_Fonts[ handle - 1]->AssignCacheForChar(wch))
+		return false;
+
+	return true;
+}
+
+GlyphDesc_t const * FontManager::GetGlyphDescFromCache(HFont handle, int wch) const
+{
+	return m_Fonts[ handle - 1 ]->GetGlyphDesc();
+}
+
 bool FontManager::IsCharInFont(HFont handle, wchar_t wch) const
 {
 	assert( m_Fonts[ handle-1 ]->IsValid() );
@@ -149,14 +170,19 @@ CFont* FontManager::GetFontByID(HFont fnt) const
 	return m_Fonts[ fnt - 1 ];
 }
 
-void FontManager::GetGlyphDesc(HFont handle, wchar_t wch, GlyphDesc_t &desc) const
-{
-	m_Fonts[ handle - 1 ]->GetGlyphDesc(wch, 0, desc);
-}
-
 int FontManager::GetFontHeight(HFont handle) const
 {
 	return m_Fonts[ handle - 1 ]->Height();
+}
+
+bool FontManager::HasKerning(HFont handle) const
+{
+	return m_Fonts[ handle - 1 ]->HasKerning();
+}
+
+float const * FontManager::GetTexCoordsFromCache(HFont handle, int wch) const
+{
+	return m_Fonts[ handle - 1 ]->GetTexCoords();
 }
 
 bool FontManager::DumpFontCache(HFont handle, const char* path) const

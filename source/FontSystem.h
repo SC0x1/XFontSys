@@ -218,6 +218,12 @@ public:
 	virtual void DrawLine(int x0, int y0, int x1, int y1, int r, int g, int b, int a = 255) = 0;
 
 	//---------------------------------------------------------------------------
+	// Purpose: Kerning 
+	//---------------------------------------------------------------------------
+	virtual bool HasKerning(HFont handle) = 0;
+	virtual void UseKerning(bool flag) = 0;
+
+	//---------------------------------------------------------------------------
 	// Purpose: Begins, ends 2D painting (to display any text, all calls draws text
 	//          must be between 'EnableStateDraw' / 'DisableStateDraw')
 	//---------------------------------------------------------------------------

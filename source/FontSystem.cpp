@@ -220,6 +220,16 @@ public:
 
 	void DrawLine(int x0, int y0, int x1, int y1, int r, int g, int b, int a);
 
+	bool HasKerning(HFont handle)
+	{ 
+		return g_pFontManager.HasKerning(handle);
+	}
+
+	void UseKerning(bool flag)
+	{
+		m_bIsKerning = flag;
+	}
+
 	void EnableStateDraw( void );
 	void DisableStateDraw( void );
 
@@ -250,11 +260,11 @@ private:
 	float m_scaleX;
 	float m_scaleY;
 
-	unsigned int	m_VertexArrayId[2];		// Vertex Array Object ID
-	unsigned int	m_VertexBufferId[2];	// Vertex Buffer Object ID
+	unsigned int m_VertexArrayId[2];  // Vertex Array Object ID
+	unsigned int m_VertexBufferId[2]; // Vertex Buffer Object ID
 
 	// uniform id - color
-	int		m_UnifColor;
+	int m_UnifColor;
 
 	unsigned int m_TexID;
 
@@ -264,33 +274,35 @@ private:
 	CUtlVector<TextInfo> m_StaticTextInfo;
 
 	// amount of free space in the video memory for the vertices of the static text in bytes
-	int		m_StaticFreeVMem;
-	int		m_StaticTotalVMem;
+	int m_StaticFreeVMem;
+	int m_StaticTotalVMem;
 
-	float	m_DrawColor[4];
+	float m_DrawColor[4];
 
 	// color for text
-	float	m_DrawTextColor[4];
+	float m_DrawTextColor[4];
 
 	// current position in screen space
-	int		m_DrawTextPos[2];
+	int m_DrawTextPos[2];
 
 	// descriptor (id) of the current font
-	HFont	m_hFont;
+	HFont m_hFont;
 
 	// current length of the text
-	int		m_TextLen;
+	int m_TextLen;
 
-	float	m_BufferVertices[1024];
+	float m_BufferVertices[1024];
 
-	float	*pBaseVertex;
+	float *pBaseVertex;
 
-	int		m_VertexCount;
+	int m_VertexCount;
 
 	// debug info
-	int		m_VertexPerFrame;
+	int m_VertexPerFrame;
 
-	bool	m_bIsInit;
+	bool m_bIsInit;
+
+	bool m_bIsKerning;
 };
 
 static CFontSystem s_FontSystem;
@@ -312,7 +324,7 @@ CFontSystem::CFontSystem()
 
 	m_VertexPerFrame = 0;
 
-	m_bIsInit = false;
+	m_bIsKerning = m_bIsInit = false;
 
 	ClearAllState();
 }
@@ -414,15 +426,9 @@ inline void PointerInc(float *& pData, const float &pX, const float &pY, const f
 template<typename T>
 void CFontSystem::BuildTextVertices(const T* text)
 {
-	//int inc = 0;
-	//auto toSet = [](const float &pX, const float &pY, const float &u, const float &v)
-	//{
-	//	pBaseVertex[inc++] = pX;
-	//	pBaseVertex[inc++] = pY;
-	//	pBaseVertex[inc++] = u;
-	//	pBaseVertex[inc++] = v;
-	//};
 	CFont &font = *g_pFontManager.GetFontByID(m_hFont);
+
+	int fk = font.HasKerning();
 
 	const int height = font.Height();
 
@@ -445,8 +451,12 @@ void CFontSystem::BuildTextVertices(const T* text)
 		x = posX + g.bitmapLeft;
 		y = (posY + height) - g.bitmapTop;
 
-		posX += g.advanceX;
-		posY += g.advanceY;
+		if (m_bIsKerning)
+			posX += g.advanceX + font.GetKerningX(text[i], text[i+1]);
+		else
+			posX += g.advanceX;
+
+		//posY += g.advanceY;
 
 		if (iswspace(Ch))
 		{
@@ -461,13 +471,6 @@ void CFontSystem::BuildTextVertices(const T* text)
 		const int h = g.bitmapHeight;
 
 		const float *pTex = font.GetTexCoords();
-
-		//toSet(x,     y,     pTex[ 0], pTex[1]);
-		//toSet(x,     y + h, pTex[ 2], pTex[3]);
-		//toSet(x + w, y,     pTex[ 4], pTex[5]);
-		//toSet(x + w, y,     pTex[ 6], pTex[7]);
-		//toSet(x,     y + h, pTex[ 8], pTex[9]);
-		//toSet(x + w, y + h, pTex[10], pTex[11]);
 
 		PointerInc(pBaseVertex, x,     y,     pTex[ 0], pTex[1]);
 		PointerInc(pBaseVertex, x,     y + h, pTex[ 2], pTex[3]);
@@ -490,7 +493,8 @@ int CFontSystem::BuildStaticText(const T* text)
 
 	void* pVM = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 
-	if ( !pVM ) {
+	if ( !pVM )
+	{
 		fprintf(stderr, "OpenGL Error glMapBuffer");
 		return -1;
 	}
@@ -533,7 +537,7 @@ BBox_t CFontSystem::GetTextArea(const T *text, BBox_t &bbox) const
 
 	CFont &font = *g_pFontManager.GetFontByID(m_hFont);
 
-	const int strHeight = font.Height();
+	const int lineHeight = font.Height();
 
 	for (int i = 0; i < m_TextLen; ++i)
 	{
@@ -543,7 +547,7 @@ BBox_t CFontSystem::GetTextArea(const T *text, BBox_t &bbox) const
 		{
 			if (Ch == '\n')
 			{
-				posY += strHeight;
+				posY += lineHeight;
 				posX = m_DrawTextPos[0];
 				continue;
 			}
@@ -560,15 +564,19 @@ BBox_t CFontSystem::GetTextArea(const T *text, BBox_t &bbox) const
 
 		GlyphDesc_t const *pDesc = font.GetGlyphDesc();
 
-		posX += pDesc->advanceX;
-		posY += pDesc->advanceY;
+		if (m_bIsKerning)
+			posX += pDesc->advanceX + font.GetKerningX(text[i], text[i+1]);
+		else
+			posX += pDesc->advanceX;
+
+		//posY += pDesc->advanceY;
 
 		if (posX > maxW) {
 			maxW = posX;
 		}
 	}
 
-	maxH = posY + strHeight + (strHeight - font.GetAbsoluteValue());
+	maxH = posY + lineHeight + (lineHeight - font.GetAbsoluteValue());
 
 	bbox.xMin = m_DrawTextPos[0];
 	bbox.yMin = m_DrawTextPos[1];
@@ -700,10 +708,10 @@ bool CFontSystem::DumpFontCache(HFont handle, const char* path)
 
 void CFontSystem::DrawFilledRect(int x0, int y0, int x1, int y1, int r, int g, int b, int a)
 {
-	GLfloat vVerts[] =	{	(float)x0, (float)y1,	//	V1
-							(float)x1, (float)y1,	//	V2
-							(float)x0, (float)y0,	//	V6
-							(float)x1, (float)y0,	//	V5
+	GLfloat vVerts[] =	{ (float)x0, (float)y1,	//	V1
+						 (float)x1, (float)y1,	//	V2
+						 (float)x0, (float)y0,	//	V6
+						 (float)x1, (float)y0,	//	V5
 						};
 
 	glBindVertexArray(m_VertexArrayId[1]);
@@ -730,8 +738,8 @@ void CFontSystem::DrawFilledRect(int x0, int y0, int x1, int y1, int r, int g, i
 //-----------------------------------------------------------------------------
 void CFontSystem::DrawLine(int x0, int y0, int x1, int y1, int r, int g, int b, int a)
 {
-	GLfloat vVerts[] = 	{	(float)x0, (float)y0,	//	V1
-							(float)x1, (float)y1,	//	V2
+	GLfloat vVerts[] = 	{ (float)x0, (float)y0, //	V1
+						 (float)x1, (float)y1, //	V2
 						};
 
 	glBindVertexArray(m_VertexArrayId[1]);
