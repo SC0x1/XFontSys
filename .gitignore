@@ -35,6 +35,7 @@ intermediate
 ipch
 *.cfnt
 *.tga
+*.exe
 logApp.txt
 
 #################
