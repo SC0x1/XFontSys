@@ -189,7 +189,9 @@ int InitStaticTextFromFile( const char* nameFile, BBox_t &bbox )
 	const char* pText = ReadWholeFileIntoString( nameFile );
 
 	if ( !pText )
+	{
 		return -1;
+	}
 
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> conv;
 	auto wstr = conv.from_bytes(pText);

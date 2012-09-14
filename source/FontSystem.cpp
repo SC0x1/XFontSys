@@ -451,9 +451,9 @@ void CFontSystem::BuildTextVertices(const T* text)
 		x = posX + g.bitmapLeft;
 		y = (posY + height) - g.bitmapTop;
 
-		if (m_bIsKerning)
-			posX += g.advanceX + font.GetKerningX(text[i], text[i+1]);
-		else
+		m_bIsKerning ?
+			posX += g.advanceX + font.GetKerningX(text[i], text[i+1])
+			:
 			posX += g.advanceX;
 
 		//posY += g.advanceY;
