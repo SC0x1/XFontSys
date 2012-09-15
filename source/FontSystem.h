@@ -74,7 +74,7 @@ public:
 	// Input  : int sWidth - Window width
 	//          int sHeight- Window height
 	//---------------------------------------------------------------------------
-	virtual void SetScreenSize(int sWidth, int sHeight) = 0;
+	virtual bool SetScreenSize(int sWidth, int sHeight) = 0;
 
 	//---------------------------------------------------------------------------
 	// Purpose: Shutdown a library

@@ -44,7 +44,7 @@ HFont FontManager::Create_Font(const char* fontName, int size)
 
 	if (!m_Fonts[ index ]->Create(fontName, size))
 	{
-		fprintf(stderr,"Wrong create a font %s", fontName);
+		fprintf(stderr, "\nWrong create a font %s", fontName);
 		m_Fonts.RemoveIndex( index );
 		delete m_Fonts[ index ];
 		return INVALID_FONT;
@@ -115,7 +115,7 @@ bool FontManager::BuildAllFonts( void )
 		yoffset += m_Fonts[i]->Height() * m_Fonts[i]->NeedTextureLines();
 	}
 
-	util::SaveAsTGA("ShowMeResult.tga", tW, tH, pRawTexture);
+	//util::SaveAsTGA("ShowMeResult.tga", tW, tH, pRawTexture);
 
 	UploadFontTextureToGL(tW, tH, pRawTexture, m_texID);
 
@@ -279,7 +279,7 @@ bool FontManager::BuildCacheFonts( void )
 		texDimY += font.Height() * font.NeedTextureLines();
 	}
 
-	util::SaveAsTGA("ShowMeResult.tga", tW, tH, pTexBase);
+	//util::SaveAsTGA("ShowMeResult.tga", tW, tH, pTexBase);
 
 	UploadFontTextureToGL(tW, tH, pTexBase, m_texID);
 

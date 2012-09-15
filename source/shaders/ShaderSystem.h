@@ -12,9 +12,10 @@
 
 class CShaderOGL
 {
-	GLuint	m_ProgramID;
-	GLuint	m_VertexShaderID; 
-	GLuint	m_FragmentShaderID;
+	GLuint m_ProgramID;
+	GLuint m_VertexShaderID;
+	GLuint m_GeometryShaderID;
+	GLuint m_FragmentShaderID;
 
 public:
 
@@ -23,12 +24,16 @@ public:
 
 	// links and build the shader program
 	bool BuildShaderProgram(const char* pNameVertex, const char* pNameFragment);
+	bool BuildShaderProgram(const char* pNameVertex, const char* pNameGeometry, const char* pNameFragment);
 	bool BuildShaderProgramMem(const void* pLocVertex, const void* pLocFragment);
+	bool BuildShaderProgramMem(const void* pLocVertex, const void* pLocGeometry, const void* pLocFragment);
 	bool BuildVertexShader(const char* pNameVertex);
+	bool BuildGeometryShader(const char* pNameGeometry);
 	bool BuildFragmentShader(const char* pNameFragment);
 
 	bool DestroyShaderProgram(void);
 	bool DestroyVertexShader(void);
+	bool DestroyGeometryShader(void);
 	bool DestroyFragmentShader(void);
 
 	bool ValidateShaderProgram(void);

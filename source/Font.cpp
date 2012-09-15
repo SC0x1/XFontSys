@@ -118,7 +118,7 @@ bool CFont::AllocateCacheData()
 	if (!(m_pGlyphData = new GlyphDesc_t[m_iNumCharacter]))
 		return false;
 
-	if (!(m_pTexCoords = new float[m_iNumCharacter * 12]))
+	if (!(m_pTexCoords = new float[m_iNumCharacter * 8]))
 		return false;
 
 	return true;
@@ -272,12 +272,6 @@ bool CFont::CalculateTextureCoords(const int xoffset, const int yoffset, const i
 			float tv = (float)iOffsetY / (float)height;
 
 			m_pTexCoords[inc++] = tu;
-			m_pTexCoords[inc++] = tv;
-
-			m_pTexCoords[inc++] = tu;
-			m_pTexCoords[inc++] = tv + (float)g.bitmapHeight / (float)height;
-
-			m_pTexCoords[inc++] = tu + (float)g.bitmapWidth / (float)width;
 			m_pTexCoords[inc++] = tv;
 
 			m_pTexCoords[inc++] = tu + (float)g.bitmapWidth / (float)width;
@@ -437,7 +431,7 @@ void CFont::AssignPointerToCache( void )
 
 			m_pCacheItem[ index ].pGlyph = &m_pGlyphData[ index ];
 
-			m_pCacheItem[ index ].pTexcoords = &m_pTexCoords[ index * 12 ];
+			m_pCacheItem[ index ].pTexcoords = &m_pTexCoords[ index * 8 ];
 		}
 	}
 }
