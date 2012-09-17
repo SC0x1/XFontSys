@@ -43,8 +43,6 @@ void PrintVideoInfo();
 
 char* const ReadWholeFileIntoString(const char *fileName, int *lenFile = nullptr);
 
-
 bool GetRelativePathToResources(std::string& out_path);
 
 bool SetWorkingDirectory( void );
-

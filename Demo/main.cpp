@@ -204,7 +204,7 @@ int InitStaticTextFromFile( const char* nameFile, BBox_t &bbox )
 	// gets the bounding box for the text from a file
 	FontSystem().GetWTextBBox( wstr.c_str(), wstr.length(), bbox );
 
-	FontSystem().SetTextColor(0, 0, 0);
+	FontSystem().SetTextColor(255, 0, 0);
 
 	// transmit the static text
 	int idText = FontSystem().SetStaticWText( wstr.c_str(), wstr.length() );
@@ -294,17 +294,10 @@ int main( int argc, char* argv[] )
 
 
 		// (Static  text) Text from File
-
-		FontSystem().DrawOutLinedRect( bboxTextFromFile, 255, 0, 255 );
-
 		FontSystem().PrintStaticText( idTextFromFile );
 
 
 		// (Static  text) link
-
-		FontSystem().DrawFilledRect( bboxTextLink, 255, 165, 0 );
-
-		FontSystem().DrawOutLinedRect( bboxTextLink, 0, 0, 255 );
 
 		FontSystem().PrintStaticText( idTextLink );
 
@@ -332,9 +325,6 @@ int main( int argc, char* argv[] )
 		}
 
 		// color of the rectangle
-		FontSystem().DrawFilledRect( bboxTime, 255, 165, 0 );
-
-		FontSystem().DrawOutLinedRect( bboxTime, 0, 0, 255 );
 
 		FontSystem().SetTextPos( bboxTime.xMin, bboxTime.yMin );
 

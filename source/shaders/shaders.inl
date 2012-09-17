@@ -1,6 +1,6 @@
 ﻿
 //---------------------------------------------------------------------------*/
-// GLSL - Shader. For the text render (without the matrix transform) 
+// GLSL - Shaders. For the text render shader program  (without the matrix transform) 
 //---------------------------------------------------------------------------*/
 
 // the vertex shader simply passes through data

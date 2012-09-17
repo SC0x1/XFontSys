@@ -209,15 +209,6 @@ public:
 	virtual void PrintWText(const wchar_t *text, const int textLen) = 0;
 
 	//---------------------------------------------------------------------------
-	// Purpose: Some drawing methods
-	//---------------------------------------------------------------------------
-	virtual void DrawOutLinedRect(const BBox_t&, int r, int g, int b, int a = 255) = 0;
-	virtual void DrawOutLinedRect(int x0, int y0, int x1, int y1, int r, int g, int b, int a = 255) = 0;
-	virtual void DrawFilledRect(const BBox_t&, int r, int g, int b, int a = 255) = 0;
-	virtual void DrawFilledRect(int x0, int y0, int x1, int y1, int r, int g, int b, int a = 255) = 0;
-	virtual void DrawLine(int x0, int y0, int x1, int y1, int r, int g, int b, int a = 255) = 0;
-
-	//---------------------------------------------------------------------------
 	// Purpose: Kerning 
 	//---------------------------------------------------------------------------
 	virtual bool HasKerning(HFont handle) = 0;

@@ -100,14 +100,6 @@ public:
 		m_hFont = handle;
 	}
 
-	void SetColor(uint8 r, uint8 g, uint8 b, uint8 a)
-	{
-		m_DrawColor[0] = (float)r;
-		m_DrawColor[1] = (float)g;
-		m_DrawColor[2] = (float)b;
-		m_DrawColor[3] = (float)a;
-	}
-
 	void SetTextColor(uint8 r, uint8 g, uint8 b, uint8 a)
 	{
 		m_DrawTextColor[0] = (float)r;
@@ -197,29 +189,6 @@ public:
 		Draw2DText();
 	}
 
-	// displays a rectangle specified in screen space
-	void DrawOutLinedRect(const BBox_t& bbox, int r, int g, int b, int a)
-	{
-		DrawOutLinedRect(bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax, r, g, b, a);
-	}
-
-	void CFontSystem::DrawOutLinedRect(int x0, int y0, int x1, int y1, int r, int g, int b, int a)
-	{
-		DrawLine(x0,   y0,   x1,   y0+1, r, g, b, a);	//top
-		DrawLine(x0,   y1-1, x1,   y1,   r, g, b, a);	//bottom
-		DrawLine(x0,   y0,   x0+1, y1,   r, g, b, a);	//left
-		DrawLine(x1-1, y0,   x1,   y1,   r, g, b, a);	//right
-	}
-
-	void DrawFilledRect(const BBox_t& bbox, int r, int g, int b, int a)
-	{
-		DrawFilledRect(bbox.xMin, bbox.yMin, bbox.xMax, bbox.yMax, r, g, b, a);
-	}
-
-	void DrawFilledRect(int x0, int y0, int x1, int y1, int r, int g, int b, int a );
-
-	void DrawLine(int x0, int y0, int x1, int y1, int r, int g, int b, int a);
-
 	bool HasKerning(HFont handle)
 	{ 
 		return g_pFontManager.HasKerning(handle);
@@ -260,8 +229,8 @@ private:
 	float m_scaleX;
 	float m_scaleY;
 
-	unsigned int m_VertexArrayId[3];  // Vertex Array Object ID
-	unsigned int m_VertexBufferId[3]; // Vertex Buffer Object ID
+	unsigned int m_VertexArrayId[2];  // Vertex Array Object ID
+	unsigned int m_VertexBufferId[2]; // Vertex Buffer Object ID
 
 	// uniform id - color
 	int m_UnifColor;
@@ -276,8 +245,6 @@ private:
 	// amount of free space in the video memory for the vertices of the static text in bytes
 	int m_StaticFreeVMem;
 	int m_StaticTotalVMem;
-
-	float m_DrawColor[4];
 
 	// color for text
 	float m_DrawTextColor[4];
@@ -366,18 +333,6 @@ void CFontSystem::InitBuffers(void)
 		glVertexAttribPointer(ATTRIB_TEXCOORD0, 4, GL_FLOAT, GL_FALSE, 32, (GLvoid*)16/*4*sizeof(float)*/);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(0);
-
-	// debug (draw lines, rect, etc...)
-	glBindVertexArray(m_VertexArrayId[2]);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[2]);
-
-	// pointers
-	glEnableVertexAttribArray(ATTRIB_POSITION);
-	glVertexAttribPointer(ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
 }
@@ -595,6 +550,8 @@ BBox_t CFontSystem::GetTextArea(const T *text, BBox_t &bbox) const
 
 void CFontSystem::Draw2DText( void )
 {
+	glBindVertexArray(m_VertexArrayId[1]);
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[1]);
 
 	glBufferData(GL_ARRAY_BUFFER, m_ElementCount * 32, m_BufferVertices, GL_DYNAMIC_DRAW);
@@ -607,8 +564,6 @@ void CFontSystem::Draw2DText( void )
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	m_fontShader.Set_Float4v(m_DrawTextColor, m_UnifColor);
-
-	glBindVertexArray(m_VertexArrayId[1]);
 
 	glDrawArrays(GL_POINTS, 0, m_ElementCount);
 
@@ -631,6 +586,8 @@ bool CFontSystem::Initialize( void )
 		return false;
 
 	m_fontShader.Begin_Use();
+
+	SetTextColor(0, 0, 0, 255);
 
 	m_fontShader.Set_Float4v(m_DrawTextColor, "u_Color", &m_UnifColor);
 
@@ -715,54 +672,6 @@ HFont CFontSystem::LoadFontCache(const char *fileName)
 bool CFontSystem::DumpFontCache(HFont handle, const char* path)
 {
 	return g_pFontManager.DumpFontCache(handle, path);
-}
-
-void CFontSystem::DrawFilledRect(int x0, int y0, int x1, int y1, int r, int g, int b, int a)
-{
-	GLfloat vVerts[] =	{ (float)x0, (float)y1, // V1
-							(float)x1, (float)y1, // V2
-							(float)x0, (float)y0, // V6
-							(float)x1, (float)y0, // V5
-						};
-
-	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[2]);
-
-	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), vVerts, GL_DYNAMIC_DRAW);
-
-	SetColor(r, g, b, a);
-
-	// pass to the shader program the color data
-	m_fontShader.Set_Float4v(m_DrawColor, m_UnifColor);
-
-	glBindVertexArray(m_VertexArrayId[2]);
-
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	glBindVertexArray(0);
-}
-
-//-----------------------------------------------------------------------------
-// Draws the line
-//-----------------------------------------------------------------------------
-void CFontSystem::DrawLine(int x0, int y0, int x1, int y1, int r, int g, int b, int a)
-{
-	GLfloat vVerts[] = 	{ (float)x0, (float)y0, //	V1
-						 (float)x1, (float)y1, //	V2
-						};
-
-	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[2]);
-
-	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(float), vVerts, GL_DYNAMIC_DRAW);
-
-	SetColor(r, g, b, a);
-
-	m_fontShader.Set_Float4v(m_DrawColor, m_UnifColor);
-
-	glBindVertexArray(m_VertexArrayId[2]);
-
-	glDrawArrays(GL_LINES, 0, 1);
-
-	glBindVertexArray(0);
 }
 
 int CFontSystem::GetFontSize(HFont font) const
