@@ -30,15 +30,15 @@ const char GeometryShader[] = "#version 150 core\n \
 								gl_Position = vec4(-1 + (qv.x * u_Scale.x), 1 - (qv.y * u_Scale.y), 0, 1);\n \
 								v_TexCoord0.xy = tex.xy;\n \
 								EmitVertex();\n \
-								gl_Position = vec4(-1 + ((qv.x + qv.z) * u_Scale.x), 1 - (qv.y * u_Scale.y), 0, 1);\n \
+								gl_Position = vec4(-1 + (qv.z * u_Scale.x), 1 - (qv.y * u_Scale.y), 0, 1);\n \
 								v_TexCoord0.x = tex.x + tex.z;\n \
 								v_TexCoord0.y = tex.y;\n \
 								EmitVertex();\n \
-								gl_Position = vec4(-1 + (qv.x * u_Scale.x), 1 - ((qv.y + qv.w) * u_Scale.y), 0, 1);\n \
+								gl_Position = vec4(-1 + (qv.x * u_Scale.x), 1 - (qv.w * u_Scale.y), 0, 1);\n \
 								v_TexCoord0.x = tex.x;\n \
 								v_TexCoord0.y = tex.y + tex.w;\n \
 								EmitVertex();\n \
-								gl_Position = vec4(-1 + ((qv.x + qv.z) * u_Scale.x), 1 - ((qv.y + qv.w) * u_Scale.y), 0, 1);\n \
+								gl_Position = vec4(-1 + (qv.z * u_Scale.x), 1 - (qv.w * u_Scale.y), 0, 1);\n \
 								v_TexCoord0.x = tex.x + tex.z;\n \
 								v_TexCoord0.y = tex.y + tex.w;\n \
 								EmitVertex();\n \

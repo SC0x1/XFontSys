@@ -260,8 +260,8 @@ private:
 	float m_scaleX;
 	float m_scaleY;
 
-	unsigned int m_VertexArrayId[2];  // Vertex Array Object ID
-	unsigned int m_VertexBufferId[2]; // Vertex Buffer Object ID
+	unsigned int m_VertexArrayId[3];  // Vertex Array Object ID
+	unsigned int m_VertexBufferId[3]; // Vertex Buffer Object ID
 
 	// uniform id - color
 	int m_UnifColor;
@@ -337,14 +337,15 @@ CFontSystem::~CFontSystem()
 void CFontSystem::InitBuffers(void)
 {
 	// Vertex Buffer Object 
-	glGenBuffers(2, m_VertexBufferId);
+	glGenBuffers(3, m_VertexBufferId);
 
 	// Vertex Array Object
-	glGenVertexArrays(2, m_VertexArrayId);
+	glGenVertexArrays(3, m_VertexArrayId);
 
+	// For the static draws
 	glBindVertexArray(m_VertexArrayId[0]);
 		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[0]);
-
+		glBufferData( GL_ARRAY_BUFFER, m_StaticTotalVMem, nullptr, GL_DYNAMIC_DRAW);
 		// pointers
 		glEnableVertexAttribArray(ATTRIB_POSITION);
 		glVertexAttribPointer(ATTRIB_POSITION, 4, GL_FLOAT, GL_FALSE, 32, (GLvoid*)0);
@@ -368,12 +369,17 @@ void CFontSystem::InitBuffers(void)
 
 	glBindVertexArray(0);
 
-	m_StaticTotalVMem = STATIC_CHARS * 32;
+	// debug (draw lines, rect, etc...)
+	glBindVertexArray(m_VertexArrayId[2]);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[2]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[0]);
-	
-	glBufferData( GL_ARRAY_BUFFER, m_StaticTotalVMem, nullptr, GL_DYNAMIC_DRAW);
+	// pointers
+	glEnableVertexAttribArray(ATTRIB_POSITION);
+	glVertexAttribPointer(ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(0);
 }
 
 void CFontSystem::PrintStaticText(int idText)
@@ -423,13 +429,13 @@ void CFontSystem::PrintStaticText(int idText)
 	glBindVertexArray(0);
 }
 
-inline void PointerInc(float* &pData, const float &pX, const float &pY, const float &w, const float &h, float const *pTexCoords)
+inline void PointerInc(float* &pData, const float &x0, const float &y0, const float &x1, const float &y1, float const *pTexCoords)
 {
 	float *p = pData;
-	*p++ = pX;
-	*p++ = pY;
-	*p++ = w;
-	*p++ = h;
+	*p++ = x0;
+	*p++ = y0;
+	*p++ = x1;
+	*p++ = y1;
 	*p++ = pTexCoords[0]; *p++ = pTexCoords[1];
 	*p++ = pTexCoords[2]; *p   = pTexCoords[3];
 
@@ -478,7 +484,7 @@ void CFontSystem::BuildTextVertices(const T* text)
 			continue;
 		}
 
-		PointerInc(pBaseVertex, x, y, g.bitmapWidth, g.bitmapHeight, g.texCoord);
+		PointerInc(pBaseVertex, x, y, x + g.bitmapWidth, y + g.bitmapHeight, g.texCoord);
 
 		++m_ElementCount;
 	}
@@ -597,21 +603,18 @@ void CFontSystem::Draw2DText( void )
 
 	glBindTexture(GL_TEXTURE_2D, m_TexID);
 
-	glBindVertexArray(m_VertexArrayId[1]);
-
-	glVertexAttribPointer(ATTRIB_POSITION, 4, GL_FLOAT, GL_FALSE, 32, (GLvoid*)0);
-	glVertexAttribPointer(ATTRIB_TEXCOORD0, 4, GL_FLOAT, GL_FALSE, 32, (GLvoid*)16/*4*sizeof(float)*/);
-
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	m_fontShader.Set_Float4v(m_DrawTextColor, m_UnifColor);
 
+	glBindVertexArray(m_VertexArrayId[1]);
+
 	glDrawArrays(GL_POINTS, 0, m_ElementCount);
 
-	glDisable(GL_BLEND);
-
 	glBindVertexArray(0);
+
+	glDisable(GL_BLEND);
 }
 
 #include "shaders/shaders.inl"
@@ -630,6 +633,8 @@ bool CFontSystem::Initialize( void )
 	m_fontShader.Begin_Use();
 
 	m_fontShader.Set_Float4v(m_DrawTextColor, "u_Color", &m_UnifColor);
+
+	m_StaticTotalVMem = STATIC_CHARS * 32;
 
 	InitBuffers();
 
@@ -720,24 +725,21 @@ void CFontSystem::DrawFilledRect(int x0, int y0, int x1, int y1, int r, int g, i
 							(float)x1, (float)y0, // V5
 						};
 
-	glBindVertexArray(m_VertexArrayId[1]);
-
-	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[2]);
 
 	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), vVerts, GL_DYNAMIC_DRAW);
-
-	glVertexAttribPointer(ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	SetColor(r, g, b, a);
 
 	// pass to the shader program the color data
 	m_fontShader.Set_Float4v(m_DrawColor, m_UnifColor);
 
+	glBindVertexArray(m_VertexArrayId[2]);
+
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	glBindVertexArray(0);
 }
-
 
 //-----------------------------------------------------------------------------
 // Draws the line
@@ -748,19 +750,17 @@ void CFontSystem::DrawLine(int x0, int y0, int x1, int y1, int r, int g, int b, 
 						 (float)x1, (float)y1, //	V2
 						};
 
-	glBindVertexArray(m_VertexArrayId[1]);
-
-	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[2]);
 
 	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(float), vVerts, GL_DYNAMIC_DRAW);
-
-	glVertexAttribPointer(ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	SetColor(r, g, b, a);
 
 	m_fontShader.Set_Float4v(m_DrawColor, m_UnifColor);
 
-	glDrawArrays(GL_LINES, 0, 2);
+	glBindVertexArray(m_VertexArrayId[2]);
+
+	glDrawArrays(GL_LINES, 0, 1);
 
 	glBindVertexArray(0);
 }
