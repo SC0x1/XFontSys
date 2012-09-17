@@ -27,7 +27,7 @@ bool Check_Shader(unsigned int checkShaderID)
 		static char bufferErr[512];
 		glGetShaderInfoLog(checkShaderID, sizeof(bufferErr), &length, bufferErr);
 		bufferErr[length+1] = '\0';
-		fprintf(stderr, "\nERROR_Shader %s", bufferErr);
+		fprintf(stderr, "\nERROR_Shader %s\n", bufferErr);
 		return false;
 	}
 
@@ -51,7 +51,7 @@ inline bool Check_Program(unsigned int program, GLenum param)
 	{
 		GLint length;
 		glGetProgramInfoLog( program, sizeof(buffer), &length, buffer );
-		fprintf(stderr,"Wrong check Program %d error: %s", program, buffer);
+		fprintf(stderr,"\nWrong check Program %d error: %s\n", program, buffer);
 		return false;
 	}
 
@@ -283,7 +283,7 @@ bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocG
 		return false;
 	}
 
-	if (!CreateShaderProgram(m_VertexShaderID, m_FragmentShaderID, m_ProgramID)) {
+	if (!CreateShaderProgram(m_VertexShaderID, m_GeometryShaderID, m_FragmentShaderID, m_ProgramID)) {
 		return false;
 	}
 

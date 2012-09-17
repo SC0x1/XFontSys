@@ -36,8 +36,6 @@ public:
 
 	GlyphDesc_t const *GetGlyphDescFromCache(HFont handle, int wch) const;
 
-	float const * GetTexCoordsFromCache(HFont handle, int wch) const;
-
 	int GetFontHeight(HFont handle) const;
 	
 	bool HasKerning(HFont handle) const;

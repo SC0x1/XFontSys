@@ -326,6 +326,8 @@ CFontSystem::CFontSystem()
 
 	m_bIsKerning = m_bIsInit = false;
 
+	m_UnifColor = -1;
+
 	ClearAllState();
 }
 
@@ -345,9 +347,9 @@ void CFontSystem::InitBuffers(void)
 
 		// pointers
 		glEnableVertexAttribArray(ATTRIB_POSITION);
-		glVertexAttribPointer(ATTRIB_POSITION, 4, GL_FLOAT, GL_FALSE, 48, (GLvoid*)0);
+		glVertexAttribPointer(ATTRIB_POSITION, 4, GL_FLOAT, GL_FALSE, 32, (GLvoid*)0);
 		glEnableVertexAttribArray(ATTRIB_TEXCOORD0);
-		glVertexAttribPointer(ATTRIB_TEXCOORD0, 8, GL_FLOAT, GL_FALSE, 48, (GLvoid*)16/*4*sizeof(float)*/);
+		glVertexAttribPointer(ATTRIB_TEXCOORD0, 4, GL_FLOAT, GL_FALSE, 32, (GLvoid*)16/*4*sizeof(float)*/);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -358,15 +360,15 @@ void CFontSystem::InitBuffers(void)
 
 		// pointers
 		glEnableVertexAttribArray(ATTRIB_POSITION);
-		glVertexAttribPointer(ATTRIB_POSITION, 4, GL_FLOAT, GL_FALSE, 48, (GLvoid*)0);
+		glVertexAttribPointer(ATTRIB_POSITION, 4, GL_FLOAT, GL_FALSE, 32, (GLvoid*)0);
 		glEnableVertexAttribArray(ATTRIB_TEXCOORD0);
-		glVertexAttribPointer(ATTRIB_TEXCOORD0, 8, GL_FLOAT, GL_FALSE, 48, (GLvoid*)16/*4*sizeof(float)*/);
+		glVertexAttribPointer(ATTRIB_TEXCOORD0, 4, GL_FLOAT, GL_FALSE, 32, (GLvoid*)16/*4*sizeof(float)*/);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
 
-	m_StaticTotalVMem = STATIC_CHARS * 48;
+	m_StaticTotalVMem = STATIC_CHARS * 32;
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[0]);
 	
@@ -429,11 +431,9 @@ inline void PointerInc(float* &pData, const float &pX, const float &pY, const fl
 	*p++ = w;
 	*p++ = h;
 	*p++ = pTexCoords[0]; *p++ = pTexCoords[1];
-	*p++ = pTexCoords[2]; *p++ = pTexCoords[3];
-	*p++ = pTexCoords[4]; *p++ = pTexCoords[5];
-	*p++ = pTexCoords[6]; *p   = pTexCoords[7];
+	*p++ = pTexCoords[2]; *p   = pTexCoords[3];
 
-	pData += 12;
+	pData += 8;
 }
 
 template<typename T>
@@ -478,7 +478,7 @@ void CFontSystem::BuildTextVertices(const T* text)
 			continue;
 		}
 
-		PointerInc(pBaseVertex, x, y, g.bitmapWidth, g.bitmapHeight, font.GetTexCoords());
+		PointerInc(pBaseVertex, x, y, g.bitmapWidth, g.bitmapHeight, g.texCoord);
 
 		++m_ElementCount;
 	}
@@ -487,7 +487,7 @@ void CFontSystem::BuildTextVertices(const T* text)
 template<typename T>
 int CFontSystem::BuildStaticText(const T* text)
 {
-	if ( !text || (m_StaticFreeVMem < (m_TextLen * 48)))
+	if ( !text || (m_StaticFreeVMem < (m_TextLen * 32)))
 		return -1;
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[0]);
@@ -500,7 +500,7 @@ int CFontSystem::BuildStaticText(const T* text)
 		return -1;
 	}
 
-	pBaseVertex = (float*)pVM + (m_CurrStaticVertex * 12);
+	pBaseVertex = (float*)pVM + (m_CurrStaticVertex * 8);
 
 	BuildTextVertices<T>(text);
 
@@ -520,7 +520,7 @@ int CFontSystem::BuildStaticText(const T* text)
 	m_CurrStaticVertex += m_ElementCount;
 
 	// 4float(x,y,s,t) * sizeof(float)
-	m_StaticFreeVMem -= m_ElementCount * (sizeof(float) * 12); 
+	m_StaticFreeVMem -= m_ElementCount * (sizeof(float) * 8); 
 
 	m_StaticTextInfo.Append( ti );
 
@@ -591,7 +591,7 @@ void CFontSystem::Draw2DText( void )
 {
 	glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[1]);
 
-	glBufferData(GL_ARRAY_BUFFER, m_ElementCount * 48, m_BufferVertices, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_ElementCount * 32, m_BufferVertices, GL_DYNAMIC_DRAW);
 
 	g_pFontManager.GetTextureID(m_TexID);
 
@@ -599,8 +599,8 @@ void CFontSystem::Draw2DText( void )
 
 	glBindVertexArray(m_VertexArrayId[1]);
 
-	glVertexAttribPointer(ATTRIB_POSITION, 4, GL_FLOAT, GL_FALSE, 48, (GLvoid*)0);
-	glVertexAttribPointer(ATTRIB_TEXCOORD0, 8, GL_FLOAT, GL_FALSE, 48, (GLvoid*)16/*4*sizeof(float)*/);
+	glVertexAttribPointer(ATTRIB_POSITION, 4, GL_FLOAT, GL_FALSE, 32, (GLvoid*)0);
+	glVertexAttribPointer(ATTRIB_TEXCOORD0, 4, GL_FLOAT, GL_FALSE, 32, (GLvoid*)16/*4*sizeof(float)*/);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -782,14 +782,14 @@ void CFontSystem::ClearAllState(void)
 	m_StaticTextInfo.Clear();
 
 	m_CurrStaticVertex = 0;
-	m_StaticFreeVMem = STATIC_CHARS * 48;
+	m_StaticFreeVMem = STATIC_CHARS * 32;
 }
 
 void CFontSystem::ResetStaticText()
 {
-	if (m_StaticTotalVMem != (STATIC_CHARS * 48))
+	if (m_StaticTotalVMem != (STATIC_CHARS * 32))
 	{
-		m_StaticTotalVMem = STATIC_CHARS * 48;
+		m_StaticTotalVMem = STATIC_CHARS * 32;
 		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferId[0]);
 
 		glBufferData( GL_ARRAY_BUFFER, m_StaticTotalVMem, nullptr, GL_DYNAMIC_DRAW);
@@ -799,7 +799,7 @@ void CFontSystem::ResetStaticText()
 	m_StaticTextInfo.Clear();
 
 	m_CurrStaticVertex = 0;
-	m_StaticFreeVMem = STATIC_CHARS * 48;
+	m_StaticFreeVMem = STATIC_CHARS * 32;
 }
 
 bool CFontSystem::BuildCache(void)

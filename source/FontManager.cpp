@@ -180,11 +180,6 @@ bool FontManager::HasKerning(HFont handle) const
 	return m_Fonts[ handle - 1 ]->HasKerning();
 }
 
-float const * FontManager::GetTexCoordsFromCache(HFont handle, int wch) const
-{
-	return m_Fonts[ handle - 1 ]->GetTexCoords();
-}
-
 bool FontManager::DumpFontCache(HFont handle, const char* path) const
 {
 	const int index = handle - 1;

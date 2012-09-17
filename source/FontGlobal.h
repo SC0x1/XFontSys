@@ -13,6 +13,18 @@ struct GlyphDesc_t
 	// id in unicode table
 	int glyphID;
 
+	union
+	{
+		struct
+		{ 
+			float s;	// x offset in image where glyph starts
+			float t;	// y offset in image where glyph starts
+			float s2;	
+			float t2;
+		};
+		float texCoord[4];
+	};
+
 	short advanceX;
 	short advanceY;
 

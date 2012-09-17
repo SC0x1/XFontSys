@@ -36,16 +36,8 @@ public:
 		return (this->*pAssignCacheForChar)( wch );
 	}
 
-	float const* GetTexCoords( void ) const
-	{
-		return m_pCacheItem[m_CurrentIndex].pTexcoords;
-	}
-
 	// gets the glyph desc. for a character from the cache
-	GlyphDesc_t const* GetGlyphDesc( void ) const
-	{
-		return m_pCacheItem[m_CurrentIndex].pGlyph;
-	}
+	GlyphDesc_t const *GetGlyphDesc( void ) const;
 
 	// gets the glyph desc. for a character from the FreeType
 	bool GetGlyphDesc(wchar_t wch, GlyphDesc_t &desc) const;
@@ -143,8 +135,6 @@ private:
 	bool AllocateCacheData(void);
 	void FreeCacheData(void);
 
-	void AssignPointerToCache( void );
-
 private:
 
 	char m_fontPath[256];
@@ -175,23 +165,11 @@ private:
 	CUtlVector<UCharacterRange>	m_UChRanges;
 	int m_iNumRange;
 
-	// cache group data
-	struct CaheItem_t  
-	{
-		GlyphDesc_t *pGlyph;
-		float *pTexcoords;
-	};
-
-	CaheItem_t	*m_pCacheItem;
-
 	// current cache index for a character
 	int m_CurrentIndex;
 
 	// pointer to the cached glyphs data
 	GlyphDesc_t *m_pGlyphData;
-
-	// pointer to the UVs data
-	float *m_pTexCoords;
 
 	bool m_bBuild;
 
