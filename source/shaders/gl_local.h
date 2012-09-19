@@ -22,4 +22,4 @@
 */
 #define ATTRIB_POSITION  0
 #define ATTRIB_TEXCOORD0 1
-#define ATTRIB_COLOR     3
+#define ATTRIB_COLOR     2

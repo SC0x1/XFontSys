@@ -470,7 +470,7 @@ void events( int key, int action )
 		break;
 	default:
 		{
-			g_hFontCurrent = g_hVerdanaB_11;
+			g_hFontCurrent = g_hVerdana_11;
 			g_bChangePage = false;
 		}
 		break;
