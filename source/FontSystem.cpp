@@ -45,17 +45,6 @@ static const UnicodeCharRange_t g_FontRange[] =
 	{"", 0, 0},
 };
 
-//-----------------------------------------------------------------------------
-// Structure that store informations about the static text
-//-----------------------------------------------------------------------------
-struct TextInfo
-{
-	// first vertex in the VBO
-	unsigned short	firstVertex;	
-	// total number of vertices for a string
-	unsigned short	countVertex;
-};
-
 class CFontSystem : public IFontSystem
 {
 public:
@@ -224,6 +213,17 @@ private:
 	void ClearAllState( void );
 
 	void Draw2DText( void );
+
+	//-----------------------------------------------------------------------------
+	// Structure that store informations about the static text
+	//-----------------------------------------------------------------------------
+	struct TextInfo
+	{
+		// first vertex in the VBO
+		unsigned short	firstVertex;	
+		// total number of vertices for a string
+		unsigned short	countVertex;
+	};
 
 	CShaderOGL m_fontShader;
 
@@ -397,8 +397,10 @@ inline void PosQuad4f(float* &pData, float const &x0, float const &y0, float con
 inline void TexCoord4f(float* &pData, float const *pTexCoords)
 {
 	float *p = pData;
-	*p++ = pTexCoords[0]; *p++ = pTexCoords[1];
-	*p++ = pTexCoords[2]; *p   = pTexCoords[3];
+	*p++ = pTexCoords[0];
+	*p++ = pTexCoords[1];
+	*p++ = pTexCoords[2];
+	*p   = pTexCoords[3];
 
 	pData += 4;
 }
@@ -406,8 +408,10 @@ inline void TexCoord4f(float* &pData, float const *pTexCoords)
 inline void Color4b(float* &pData, uint8 const *pColor)
 {
 	uint8 *p = reinterpret_cast<uint8*>(pData);
-	*p++ = pColor[0]; *p++ = pColor[1];
-	*p++ = pColor[2]; *p   = pColor[3];
+	*p++ = *pColor;
+	*p++ = *(pColor + 1);
+	*p++ = *(pColor + 2);
+	*p   = *(pColor + 3);
 
 	pData += 1;
 }
