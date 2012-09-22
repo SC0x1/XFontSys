@@ -58,14 +58,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		D85DA07215C0847C002BB325 = {
+		D834BC13160E075400B02367 /* Lib */ = {
 			isa = PBXGroup;
 			children = (
 				D8A8276815DD60C1005120D8 /* libfreetype.a */,
+			);
+			name = Lib;
+			sourceTree = "<group>";
+		};
+		D85DA07215C0847C002BB325 = {
+			isa = PBXGroup;
+			children = (
+				D85DA07E15C0847C002BB325 /* Products */,
+				D834BC13160E075400B02367 /* Lib */,
 				D8ADB35A15C0881D00239E31 /* Public */,
 				D8ADB35915C0881500239E31 /* Shaders */,
 				D8ADB35815C0880600239E31 /* FontSystem */,
-				D85DA07E15C0847C002BB325 /* Products */,
 			);
 			sourceTree = "<group>";
 		};

@@ -62,20 +62,36 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		D85DA08715C08542002BB325 = {
+		D834BC0F160E060A00B02367 /* Public */ = {
 			isa = PBXGroup;
 			children = (
-				D843A64F15D53C4E00225917 /* IOKit.framework */,
-				D8AD1FAF15D5328400D103A2 /* Lib Externals */,
-				D8ADB38515C08EAD00239E31 /* libFSGL3.a */,
-				D8ADB37915C08B1400239E31 /* OpenGL.framework */,
-				D8ADB37715C08B0800239E31 /* Cocoa.framework */,
 				D82794C615D5A83900389FB6 /* Logger.cpp */,
 				D82794C715D5A83900389FB6 /* Logger.h */,
 				D8ADB37015C0885000239E31 /* common.cpp */,
 				D8ADB37115C0885000239E31 /* common.h */,
-				D8ADB37215C0885000239E31 /* main.cpp */,
+			);
+			name = Public;
+			sourceTree = "<group>";
+		};
+		D834BC12160E071700B02367 /* Externals */ = {
+			isa = PBXGroup;
+			children = (
+				D8ADB37715C08B0800239E31 /* Cocoa.framework */,
+				D8ADB37915C08B1400239E31 /* OpenGL.framework */,
+				D843A64F15D53C4E00225917 /* IOKit.framework */,
+				D8ADB38315C08BBD00239E31 /* libglfw.a */,
+				D8ADB38115C08B9B00239E31 /* libGLEW.a */,
+			);
+			name = Externals;
+			sourceTree = "<group>";
+		};
+		D85DA08715C08542002BB325 = {
+			isa = PBXGroup;
+			children = (
 				D85DA09315C08542002BB325 /* Products */,
+				D8AD1FAF15D5328400D103A2 /* Lib */,
+				D834BC0F160E060A00B02367 /* Public */,
+				D8ADB37215C0885000239E31 /* main.cpp */,
 			);
 			sourceTree = "<group>";
 		};
@@ -87,13 +103,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D8AD1FAF15D5328400D103A2 /* Lib Externals */ = {
+		D8AD1FAF15D5328400D103A2 /* Lib */ = {
 			isa = PBXGroup;
 			children = (
-				D8ADB38315C08BBD00239E31 /* libglfw.a */,
-				D8ADB38115C08B9B00239E31 /* libGLEW.a */,
+				D834BC12160E071700B02367 /* Externals */,
+				D8ADB38515C08EAD00239E31 /* libFSGL3.a */,
 			);
-			name = "Lib Externals";
+			name = Lib;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
