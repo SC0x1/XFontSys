@@ -136,7 +136,7 @@ inline void* CVertexBuffer::Lock( int vertexCount, int& baseVertexIndex )
 	{
 		glBindBuffer( GL_ARRAY_BUFFER, m_VBid );
 
-		ptr = reinterpret_cast<unsigned char*>(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY));
+		ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 		baseVertexIndex = m_BorderPosition;
 
 		m_bLock = true;
