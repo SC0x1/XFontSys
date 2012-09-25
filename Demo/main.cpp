@@ -278,7 +278,7 @@ int main( int argc, char* argv[] )
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Begins painting (bind shader program, clear all state etc.)
-		FontSystem().EnableStateDraw();
+		FontSystem().BeginDraw();
 
 
 		// (Dynamic text) Debug info
@@ -393,7 +393,7 @@ int main( int argc, char* argv[] )
 			g_bChangePage = false;
 		}
 
-		FontSystem().DisableStateDraw();
+		FontSystem().EndDraw();
 
 		VertexPerFrame = FontSystem().VertexPerFrame();
 

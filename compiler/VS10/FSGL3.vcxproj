@@ -106,6 +106,7 @@
     <ClInclude Include="..\..\source\FT_Lib.h" />
     <ClInclude Include="..\..\source\public\common.h" />
     <ClInclude Include="..\..\source\public\utlvector.h" />
+    <ClInclude Include="..\..\source\shaders\VertexBuffer.h" />
     <ClInclude Include="..\..\source\shaders\gl_local.h" />
     <ClInclude Include="..\..\source\shaders\ShaderSystem.h" />
   </ItemGroup>

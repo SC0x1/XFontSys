@@ -195,7 +195,6 @@ public:
 
 	//---------------------------------------------------------------------------
 	// Purpose: Draws a static text by its descriptor
-	//          If ID is zero, then will be displayed all the static text
 	// Input  : int idText - ID for the static text
 	//---------------------------------------------------------------------------
 	virtual void PrintStaticText(int idText = 0) = 0;
@@ -218,8 +217,8 @@ public:
 	// Purpose: Begins, ends 2D painting (to display any text, all calls draws text
 	//          must be between 'EnableStateDraw' / 'DisableStateDraw')
 	//---------------------------------------------------------------------------
-	virtual void EnableStateDraw( void ) = 0;
-	virtual void DisableStateDraw( void ) = 0;
+	virtual void BeginDraw( void ) = 0;
+	virtual void EndDraw( void ) = 0;
 
 	/*
 		Debug info ...

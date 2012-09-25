@@ -44,9 +44,9 @@ public:
 	HFont LoadFontCache(const char* filename);
 
 	// TODO: modify /~! out into a separate class CFontTextureCache
-	void GetTextureID(unsigned int &id)
+	uint32 GetTextureID( void )
 	{
-		id = m_texID;
+		return m_texID;
 	}
 
 	bool IsCharInFont(HFont handle, wchar_t wch) const;

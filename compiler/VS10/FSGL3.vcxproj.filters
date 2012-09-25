@@ -67,5 +67,8 @@
     <ClInclude Include="..\..\source\FontGlobal.h">
       <Filter>FontSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\shaders\VertexBuffer.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

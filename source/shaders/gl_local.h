@@ -23,3 +23,31 @@
 #define ATTRIB_POSITION  0
 #define ATTRIB_TEXCOORD0 1
 #define ATTRIB_COLOR     2
+
+typedef struct TrianglesPack_s
+{
+	int numVerts;				// number of vertices
+	int offsetVerts;
+}TrianglesPack_t;
+
+typedef void(*VERTEXATTRIB)(void);
+
+inline void Set_AttribTextColored( void )
+{
+	// pointers
+	glEnableVertexAttribArray(ATTRIB_POSITION);
+	glVertexAttribPointer(ATTRIB_POSITION, 4, GL_FLOAT, GL_FALSE, 36, (GLvoid*)0);
+
+	glEnableVertexAttribArray(ATTRIB_TEXCOORD0);
+	glVertexAttribPointer(ATTRIB_TEXCOORD0, 4, GL_FLOAT, GL_FALSE, 36, (GLvoid*)16/*4*sizeof(float)*/);
+
+	glEnableVertexAttribArray(ATTRIB_COLOR);
+	glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_FALSE, 36, (GLvoid*)32/*8*sizeof(float)*/);
+}
+
+inline void Reset_AttribTextColored( void )
+{
+	glDisableVertexAttribArray(ATTRIB_POSITION);
+	glDisableVertexAttribArray(ATTRIB_TEXCOORD0);
+	glEnableVertexAttribArray(ATTRIB_COLOR);
+}
