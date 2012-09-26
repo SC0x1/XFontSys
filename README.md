@@ -81,7 +81,7 @@ int id_SText = FontSystem().SetStaticWText(WText, wcslen(WText));
 while( run )
 {
 	// Bind the shader program, clear all state etc.
-	FontSystem().EnableStateDraw();
+	FontSystem().BeginDraw();
 
 	// Draw a static text
 	FontSystem().PrintStaticText( id_SText );
@@ -98,7 +98,7 @@ while( run )
 	// Draw a dynamic text
 	FontSystem().PrintText( time.c_str(), time.length() );
 
-	FontSystem().DisableStateDraw();
+	FontSystem().EndDraw();
 }
 ```
 
@@ -106,7 +106,7 @@ As a result:
 
 ![alt text](https://dl.dropbox.com/u/45284518/ShamanCode/TextRederSystem/scrHelloWorld.png "Rendering text result")
 
-For any text you can get it bounding box (BBox).
+For any text you can get its bounding box (BBox).
 
 ```c++
 // for example, load any text from a file

@@ -40,7 +40,7 @@ static const UnicodeCharRange_t g_FontRange[] =
 	{"Cyrillic", 1024, 1279},
 	{"Cyrillic Supplementary", 1280, 1327},
 
-	/*	...	add more */
+	/* ... add more */
 
 	{"", 0, 0},
 };

@@ -393,7 +393,7 @@ int main( int argc, char* argv[] )
 			g_bChangePage = false;
 		}
 
-		//FontSystem().EndDraw();
+		FontSystem().EndDraw();
 
 		VertexPerFrame = FontSystem().VertexPerFrame();
 
