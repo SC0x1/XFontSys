@@ -250,7 +250,7 @@ int main( int argc, char* argv[] )
 
 	FontSystem().SetTextPos(1, 1);
 	FontSystem().GetTextBBox( pLinkBlog, strlen(pLinkBlog), bboxTextLink );
-	FontSystem().SetTextColor(255, 255, 255);
+	FontSystem().SetTextColor(10, 158, 10);
 	int idTextLink = FontSystem().SetStaticText( pLinkBlog, strlen(pLinkBlog) );
 
 	NowTime(time);
@@ -381,7 +381,7 @@ int main( int argc, char* argv[] )
 			FontSystem().BindFont(g_hFreeSans_14);
 			
 			FontSystem().SetTextPos(1, 1);
-			FontSystem().SetTextColor(255, 255, 255);
+			FontSystem().SetTextColor(10, 158, 10);
 			idTextLink = FontSystem().SetStaticText( pLinkBlog, strlen(pLinkBlog) );
 
 			FontSystem().BindFont(g_hDejaVuSans_10);
