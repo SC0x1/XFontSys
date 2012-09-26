@@ -3,8 +3,6 @@
 // GLSL - Shaders. For the text render shader program  (without the matrix transform) 
 //---------------------------------------------------------------------------*/
 
-// TODO : передавать цвет через аттрибуты (4 ubytes)
-
 // the vertex shader simply passes through data
 const char VertexShader[] = "#version 150 core\n \
 							#extension GL_ARB_explicit_attrib_location : enable\n \

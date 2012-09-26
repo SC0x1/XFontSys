@@ -14,14 +14,14 @@
 #include <codecvt>
 
 // font descriptors
-HFont	g_hDejaVuSans_10	= INVALID_FONT,
-		g_hFreeSans_14		= INVALID_FONT,
+HFont g_hDejaVuSans_10 = INVALID_FONT,
+		g_hFreeSans_14 = INVALID_FONT,
 
-		g_hVerdana_11		= INVALID_FONT,
-		g_hVerdanaB_11		= INVALID_FONT,
-		g_hVerdanaI_11		= INVALID_FONT,
+		g_hVerdana_11 = INVALID_FONT,
+		g_hVerdanaB_11 = INVALID_FONT,
+		g_hVerdanaI_11 = INVALID_FONT,
 
-		g_hFontCurrent		= INVALID_FONT;
+		g_hFontCurrent = INVALID_FONT;
 
 //#define INIT_FROM_CACHE
 
@@ -393,7 +393,7 @@ int main( int argc, char* argv[] )
 			g_bChangePage = false;
 		}
 
-		FontSystem().EndDraw();
+		//FontSystem().EndDraw();
 
 		VertexPerFrame = FontSystem().VertexPerFrame();
 

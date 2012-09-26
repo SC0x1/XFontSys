@@ -228,8 +228,6 @@ private:
 	float m_scaleX;
 	float m_scaleY;
 
-	unsigned int m_VertexArrayId[2];  // Vertex Array Object ID
-
 	CUtlVector<TextInfo> m_StaticTextInfo;
 
 	int MAX_STATIC_CHARS;
@@ -281,6 +279,8 @@ CFontSystem::CFontSystem()
 	m_VertexPerFrame = 0;
 
 	m_bIsKerning = m_bIsInit = false;
+
+	ClearAllState();
 }
 
 CFontSystem::~CFontSystem()
@@ -294,8 +294,6 @@ void CFontSystem::PrintStaticText(int idText)
 		return;
 
 	glBindTexture( GL_TEXTURE_2D, g_pFontManager.GetTextureID() );
-
-	glBindVertexArray( m_VertexArrayId[0] );
 
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -312,8 +310,6 @@ void CFontSystem::PrintStaticText(int idText)
 	m_VertexPerFrame += dti.countVertex;
 
 	glDisable( GL_BLEND );
-
-	glBindVertexArray(0);
 }
 
 inline void PosQuad4f(float* &pData, float const &x0, float const &y0, float const &x1, float const &y1)
@@ -494,8 +490,6 @@ BBox_t CFontSystem::GetTextArea(const T *text, BBox_t &bbox) const
 
 void CFontSystem::Draw2DText( void )
 {
-	glBindVertexArray(m_VertexArrayId[1]);
-
 	m_pVBODynamic->PushVertexData(m_CountVertex, m_BufferVertices);
 
 	glBindTexture(GL_TEXTURE_2D, g_pFontManager.GetTextureID());
@@ -504,8 +498,6 @@ void CFontSystem::Draw2DText( void )
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glDrawArrays(GL_POINTS, 0, m_CountVertex);
-
-	glBindVertexArray(0);
 
 	glDisable(GL_BLEND);
 }
@@ -520,20 +512,18 @@ bool CFontSystem::Initialize( void )
 	if (!ftLib::InitFT2Lib())
 		return false;
 
-	if (!m_fontShader.BuildShaderProgramMem(VertexShader, GeometryShader, FragmentShader))
+	if (!m_fontShader.BuildShaderProgramMem(VertexShader, GeometryShader, FragmentShader, FVF_Simple2DColoredText))
 		return false;
 
+	m_pVBODynamic = new CVertexBuffer(VERTEX_SIZE, 0, true);
+
+	m_fontShader.SetVertexAttrib();
+
+	m_pVBOStatic = new CVertexBuffer(VERTEX_SIZE, STATIC_CHARS, false);
+
+	m_fontShader.SetVertexAttrib();
+
 	MAX_STATIC_CHARS = STATIC_CHARS;
-
-	glGenVertexArrays(2,m_VertexArrayId);
-
-	glBindVertexArray(m_VertexArrayId[0]);
-
-	m_pVBOStatic = new CVertexBuffer(Set_AttribTextColored, VERTEX_SIZE, STATIC_CHARS, false);
-	
-	glBindVertexArray(m_VertexArrayId[1]);
-
-	m_pVBODynamic = new CVertexBuffer(Set_AttribTextColored, VERTEX_SIZE, 0, true);
 
 	return m_bIsInit = true;
 }
@@ -556,17 +546,15 @@ void CFontSystem::Shutdown( void )
 {
 	g_pFontManager.ClearAllFonts();
 
-	m_fontShader.End_Use();
-
-	m_fontShader.DestroyVertexShader();
-	m_fontShader.DestroyFragmentShader();
-
 	m_fontShader.DestroyShaderProgram();
 
-	delete m_pVBOStatic;
-	delete m_pVBODynamic;
+	if (m_pVBOStatic)
+		delete m_pVBOStatic;
 
-	glDeleteVertexArrays(2, m_VertexArrayId);
+	if (m_pVBODynamic)
+		delete m_pVBODynamic;
+
+	m_pVBODynamic = new CVertexBuffer(VERTEX_SIZE, 0, true);
 
 	ftLib::DoneFT2Lib();
 
@@ -631,15 +619,13 @@ void CFontSystem::ClearAllState(void)
 	m_DrawTextColor[3] = 255;
 
 	m_StaticTextInfo.Clear();
-
-	m_pVBOStatic->Clear();
 }
 
 void CFontSystem::ResetStaticText(void)
 {
 	if (MAX_STATIC_CHARS != STATIC_CHARS)
 	{
-		m_pVBOStatic->ReInit(Set_AttribTextColored, VERTEX_SIZE, STATIC_CHARS, true);
+		m_pVBOStatic->ReInit(VERTEX_SIZE, STATIC_CHARS, true);
 		MAX_STATIC_CHARS = STATIC_CHARS;
 	}
 
@@ -671,7 +657,7 @@ void CFontSystem::EndDraw(void)
 	glEnable(GL_CULL_FACE);
 }
 
-bool	SetFontTextureWidth(const int texture_width)
+bool SetFontTextureWidth(const int texture_width)
 {
 	if ( (texture_width < MIN_TEXTURE_WIDTH) ||
 		(texture_width > MAX_TEXTURE_WIDTH) )
@@ -682,7 +668,7 @@ bool	SetFontTextureWidth(const int texture_width)
 	return true;
 }
 
-bool	SetMaxStaticChars(const int max_Static_Chars)
+bool SetMaxStaticChars(const int max_Static_Chars)
 {
 	if ( (max_Static_Chars < MIN_STATIC_CHARS) ||
 		(max_Static_Chars > MAX_STATIC_CHARS) )

@@ -1,7 +1,7 @@
 /****************************************************************************/
 /*	Copyright (c) 2012 Vitaly Lyaschenko < scxv86@gmail.com >
 /*
-/*	Purpose: Wrapper for GLSL shaders
+/*	Purpose: Wrapper for the GLSL shaders
 /*
 /****************************************************************************/
 #pragma once
@@ -17,24 +17,47 @@ class CShaderOGL
 	GLuint m_GeometryShaderID;
 	GLuint m_FragmentShaderID;
 
+	GLuint m_VAOID;
+
+	VERTEXATTRIB pSetAttrib;
+	VERTEXATTRIB pResetAttrib;
+
+	bool m_bInit;
+
+	void InitVertexPointer( VertexFormats format );
+
+	bool BuildVertexShader(const char* pNameVertex);
+	bool BuildGeometryShader(const char* pNameGeometry);
+	bool BuildFragmentShader(const char* pNameFragment);
+
+	bool DestroyVertexShader(void);
+	bool DestroyGeometryShader(void);
+	bool DestroyFragmentShader(void);
+
 public:
 
 	CShaderOGL();
 	~CShaderOGL();
 
 	// links and build the shader program
-	bool BuildShaderProgram(const char* pNameVertex, const char* pNameFragment);
-	bool BuildShaderProgram(const char* pNameVertex, const char* pNameGeometry, const char* pNameFragment);
-	bool BuildShaderProgramMem(const void* pLocVertex, const void* pLocFragment);
-	bool BuildShaderProgramMem(const void* pLocVertex, const void* pLocGeometry, const void* pLocFragment);
-	bool BuildVertexShader(const char* pNameVertex);
-	bool BuildGeometryShader(const char* pNameGeometry);
-	bool BuildFragmentShader(const char* pNameFragment);
+	bool BuildShaderProgram(const char* pNameVertex, const char* pNameFragment, VertexFormats format);
+	bool BuildShaderProgram(const char* pNameVertex, const char* pNameGeometry, const char* pNameFragment, VertexFormats format);
+	bool BuildShaderProgramMem(const void* pLocVertex, const void* pLocFragment, VertexFormats format);
+	bool BuildShaderProgramMem(const void* pLocVertex, const void* pLocGeometry, const void* pLocFragment, VertexFormats format);
 
 	bool DestroyShaderProgram(void);
-	bool DestroyVertexShader(void);
-	bool DestroyGeometryShader(void);
-	bool DestroyFragmentShader(void);
+
+	void SetVertexAttrib(void)
+	{
+		glBindVertexArray(m_VAOID);
+		pSetAttrib();
+	}
+
+	void ResetVertexAttrib(void)
+	{
+		pResetAttrib();
+		glBindVertexArray(0);
+	}
 
 	bool ValidateShaderProgram(void);
 	
