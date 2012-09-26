@@ -24,16 +24,6 @@ public:
 		m_BorderPosition = 0;
 	}
 
-	void BindBuffer(void) const
-	{
-		glBindVertexArray(m_VAOID);
-	}
-
-	void UnbindBuffer(void) const
-	{
-		glBindVertexArray(0);
-	}
-
 	void* Lock( int vertexCount, int& baseVertexIndex );
 
 	void Unlock( int vertexCount );

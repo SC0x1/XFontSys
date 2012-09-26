@@ -18,8 +18,9 @@
 
 #include "FontGlobal.h"
 
+#define MAX_LENGTH_STRING 1024
+
 // TODO: remove globals var
-extern int MAX_LENGTH_STRING = 256;
 extern int STATIC_CHARS = 4096;
 extern int FONT_TEXTURE_WIDTH = 1024;
 
@@ -247,7 +248,7 @@ private:
 	// current length of the text
 	int m_TextLen;
 
-	float m_BufferVertices[1024];
+	float m_BufferVertices[MAX_LENGTH_STRING];
 
 	float *pBaseVertex;
 
@@ -409,14 +410,14 @@ int CFontSystem::BuildStaticText(const T* text)
 
 	m_pVBOStatic->Unlock(m_CountVertex);
 
-	TextInfo_t ti;
+	TextInfo_t txtInfo;
 
-	ti.offsetVerts = baseVertex;
-	ti.countVerts = m_CountVertex;
-	ti.vaoID = m_pVBOStatic->VertexArrayObjectID();
-	ti.textureID = g_pFontManager.GetTextureID();
+	txtInfo.vaoID = m_pVBOStatic->VertexArrayObjectID();
+	txtInfo.textureID = g_pFontManager.GetTextureID();
+	txtInfo.offsetVerts = baseVertex;
+	txtInfo.countVerts = m_CountVertex;
 
-	m_StaticTextInfo.Append( ti );
+	m_StaticTextInfo.Append( txtInfo );
 
 	return  m_StaticTextInfo.Num();
 }
