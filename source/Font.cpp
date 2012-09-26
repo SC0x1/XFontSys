@@ -25,9 +25,7 @@ CFont::CFont()
 
 	m_iNumRange = 0;
 	m_pFT_Face = nullptr;
-	m_pCacheItem = nullptr;
 	m_pGlyphData = nullptr;
-	m_pTexCoords = nullptr;
 
 	m_iTextureWidth = 0;
 
@@ -112,13 +110,7 @@ bool CFont::AllocateCacheData()
 	if (m_iNumCharacter <= 0)
 		return false;
 
-	if (!(m_pCacheItem = new CaheItem_t[m_iNumCharacter]))
-		return false;
-
 	if (!(m_pGlyphData = new GlyphDesc_t[m_iNumCharacter]))
-		return false;
-
-	if (!(m_pTexCoords = new float[m_iNumCharacter * 12]))
 		return false;
 
 	return true;
@@ -126,14 +118,8 @@ bool CFont::AllocateCacheData()
 
 void CFont::FreeCacheData(void)
 {
-	if (m_pCacheItem)
-		delete[] m_pCacheItem;
-
 	if (m_pGlyphData)
 		delete[] m_pGlyphData;
-
-	if (m_pTexCoords)
-		delete[] m_pTexCoords;
 }
 
 bool CFont::Build( void )
@@ -175,7 +161,7 @@ bool CFont::Build( void )
 			// gets data from the FreeType
 			if (!GetGlyphDesc(chId, g))
 			{
-				fprintf(stderr, "\nFailed loading char: %s", (wchar_t)chId);
+				fprintf(stderr, "\nFailed loading char: %s\n", (wchar_t)chId);
 				continue;
 			}
 
@@ -189,8 +175,6 @@ bool CFont::Build( void )
 			heightLine = _max(heightLine, g.bitmapHeight);
 		}
 	}
-
-	AssignPointerToCache();
 
 	m_iHeight = heightLine;
 	m_iNeedNumLines = numLines;
@@ -232,7 +216,7 @@ unsigned char const* CFont::GetGlyphBitmap(wchar_t wch) const
 
 	if (!m_pFT_Face->RenderGlyph(wch))
 	{
-		fprintf(stderr, "Failed loading char: %s", wch);
+		fprintf(stderr, "\nFailed loading char: %s\n", wch);
 		return nullptr;
 	}
 
@@ -268,26 +252,10 @@ bool CFont::CalculateTextureCoords(const int xoffset, const int yoffset, const i
 			if ((iOffsetY + g.bitmapHeight) > height)
 				return false;
 
-			float tu = (float)iOffsetX / (float)width;
-			float tv = (float)iOffsetY / (float)height;
-
-			m_pTexCoords[inc++] = tu;
-			m_pTexCoords[inc++] = tv;
-
-			m_pTexCoords[inc++] = tu;
-			m_pTexCoords[inc++] = tv + (float)g.bitmapHeight / (float)height;
-
-			m_pTexCoords[inc++] = tu + (float)g.bitmapWidth / (float)width;
-			m_pTexCoords[inc++] = tv;
-
-			m_pTexCoords[inc++] = tu + (float)g.bitmapWidth / (float)width;
-			m_pTexCoords[inc++] = tv;
-
-			m_pTexCoords[inc++] = tu;
-			m_pTexCoords[inc++] = tv + (float)g.bitmapHeight / (float)height;
-
-			m_pTexCoords[inc++] = tu + (float)g.bitmapWidth / (float)width;
-			m_pTexCoords[inc++] = tv + (float)g.bitmapHeight / (float)height;
+			g.s = (float)iOffsetX / (float)width;
+			g.t = (float)iOffsetY / (float)height;
+			g.s2 = (float)g.bitmapWidth / (float)width;
+			g.t2 = (float)g.bitmapHeight / (float)height;
 
 			iOffsetX += g.bitmapWidth + 1;
 		}
@@ -402,6 +370,11 @@ bool CFont::GetGlyphDesc(wchar_t wch, GlyphDesc_t &desc) const
 	return true;
 }
 
+GlyphDesc_t const * CFont::GetGlyphDesc(void) const
+{
+	return &m_pGlyphData[m_CurrentIndex];
+}
+
 bool CFont::HasKerning(void)
 {
 	return m_pFT_Face->HasKerning();
@@ -421,25 +394,6 @@ int CFont::GetKerningY(wchar_t wch_prev, wchar_t wch_next) const
 		return 0;
 
 	return m_pFT_Face->GetKerningY(wch_prev, wch_next);
-}
-
-void CFont::AssignPointerToCache( void )
-{
-	for (int nRange = 0; nRange < m_iNumRange; ++nRange)
-	{
-		const int lowRange = m_UChRanges[nRange].lowRange;
-		const int upperRange = m_UChRanges[nRange].upperRange;
-		const int charOffset = m_UChRanges[nRange].chOffset;
-
-		for (int chId = lowRange, i = 0; chId < upperRange; ++chId, ++i)
-		{
-			const int index = charOffset + i;
-
-			m_pCacheItem[ index ].pGlyph = &m_pGlyphData[ index ];
-
-			m_pCacheItem[ index ].pTexcoords = &m_pTexCoords[ index * 12 ];
-		}
-	}
 }
 
 struct FontInfo_s 
@@ -544,8 +498,6 @@ bool CFont::InitFromCache(const char* fileName)
 			heightLine = _max(heightLine, g.bitmapHeight);
 		}
 	}
-
-	AssignPointerToCache();
 
 	m_iHeight = heightLine;
 	m_iNeedNumLines = numLines;

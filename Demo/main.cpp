@@ -14,14 +14,14 @@
 #include <codecvt>
 
 // font descriptors
-HFont	g_hDejaVuSans_10	= INVALID_FONT,
-		g_hFreeSans_14		= INVALID_FONT,
+HFont g_hDejaVuSans_10 = INVALID_FONT,
+		g_hFreeSans_14 = INVALID_FONT,
 
-		g_hVerdana_11		= INVALID_FONT,
-		g_hVerdanaB_11		= INVALID_FONT,
-		g_hVerdanaI_11		= INVALID_FONT,
+		g_hVerdana_11 = INVALID_FONT,
+		g_hVerdanaB_11 = INVALID_FONT,
+		g_hVerdanaI_11 = INVALID_FONT,
 
-		g_hFontCurrent		= INVALID_FONT;
+		g_hFontCurrent = INVALID_FONT;
 
 //#define INIT_FROM_CACHE
 
@@ -204,7 +204,7 @@ int InitStaticTextFromFile( const char* nameFile, BBox_t &bbox )
 	// gets the bounding box for the text from a file
 	FontSystem().GetWTextBBox( wstr.c_str(), wstr.length(), bbox );
 
-	FontSystem().SetTextColor(0, 0, 0);
+	FontSystem().SetTextColor(255, 0, 0);
 
 	// transmit the static text
 	int idText = FontSystem().SetStaticWText( wstr.c_str(), wstr.length() );
@@ -250,7 +250,7 @@ int main( int argc, char* argv[] )
 
 	FontSystem().SetTextPos(1, 1);
 	FontSystem().GetTextBBox( pLinkBlog, strlen(pLinkBlog), bboxTextLink );
-	FontSystem().SetTextColor(255, 255, 255);
+	FontSystem().SetTextColor(10, 158, 10);
 	int idTextLink = FontSystem().SetStaticText( pLinkBlog, strlen(pLinkBlog) );
 
 	NowTime(time);
@@ -278,7 +278,7 @@ int main( int argc, char* argv[] )
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Begins painting (bind shader program, clear all state etc.)
-		FontSystem().EnableStateDraw();
+		FontSystem().BeginDraw();
 
 
 		// (Dynamic text) Debug info
@@ -294,17 +294,10 @@ int main( int argc, char* argv[] )
 
 
 		// (Static  text) Text from File
-
-		FontSystem().DrawOutLinedRect( bboxTextFromFile, 255, 0, 255 );
-
 		FontSystem().PrintStaticText( idTextFromFile );
 
 
 		// (Static  text) link
-
-		FontSystem().DrawFilledRect( bboxTextLink, 255, 165, 0 );
-
-		FontSystem().DrawOutLinedRect( bboxTextLink, 0, 0, 255 );
 
 		FontSystem().PrintStaticText( idTextLink );
 
@@ -332,9 +325,6 @@ int main( int argc, char* argv[] )
 		}
 
 		// color of the rectangle
-		FontSystem().DrawFilledRect( bboxTime, 255, 165, 0 );
-
-		FontSystem().DrawOutLinedRect( bboxTime, 0, 0, 255 );
 
 		FontSystem().SetTextPos( bboxTime.xMin, bboxTime.yMin );
 
@@ -391,7 +381,7 @@ int main( int argc, char* argv[] )
 			FontSystem().BindFont(g_hFreeSans_14);
 			
 			FontSystem().SetTextPos(1, 1);
-			FontSystem().SetTextColor(255, 255, 255);
+			FontSystem().SetTextColor(10, 158, 10);
 			idTextLink = FontSystem().SetStaticText( pLinkBlog, strlen(pLinkBlog) );
 
 			FontSystem().BindFont(g_hDejaVuSans_10);
@@ -403,7 +393,7 @@ int main( int argc, char* argv[] )
 			g_bChangePage = false;
 		}
 
-		FontSystem().DisableStateDraw();
+		FontSystem().EndDraw();
 
 		VertexPerFrame = FontSystem().VertexPerFrame();
 
@@ -480,7 +470,7 @@ void events( int key, int action )
 		break;
 	default:
 		{
-			g_hFontCurrent = g_hVerdanaB_11;
+			g_hFontCurrent = g_hVerdana_11;
 			g_bChangePage = false;
 		}
 		break;

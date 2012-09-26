@@ -13,8 +13,6 @@
 
 #include "public/common.h"
 
-void UploadFontTextureToGL(int w, int h, unsigned char* pRawTex, GLuint &idTex);
-
 FontManager::FontManager()
  : m_bIsBuildAllFonts(false)
 {
@@ -44,7 +42,7 @@ HFont FontManager::Create_Font(const char* fontName, int size)
 
 	if (!m_Fonts[ index ]->Create(fontName, size))
 	{
-		fprintf(stderr,"Wrong create a font %s", fontName);
+		fprintf(stderr, "\nWrong create a font %s", fontName);
 		m_Fonts.RemoveIndex( index );
 		delete m_Fonts[ index ];
 		return INVALID_FONT;
@@ -115,7 +113,7 @@ bool FontManager::BuildAllFonts( void )
 		yoffset += m_Fonts[i]->Height() * m_Fonts[i]->NeedTextureLines();
 	}
 
-	util::SaveAsTGA("ShowMeResult.tga", tW, tH, pRawTexture);
+	//util::SaveAsTGA("ShowMeResult.tga", tW, tH, pRawTexture);
 
 	UploadFontTextureToGL(tW, tH, pRawTexture, m_texID);
 
@@ -178,11 +176,6 @@ int FontManager::GetFontHeight(HFont handle) const
 bool FontManager::HasKerning(HFont handle) const
 {
 	return m_Fonts[ handle - 1 ]->HasKerning();
-}
-
-float const * FontManager::GetTexCoordsFromCache(HFont handle, int wch) const
-{
-	return m_Fonts[ handle - 1 ]->GetTexCoords();
 }
 
 bool FontManager::DumpFontCache(HFont handle, const char* path) const
@@ -279,7 +272,7 @@ bool FontManager::BuildCacheFonts( void )
 		texDimY += font.Height() * font.NeedTextureLines();
 	}
 
-	util::SaveAsTGA("ShowMeResult.tga", tW, tH, pTexBase);
+	//util::SaveAsTGA("ShowMeResult.tga", tW, tH, pTexBase);
 
 	UploadFontTextureToGL(tW, tH, pTexBase, m_texID);
 
@@ -291,27 +284,3 @@ bool FontManager::BuildCacheFonts( void )
 // Singleton
 static FontManager s_fntMng;
 extern FontManager& g_pFontManager = s_fntMng;
-
-void UploadFontTextureToGL(int w, int h, unsigned char* pRawTex, GLuint &idTex)
-{
-	if (!pRawTex)
-		return;
-
-	glGenTextures(1, &idTex);
-
-	glActiveTexture(GL_TEXTURE0);
-
-	glBindTexture(GL_TEXTURE_2D, idTex);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, pRawTex);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-}

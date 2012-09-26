@@ -36,8 +36,6 @@ public:
 
 	GlyphDesc_t const *GetGlyphDescFromCache(HFont handle, int wch) const;
 
-	float const * GetTexCoordsFromCache(HFont handle, int wch) const;
-
 	int GetFontHeight(HFont handle) const;
 	
 	bool HasKerning(HFont handle) const;
@@ -46,9 +44,9 @@ public:
 	HFont LoadFontCache(const char* filename);
 
 	// TODO: modify /~! out into a separate class CFontTextureCache
-	void GetTextureID(unsigned int &id)
+	uint32 GetTextureID( void )
 	{
-		id = m_texID;
+		return m_texID;
 	}
 
 	bool IsCharInFont(HFont handle, wchar_t wch) const;

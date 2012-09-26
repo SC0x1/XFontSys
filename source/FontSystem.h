@@ -74,7 +74,7 @@ public:
 	// Input  : int sWidth - Window width
 	//          int sHeight- Window height
 	//---------------------------------------------------------------------------
-	virtual void SetScreenSize(int sWidth, int sHeight) = 0;
+	virtual bool SetScreenSize(int sWidth, int sHeight) = 0;
 
 	//---------------------------------------------------------------------------
 	// Purpose: Shutdown a library
@@ -195,7 +195,6 @@ public:
 
 	//---------------------------------------------------------------------------
 	// Purpose: Draws a static text by its descriptor
-	//          If ID is zero, then will be displayed all the static text
 	// Input  : int idText - ID for the static text
 	//---------------------------------------------------------------------------
 	virtual void PrintStaticText(int idText = 0) = 0;
@@ -209,15 +208,6 @@ public:
 	virtual void PrintWText(const wchar_t *text, const int textLen) = 0;
 
 	//---------------------------------------------------------------------------
-	// Purpose: Some drawing methods
-	//---------------------------------------------------------------------------
-	virtual void DrawOutLinedRect(const BBox_t&, int r, int g, int b, int a = 255) = 0;
-	virtual void DrawOutLinedRect(int x0, int y0, int x1, int y1, int r, int g, int b, int a = 255) = 0;
-	virtual void DrawFilledRect(const BBox_t&, int r, int g, int b, int a = 255) = 0;
-	virtual void DrawFilledRect(int x0, int y0, int x1, int y1, int r, int g, int b, int a = 255) = 0;
-	virtual void DrawLine(int x0, int y0, int x1, int y1, int r, int g, int b, int a = 255) = 0;
-
-	//---------------------------------------------------------------------------
 	// Purpose: Kerning 
 	//---------------------------------------------------------------------------
 	virtual bool HasKerning(HFont handle) = 0;
@@ -227,8 +217,8 @@ public:
 	// Purpose: Begins, ends 2D painting (to display any text, all calls draws text
 	//          must be between 'EnableStateDraw' / 'DisableStateDraw')
 	//---------------------------------------------------------------------------
-	virtual void EnableStateDraw( void ) = 0;
-	virtual void DisableStateDraw( void ) = 0;
+	virtual void BeginDraw( void ) = 0;
+	virtual void EndDraw( void ) = 0;
 
 	/*
 		Debug info ...

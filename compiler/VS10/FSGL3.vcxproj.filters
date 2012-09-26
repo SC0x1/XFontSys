@@ -38,6 +38,9 @@
     <ClCompile Include="..\..\source\public\common.cpp">
       <Filter>public</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\shaders\gl_local.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\shaders\gl_local.h">
@@ -66,6 +69,9 @@
     </ClInclude>
     <ClInclude Include="..\..\source\FontGlobal.h">
       <Filter>FontSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\shaders\VertexBuffer.h">
+      <Filter>Shaders</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

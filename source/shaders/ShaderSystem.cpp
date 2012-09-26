@@ -27,7 +27,7 @@ bool Check_Shader(unsigned int checkShaderID)
 		static char bufferErr[512];
 		glGetShaderInfoLog(checkShaderID, sizeof(bufferErr), &length, bufferErr);
 		bufferErr[length+1] = '\0';
-		fprintf(stderr, "Check_Shader %s", bufferErr);
+		fprintf(stderr, "\nERROR_Shader %s\n", bufferErr);
 		return false;
 	}
 
@@ -51,7 +51,7 @@ inline bool Check_Program(unsigned int program, GLenum param)
 	{
 		GLint length;
 		glGetProgramInfoLog( program, sizeof(buffer), &length, buffer );
-		fprintf(stderr,"Wrong check Program %d error: %s", program, buffer);
+		fprintf(stderr,"\nWrong check Program %d error: %s\n", program, buffer);
 		return false;
 	}
 
@@ -136,6 +136,32 @@ inline bool CreateShaderProgram(GLuint vertShaderID, GLuint fragShaderID, GLuint
 	return true;
 }
 
+inline bool CreateShaderProgram(GLuint vertShaderID, GLuint geomShaderID, GLuint fragShaderID, GLuint& program)
+{
+	program = glCreateProgram();
+
+	if (program == GL_FALSE)
+		return false;
+
+	glAttachShader(program, vertShaderID);
+	glAttachShader(program, geomShaderID);
+	glAttachShader(program, fragShaderID);
+
+	glLinkProgram(program);
+
+	if (!Check_Program(program, GL_LINK_STATUS))
+	{
+		glDetachShader(program, vertShaderID);
+		glDetachShader(program, geomShaderID);
+		glDetachShader(program, fragShaderID);
+		glDeleteProgram( program );
+		program = 0;
+		return false;
+	}
+
+	return true;
+}
+
 inline bool DestroyProgram(GLuint program)
 {
 	if ( glIsProgram(program) == GL_TRUE)
@@ -150,15 +176,18 @@ inline bool DestroyProgram(GLuint program)
 }
 
 CShaderOGL::CShaderOGL() 
-:	m_VertexShaderID(0), 
+:	m_VertexShaderID(0),
 	m_FragmentShaderID(0),
-	m_ProgramID(0)
+	m_GeometryShaderID(0),
+	m_ProgramID(0),
+	m_bInit(false)
 { }
 
 CShaderOGL::~CShaderOGL()
 {
 	if (ValidateProgram(m_ProgramID))
 	{
+		
 		glDetachShader(m_ProgramID, m_VertexShaderID);
 		glDetachShader(m_ProgramID, m_FragmentShaderID);
 	}
@@ -173,7 +202,7 @@ bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameFr
 {
 	ASSERT(pNameVertex && pNameFragment);
 	ASSERT((m_FragmentShaderID == 0) && (m_VertexShaderID == 0));
-	ASSERT(m_ProgramID == 0);
+	ASSERT((m_ProgramID == 0) && !m_bInit);
 
 	if (!this->BuildVertexShader(pNameVertex)) {
 		return false;
@@ -191,19 +220,43 @@ bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameFr
 	return true;
 }
 
+bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameGeometry, const char* pNameFragment)
+{
+	ASSERT(pNameVertex && pNameFragment && pNameGeometry);
+	ASSERT((m_FragmentShaderID == 0) && (m_GeometryShaderID == 0) && (m_VertexShaderID == 0));
+	ASSERT((m_ProgramID == 0) && !m_bInit);
+
+	if (!this->BuildVertexShader(pNameVertex)) {
+		return false;
+	}
+
+	if (!this->BuildGeometryShader(pNameGeometry)) {
+		return false;
+	}
+
+	if (!this->BuildFragmentShader(pNameFragment)) {
+		return false;
+	}
+
+	if (!CreateShaderProgram(m_VertexShaderID, m_GeometryShaderID, m_FragmentShaderID, m_ProgramID)) {
+		fprintf(stderr,"Failed create the Shader Program %d \n", m_ProgramID);
+		return false;
+	}
+
+	return true;
+}
+
 bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocFragment)
 {
 	ASSERT(pLocVertex && pLocFragment);
 	ASSERT((m_FragmentShaderID == 0) && (m_VertexShaderID == 0));
-	ASSERT(m_ProgramID == 0);
+	ASSERT((m_ProgramID == 0) && !m_bInit);
 
-	if (!CreateShader(GL_VERTEX_SHADER, (const char*)pLocVertex, m_VertexShaderID))
-	{
+	if (!CreateShader(GL_VERTEX_SHADER, (const char*)pLocVertex, m_VertexShaderID)) {
 		return false;
 	}
 
-	if (!CreateShader(GL_FRAGMENT_SHADER, (const char*)pLocFragment, m_FragmentShaderID))
-	{
+	if (!CreateShader(GL_FRAGMENT_SHADER, (const char*)pLocFragment, m_FragmentShaderID)) {
 		return false;
 	}
 
@@ -214,17 +267,54 @@ bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocF
 	return true;
 }
 
+bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocGeometry, const void* pLocFragment)
+{
+	ASSERT(pLocVertex && pLocFragment && pLocGeometry);
+	ASSERT((m_FragmentShaderID == 0) && (m_GeometryShaderID == 0) && (m_VertexShaderID == 0));
+	ASSERT((m_ProgramID == 0) && !m_bInit);
+
+	if (!CreateShader(GL_VERTEX_SHADER, (const char*)pLocVertex, m_VertexShaderID)) {
+		return false;
+	}
+
+	if (!CreateShader(GL_GEOMETRY_SHADER, (const char*)pLocGeometry, m_GeometryShaderID)) {
+		return false;
+	}
+
+	if (!CreateShader(GL_FRAGMENT_SHADER, (const char*)pLocFragment, m_FragmentShaderID)) {
+		return false;
+	}
+
+	if (!CreateShaderProgram(m_VertexShaderID, m_GeometryShaderID, m_FragmentShaderID, m_ProgramID)) {
+		return false;
+	}
+
+	return true;
+}
+
 bool CShaderOGL::BuildVertexShader(const char* pNameVertexShaderFile)
 {
 	const char * codeVertexShader = util::ReadWholeFileIntoString(pNameVertexShaderFile);
 
-	if (!codeVertexShader)
-	{
+	if (!codeVertexShader) {
 		return false;
 	}
 
-	if (!CreateShader(GL_VERTEX_SHADER, codeVertexShader, m_VertexShaderID))
-	{
+	if (!CreateShader(GL_VERTEX_SHADER, codeVertexShader, m_VertexShaderID)) {
+		return false;
+	}
+	return true;
+}
+
+bool CShaderOGL::BuildGeometryShader(const char* pNameGeometryShaderFile)
+{
+	const char * codeVertexShader = util::ReadWholeFileIntoString(pNameGeometryShaderFile);
+
+	if (!codeVertexShader) {
+		return false;
+	}
+
+	if (!CreateShader(GL_GEOMETRY_SHADER, codeVertexShader, m_GeometryShaderID)) {
 		return false;
 	}
 	return true;
@@ -234,13 +324,11 @@ bool CShaderOGL::BuildFragmentShader(const char* pNameFragmentShaderFile)
 {
 	const char * codeFragmentShader = util::ReadWholeFileIntoString(pNameFragmentShaderFile);
 
-	if (!codeFragmentShader)
-	{
+	if (!codeFragmentShader) {
 		return false;
 	}
 
-	if (!CreateShader(GL_FRAGMENT_SHADER, codeFragmentShader, m_FragmentShaderID))
-	{
+	if (!CreateShader(GL_FRAGMENT_SHADER, codeFragmentShader, m_FragmentShaderID)) {
 		return false;
 	}
 	return true;
@@ -249,8 +337,8 @@ bool CShaderOGL::BuildFragmentShader(const char* pNameFragmentShaderFile)
 bool CShaderOGL::ValidateShaderProgram()
 {
 	if (!ValidateProgram(m_ProgramID)) {
-		fprintf(stderr, "Shader Program %d Not Validate! exit(1)", m_ProgramID);
-		exit(1);
+		fprintf(stderr, "\nShader Program %d Not Validate!\n", m_ProgramID);
+		return false;
 	}
 
 	return true;
@@ -258,12 +346,31 @@ bool CShaderOGL::ValidateShaderProgram()
 
 bool CShaderOGL::DestroyShaderProgram()
 {
-	return DestroyProgram(m_ProgramID);
+	m_bInit = false;
+
+	if (!DestroyProgram(m_ProgramID))
+		return false;
+
+	if (m_VertexShaderID > 0)
+		DestroyVertexShader();
+
+	if (m_GeometryShaderID > 0)
+		DestroyGeometryShader();
+
+	if (m_FragmentShaderID > 0)
+		DestroyFragmentShader();
+
+	return true;
 }
 
 bool CShaderOGL::DestroyVertexShader(void)
 {
 	return DestroyShader(m_VertexShaderID);
+}
+
+bool CShaderOGL::DestroyGeometryShader(void)
+{
+	return DestroyShader(m_GeometryShaderID);
 }
 
 bool CShaderOGL::DestroyFragmentShader(void)
