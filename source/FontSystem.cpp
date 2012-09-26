@@ -305,7 +305,11 @@ void CFontSystem::PrintStaticText(int idText)
 
 	TextInfo &dti = m_StaticTextInfo[index];
 
+	m_pVBOStatic->BindBuffer();
+
 	glDrawArrays( GL_POINTS, dti.firstVertex, dti.countVertex );
+
+	m_pVBOStatic->UnbindBuffer();
 
 	m_VertexPerFrame += dti.countVertex;
 
@@ -497,7 +501,11 @@ void CFontSystem::Draw2DText( void )
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	m_pVBODynamic->BindBuffer();
+
 	glDrawArrays(GL_POINTS, 0, m_CountVertex);
+
+	m_pVBODynamic->UnbindBuffer();
 
 	glDisable(GL_BLEND);
 }
@@ -512,16 +520,12 @@ bool CFontSystem::Initialize( void )
 	if (!ftLib::InitFT2Lib())
 		return false;
 
-	if (!m_fontShader.BuildShaderProgramMem(VertexShader, GeometryShader, FragmentShader, FVF_Simple2DColoredText))
+	if (!m_fontShader.BuildShaderProgramMem(VertexShader, GeometryShader, FragmentShader))
 		return false;
 
-	m_pVBODynamic = new CVertexBuffer(VERTEX_SIZE, 0, true);
+	m_pVBODynamic = new CVertexBuffer(FVF_Simple2DColoredText, VERTEX_SIZE, 0, true);
 
-	m_fontShader.SetVertexAttrib();
-
-	m_pVBOStatic = new CVertexBuffer(VERTEX_SIZE, STATIC_CHARS, false);
-
-	m_fontShader.SetVertexAttrib();
+	m_pVBOStatic = new CVertexBuffer(FVF_Simple2DColoredText, VERTEX_SIZE, STATIC_CHARS, false);
 
 	MAX_STATIC_CHARS = STATIC_CHARS;
 
@@ -553,8 +557,6 @@ void CFontSystem::Shutdown( void )
 
 	if (m_pVBODynamic)
 		delete m_pVBODynamic;
-
-	m_pVBODynamic = new CVertexBuffer(VERTEX_SIZE, 0, true);
 
 	ftLib::DoneFT2Lib();
 
@@ -625,7 +627,7 @@ void CFontSystem::ResetStaticText(void)
 {
 	if (MAX_STATIC_CHARS != STATIC_CHARS)
 	{
-		m_pVBOStatic->ReInit(VERTEX_SIZE, STATIC_CHARS, true);
+		m_pVBOStatic->ReInit(FVF_Simple2DColoredText, VERTEX_SIZE, STATIC_CHARS, true);
 		MAX_STATIC_CHARS = STATIC_CHARS;
 	}
 

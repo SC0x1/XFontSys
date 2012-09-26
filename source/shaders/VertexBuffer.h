@@ -12,26 +12,26 @@ class CVertexBuffer
 {
 public:
 
-	CVertexBuffer(VERTEXATTRIB pSetAttrib, int vertexSize, int vertexCount, bool dynamic);
+	CVertexBuffer(VertexFormats format, int vertexSize, int vertexCount, bool dynamic);
 	~CVertexBuffer();
 
-	int PushVertexData(int vertexCount, GLvoid  const* pData);
+	int ReInit(VertexFormats format, int vertexSize, int vertexCount, bool dynamic);
 
-	int ReInit(VERTEXATTRIB pSetAttrib, int vertexSize, int vertexCount, bool dynamic);
+	int PushVertexData(int vertexCount, GLvoid  const* pData);
 
 	void Clear( void )
 	{
 		m_BorderPosition = 0;
 	}
 
-	void SetAttrib(void) const
+	void BindBuffer(void) const
 	{
-		glBindBuffer( GL_ARRAY_BUFFER, m_VBOID );
+		glBindVertexArray(m_VAOID);
 	}
 
-	void ResetAttrib(void) const
+	void UnbindBuffer(void) const
 	{
-		glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		glBindVertexArray(0);
 	}
 
 	void* Lock( int vertexCount, int& baseVertexIndex );
@@ -52,7 +52,10 @@ public:
 
 private:
 
-	VERTEXATTRIB m_pFuncSetAttrib;
+	void InitVertexPointer( VertexFormats format );
+
+	VERTEXATTRIB m_pfSetAttrib;
+	VERTEXATTRIB m_pfResetAttrib;
 
 	static int s_BufferCount;
 
@@ -78,18 +81,27 @@ int CVertexBuffer::s_BufferCount = 0;
 // Input  : int vertexSize - размер одной вершины в буфере ( к примеру xyz + uv = ( 3float + 2float ) * sizeof(float) =  20 байт )
 //			int vertexCount - максимальное количество вершин содержащихся в буфере
 //-----------------------------------------------------------------------------
-inline CVertexBuffer::CVertexBuffer(VERTEXATTRIB pSetAttrib, int vertexSize, int vertexCount, bool dynamic)
+inline CVertexBuffer::CVertexBuffer(VertexFormats format, int vertexSize, int vertexCount, bool dynamic)
 	: m_bLock(false), m_VBOID(-1), m_VAOID(-1), m_BorderPosition(0),
 	m_VertexCount(vertexCount), m_VertexSize(vertexSize),
 	m_bDynamic(dynamic)
 {
 	++s_BufferCount;
 
-	m_pFuncSetAttrib = pSetAttrib;
+	m_pfSetAttrib = nullptr;
+	m_pfResetAttrib = nullptr;
+
+	InitVertexPointer( format );
+
+	glGenVertexArrays( 1, &m_VAOID );
 
 	glGenBuffers( 1, &m_VBOID );
 
+	glBindVertexArray(m_VAOID);
+
 	PushVertexData(m_VertexCount, nullptr);
+
+	glBindVertexArray(0);
 }
 
 inline CVertexBuffer::~CVertexBuffer()
@@ -98,28 +110,37 @@ inline CVertexBuffer::~CVertexBuffer()
 
 	Unlock(0);
 
-	if ( m_VBOID ) {
+	if ( m_VBOID > 0) {
 		glDeleteBuffers(1, &m_VBOID);
+	}
+
+	if (m_VAOID > 0 ) {
+		glDeleteVertexArrays(1, &m_VAOID);
 	}
 }
 
-inline int CVertexBuffer::ReInit(VERTEXATTRIB pSetAttrib, int vertexSize, int vertexCount, bool dynamic)
+inline int CVertexBuffer::ReInit(VertexFormats format, int vertexSize, int vertexCount, bool dynamic)
 {
-	m_pFuncSetAttrib = pSetAttrib;
 	m_VertexSize = vertexSize;
 	m_VertexCount = vertexCount;
 	m_bDynamic = dynamic;
 
 	m_BorderPosition = 0;
 
-	return PushVertexData(m_VertexCount, nullptr);
+	InitVertexPointer( format );
+
+	glBindVertexArray(m_VAOID);
+
+	const int bytes = PushVertexData(m_VertexCount, nullptr);
+
+	glBindVertexArray(0);
+
+	return bytes;
 }
 
 inline int CVertexBuffer::PushVertexData(int vertexCount, GLvoid  const* pData)
 {
 	glBindBuffer( GL_ARRAY_BUFFER, m_VBOID );
-
-	m_pFuncSetAttrib();
 
 	const int size = vertexCount * m_VertexSize;
 
@@ -129,6 +150,8 @@ inline int CVertexBuffer::PushVertexData(int vertexCount, GLvoid  const* pData)
 	} else {
 		glBufferData( GL_ARRAY_BUFFER, size, pData, GL_STATIC_DRAW );
 	}
+
+	m_pfSetAttrib();
 
 	glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
@@ -147,6 +170,8 @@ inline void* CVertexBuffer::Lock( int vertexCount, int& baseVertexIndex )
 	if (!m_bLock)
 	{
 		glBindBuffer( GL_ARRAY_BUFFER, m_VBOID );
+
+		m_pfSetAttrib();
 
 		ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 		baseVertexIndex = m_BorderPosition;
@@ -168,4 +193,20 @@ inline void CVertexBuffer::Unlock( int vertexCount )
 
 		m_bLock = false;
 	}
+}
+
+inline void CVertexBuffer::InitVertexPointer( VertexFormats format )
+{
+	if(format == FVF_Simple2DText)
+	{
+		m_pfSetAttrib   = Set_Attrib2DText;
+		m_pfResetAttrib = Reset_Attrib2DText;
+	}
+	else if(format == FVF_Simple2DColoredText)
+	{
+		m_pfSetAttrib   = Set_Attrib2DTextColored;
+		m_pfResetAttrib = Reset_Attrib2DTextColored;
+	}
+
+	/* ... */
 }

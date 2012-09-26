@@ -180,12 +180,8 @@ CShaderOGL::CShaderOGL()
 	m_FragmentShaderID(0),
 	m_GeometryShaderID(0),
 	m_ProgramID(0),
-	m_VAOID(0),
 	m_bInit(false)
-{
-	pSetAttrib = nullptr;
-	pResetAttrib = nullptr;
-}
+{ }
 
 CShaderOGL::~CShaderOGL()
 {
@@ -200,16 +196,13 @@ CShaderOGL::~CShaderOGL()
 	DestroyShader(m_FragmentShaderID);
 
 	DestroyProgram(m_ProgramID);
-
-	glDeleteBuffers(1, &m_VAOID);
 }
 
-bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameFragment, VertexFormats format)
+bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameFragment)
 {
 	ASSERT(pNameVertex && pNameFragment);
 	ASSERT((m_FragmentShaderID == 0) && (m_VertexShaderID == 0));
 	ASSERT((m_ProgramID == 0) && !m_bInit);
-
 
 	if (!this->BuildVertexShader(pNameVertex)) {
 		return false;
@@ -224,12 +217,10 @@ bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameFr
 		return false;
 	}
 
-	InitVertexPointer(format);
-
 	return true;
 }
 
-bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameGeometry, const char* pNameFragment, VertexFormats format)
+bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameGeometry, const char* pNameFragment)
 {
 	ASSERT(pNameVertex && pNameFragment && pNameGeometry);
 	ASSERT((m_FragmentShaderID == 0) && (m_GeometryShaderID == 0) && (m_VertexShaderID == 0));
@@ -252,12 +243,10 @@ bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameGe
 		return false;
 	}
 
-	InitVertexPointer(format);
-
 	return true;
 }
 
-bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocFragment, VertexFormats format)
+bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocFragment)
 {
 	ASSERT(pLocVertex && pLocFragment);
 	ASSERT((m_FragmentShaderID == 0) && (m_VertexShaderID == 0));
@@ -275,12 +264,10 @@ bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocF
 		return false;
 	}
 
-	InitVertexPointer(format);
-
 	return true;
 }
 
-bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocGeometry, const void* pLocFragment, VertexFormats format)
+bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocGeometry, const void* pLocFragment)
 {
 	ASSERT(pLocVertex && pLocFragment && pLocGeometry);
 	ASSERT((m_FragmentShaderID == 0) && (m_GeometryShaderID == 0) && (m_VertexShaderID == 0));
@@ -301,8 +288,6 @@ bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocG
 	if (!CreateShaderProgram(m_VertexShaderID, m_GeometryShaderID, m_FragmentShaderID, m_ProgramID)) {
 		return false;
 	}
-
-	InitVertexPointer(format);
 
 	return true;
 }
@@ -374,13 +359,6 @@ bool CShaderOGL::DestroyShaderProgram()
 
 	if (m_FragmentShaderID > 0)
 		DestroyFragmentShader();
-
-	pResetAttrib();
-
-	glDeleteVertexArrays(1, &m_VAOID);
-
-	pSetAttrib = nullptr;
-	pResetAttrib = nullptr;
 
 	return true;
 }
@@ -746,23 +724,4 @@ void CShaderOGL::Begin_Use()
 void CShaderOGL::End_Use()
 {
 	glUseProgram(0);
-}
-
-void CShaderOGL::InitVertexPointer( VertexFormats format )
-{
-	glGenVertexArrays(1, &m_VAOID);
-	glBindVertexArray(m_VAOID);
-
-	if(format == FVF_Simple2DText)
-	{
-		pSetAttrib   = Set_Attrib2DText;
-		pResetAttrib = Reset_Attrib2DText;
-	}
-	else if(format == FVF_Simple2DColoredText)
-	{
-		pSetAttrib   = Set_Attrib2DTextColored;
-		pResetAttrib = Reset_Attrib2DTextColored;
-	}
-
-	/* ... */
 }
