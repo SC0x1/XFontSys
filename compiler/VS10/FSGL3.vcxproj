@@ -96,6 +96,7 @@
     <ClCompile Include="..\..\source\FontSystem.cpp" />
     <ClCompile Include="..\..\source\FT_Lib.cpp" />
     <ClCompile Include="..\..\source\public\common.cpp" />
+    <ClCompile Include="..\..\source\shaders\gl_local.cpp" />
     <ClCompile Include="..\..\source\shaders\ShaderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>

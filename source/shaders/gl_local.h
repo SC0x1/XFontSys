@@ -26,7 +26,7 @@
 
 typedef struct TextInfo_s
 {
-	GLuint VAO;
+	GLuint vaoID;
 
 	GLuint textureID;
 
@@ -44,6 +44,10 @@ enum VertexFormats
 };
 
 typedef void(*VERTEXATTRIB)(void);
+
+void DrawSimple2DText(const TextInfo_s& txtInfo);
+
+void UploadFontTextureToGL(int w, int h, unsigned char* pRawTex, GLuint &idTex);
 
 inline void Set_Attrib2DText( void )
 {
@@ -79,44 +83,4 @@ inline void Reset_Attrib2DTextColored( void )
 	glDisableVertexAttribArray(ATTRIB_POSITION);
 	glDisableVertexAttribArray(ATTRIB_TEXCOORD0);
 	glEnableVertexAttribArray(ATTRIB_COLOR);
-}
-
-inline void DrawSimple2DText(TextInfo_s& txtInfo)
-{
-	glBindTexture( GL_TEXTURE_2D, txtInfo.textureID );
-
-	glBindVertexArray( txtInfo.VAO );
-
-	glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-	glDrawArrays( GL_POINTS, txtInfo.offsetVerts, txtInfo.countVerts );
-
-	glDisable( GL_BLEND );
-
-	glBindVertexArray(0);
-}
-
-inline void UploadFontTextureToGL(int w, int h, unsigned char* pRawTex, GLuint &idTex)
-{
-	if (!pRawTex)
-		return;
-
-	glGenTextures(1, &idTex);
-
-	glActiveTexture(GL_TEXTURE0);
-
-	glBindTexture(GL_TEXTURE_2D, idTex);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, pRawTex);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
 }

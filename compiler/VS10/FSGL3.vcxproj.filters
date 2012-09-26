@@ -38,6 +38,9 @@
     <ClCompile Include="..\..\source\public\common.cpp">
       <Filter>public</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\shaders\gl_local.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\shaders\gl_local.h">

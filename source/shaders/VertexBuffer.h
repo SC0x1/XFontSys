@@ -42,6 +42,8 @@ public:
 
 	int VertexCount() const { return m_VertexCount; }
 
+	int VertexArrayObjectID() const { return m_VAOID; }
+
 	static int BufferCount() { return s_BufferCount; }
 
 	// хватит ли места в буфере для указанного количества вершин

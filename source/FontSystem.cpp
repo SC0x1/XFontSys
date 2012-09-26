@@ -148,6 +148,7 @@ public:
 	void ResetStaticText( void );
 
 	void PrintStaticText(int idText);
+
 	void PrintText(const char *text, const int textLen)
 	{
 		if (!text || ((m_TextLen = textLen) > MAX_LENGTH_STRING))
@@ -160,7 +161,7 @@ public:
 
 		BuildTextVertices<char>(text);
 
-		Draw2DText();
+		CommitDynamicVertex();
 	}
 
 	void PrintWText(const wchar_t *text, const int textLen)
@@ -175,7 +176,20 @@ public:
 
 		BuildTextVertices<wchar_t>(text);
 
-		Draw2DText();
+		CommitDynamicVertex();
+	}
+
+	void CommitDynamicVertex(void)
+	{
+		m_pVBODynamic->PushVertexData(m_CountVertex, m_BufferVertices);
+
+		TextInfo_t txtInf;
+		txtInf.vaoID = m_pVBODynamic->VertexArrayObjectID();
+		txtInf.textureID = g_pFontManager.GetTextureID();
+		txtInf.countVerts = m_CountVertex;
+		txtInf.offsetVerts = 0;
+
+		DrawSimple2DText(txtInf);
 	}
 
 	bool HasKerning(HFont handle)
@@ -209,17 +223,6 @@ private:
 
 	void ClearAllState( void );
 
-	void Draw2DText( void );
-
-	// Structure that store informations about the static text
-	struct TextInfo
-	{
-		// first vertex in the VBO
-		unsigned short	firstVertex;	
-		// total number of vertices for a string
-		unsigned short	countVertex;
-	};
-
 	CShaderOGL m_fontShader;
 
 	CVertexBuffer *m_pVBOStatic;
@@ -228,7 +231,7 @@ private:
 	float m_scaleX;
 	float m_scaleY;
 
-	CUtlVector<TextInfo> m_StaticTextInfo;
+	CUtlVector<TextInfo_t> m_StaticTextInfo;
 
 	int MAX_STATIC_CHARS;
 
@@ -249,7 +252,6 @@ private:
 	float *pBaseVertex;
 
 	int m_CountVertex;
-	int m_CurrStaticVertex;
 
 	// debug info
 	int m_VertexPerFrame;
@@ -271,7 +273,7 @@ CFontSystem::CFontSystem()
 	pBaseVertex = nullptr;
 
 	m_CountVertex = 0;
-	m_CurrStaticVertex = 0;
+
 	m_TextLen = 0;
 
 	MAX_STATIC_CHARS = 0;
@@ -293,27 +295,12 @@ void CFontSystem::PrintStaticText(int idText)
 	if (numString <= 0)
 		return;
 
-	glBindTexture( GL_TEXTURE_2D, g_pFontManager.GetTextureID() );
-
-	glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
 	const int index = idText - 1;
 
 	if((numString - 1) < index)
 		return;
 
-	TextInfo &dti = m_StaticTextInfo[index];
-
-	m_pVBOStatic->BindBuffer();
-
-	glDrawArrays( GL_POINTS, dti.firstVertex, dti.countVertex );
-
-	m_pVBOStatic->UnbindBuffer();
-
-	m_VertexPerFrame += dti.countVertex;
-
-	glDisable( GL_BLEND );
+	DrawSimple2DText(m_StaticTextInfo[index]);
 }
 
 inline void PosQuad4f(float* &pData, float const &x0, float const &y0, float const &x1, float const &y1)
@@ -422,10 +409,12 @@ int CFontSystem::BuildStaticText(const T* text)
 
 	m_pVBOStatic->Unlock(m_CountVertex);
 
-	TextInfo ti;
+	TextInfo_t ti;
 
-	ti.countVertex = m_CountVertex;
-	ti.firstVertex = baseVertex;
+	ti.offsetVerts = baseVertex;
+	ti.countVerts = m_CountVertex;
+	ti.vaoID = m_pVBOStatic->VertexArrayObjectID();
+	ti.textureID = g_pFontManager.GetTextureID();
 
 	m_StaticTextInfo.Append( ti );
 
@@ -490,24 +479,6 @@ BBox_t CFontSystem::GetTextArea(const T *text, BBox_t &bbox) const
 	bbox.yMax = maxH;
 
 	return bbox;
-}
-
-void CFontSystem::Draw2DText( void )
-{
-	m_pVBODynamic->PushVertexData(m_CountVertex, m_BufferVertices);
-
-	glBindTexture(GL_TEXTURE_2D, g_pFontManager.GetTextureID());
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	m_pVBODynamic->BindBuffer();
-
-	glDrawArrays(GL_POINTS, 0, m_CountVertex);
-
-	m_pVBODynamic->UnbindBuffer();
-
-	glDisable(GL_BLEND);
 }
 
 #include "shaders/shaders.inl"
