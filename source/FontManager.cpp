@@ -77,7 +77,7 @@ bool FontManager::BuildAllFonts( void )
 	if (m_bIsBuildAllFonts)
 		return false;
 
-	const int tW = FONT_TEXTURE_WIDTH;
+	const int tW = cfg::FONT_TEXTURE_WIDTH;
 
 	int tH = 0;
 
@@ -85,7 +85,7 @@ bool FontManager::BuildAllFonts( void )
 
 	for (int i = 0; i < num_fonts; ++i)
 	{
-		m_Fonts[i]->SetTextureWidth(FONT_TEXTURE_WIDTH);
+		m_Fonts[i]->SetTextureWidth(cfg::FONT_TEXTURE_WIDTH);
 
 		if( m_Fonts[i]->Build() ) {
 			tH += m_Fonts[i]->Height() * m_Fonts[i]->NeedTextureLines();
@@ -221,7 +221,7 @@ bool FontManager::BuildCacheFonts( void )
 		return false;
 
 	int tH = 0;
-	const int tW = FONT_TEXTURE_WIDTH;
+	const int tW = cfg::FONT_TEXTURE_WIDTH;
 	char gName[256];
 
 	const int num_fonts = m_Fonts.Num();
@@ -238,7 +238,7 @@ bool FontManager::BuildCacheFonts( void )
 			return false;
 		}
 
-		m_Fonts[i]->SetTextureWidth(FONT_TEXTURE_WIDTH);
+		m_Fonts[i]->SetTextureWidth(cfg::FONT_TEXTURE_WIDTH);
 		tH += m_Fonts[i]->Height() * m_Fonts[i]->NeedTextureLines();
 	}
 

@@ -43,16 +43,15 @@ struct UnicodeCharRange_t
 };
 
 // globals ...
-extern int DYNAMIC_CHARS;      // 256 define in FontSystem.cpp
-const int MIN_DYNAMIC_CHARS = 0;
-const int MAX_DYNAMIC_CHARS = 50000;
+typedef struct FsglCfg_s 
+{
+	static const int MAX_LENGTH_STRING;
 
-extern int STATIC_CHARS;       // 4096 define in FontSystem.cpp
-const int MIN_STATIC_CHARS = 0;
-const int MAX_STATIC_CHARS = 50000;
+	static int STATIC_CHARS;
+	static const int MIN_STATIC_CHARS;
+	static const int MAX_STATIC_CHARS;
 
-extern int FONT_TEXTURE_WIDTH; // 1024 define in FontManager.cpp
-
-const int MIN_TEXTURE_WIDTH = 128;
-const int MAX_TEXTURE_WIDTH = 4096;
-
+	static int FONT_TEXTURE_WIDTH;
+	static const int MIN_TEXTURE_WIDTH;
+	static const int MAX_TEXTURE_WIDTH;
+} cfg;

@@ -12,7 +12,7 @@
 
 #include "public/common.h"
 
-CFont::CFont() 
+CFont::CFont(void)
 : m_bBuild(false), m_bIsAsci(false)
 {
 	m_fontName[0] = 0;
@@ -546,12 +546,12 @@ bool CFont::DumpCache(const char* path) const
 	fclose(pFile);
 
 	const int tH = m_iHeight * m_iNeedNumLines;
-	const int tW = FONT_TEXTURE_WIDTH;
+	const int tW = cfg::FONT_TEXTURE_WIDTH;
 
 	const size_t size_tex = tW * tH;
-	unsigned char* pRawTexture = (unsigned char*)malloc(size_tex);
+	unsigned char* pRawTexture = (uint8*)malloc(size_tex);
 
-	memset(pRawTexture, 0, sizeof(unsigned char) * size_tex);
+	memset(pRawTexture, 0, sizeof(uint8) * size_tex);
 
 	GlyphTexSubImage(0, 0, tW, tH, pRawTexture);
 

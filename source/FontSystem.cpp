@@ -18,11 +18,15 @@
 
 #include "FontGlobal.h"
 
-#define MAX_LENGTH_STRING 1024
+const int cfg::MAX_LENGTH_STRING = 1024;
 
-// TODO: remove globals var
-extern int STATIC_CHARS = 4096;
-extern int FONT_TEXTURE_WIDTH = 1024;
+int cfg::STATIC_CHARS = 4096;
+const int cfg::MIN_STATIC_CHARS = 0;
+const int cfg::MAX_STATIC_CHARS = 50000;
+
+int cfg::FONT_TEXTURE_WIDTH = 1024;
+const int cfg::MIN_TEXTURE_WIDTH = 128;
+const int cfg::MAX_TEXTURE_WIDTH = 4096;
 
 // 16 bytes(pos) + 16 bytes(texCoords) + 4 bytes (color)
 const int VERTEX_SIZE = 36; 
@@ -71,7 +75,7 @@ public:
 
 	void GetTextBBox(const char *text, const int textLen, BBox_t &bbox)
 	{
-		if ((m_TextLen = textLen) > STATIC_CHARS)
+		if ((m_TextLen = textLen) > cfg::STATIC_CHARS)
 			return;
 
 		GetTextArea<char>(text, bbox);
@@ -79,7 +83,7 @@ public:
 
 	void GetWTextBBox(const wchar_t *text, const int textLen, BBox_t &bbox)
 	{
-		if ((m_TextLen = textLen) > STATIC_CHARS)
+		if ((m_TextLen = textLen) > cfg::STATIC_CHARS)
 			return;
 
 		GetTextArea<wchar_t>(text, bbox);
@@ -132,7 +136,7 @@ public:
 
 	int SetStaticText(const char *text, const int textLen)
 	{
-		if ((m_TextLen = textLen) > STATIC_CHARS)
+		if ((m_TextLen = textLen) > cfg::STATIC_CHARS)
 			return -1;
 
 		return BuildStaticText<char>(text);
@@ -140,7 +144,7 @@ public:
 
 	int SetStaticWText(const wchar_t *text, const int textLen)
 	{
-		if ((m_TextLen = textLen) > STATIC_CHARS)
+		if ((m_TextLen = textLen) > cfg::STATIC_CHARS)
 			return -1;
 
 		return BuildStaticText<wchar_t>(text);
@@ -152,7 +156,7 @@ public:
 
 	void PrintText(const char *text, const int textLen)
 	{
-		if (!text || ((m_TextLen = textLen) > MAX_LENGTH_STRING))
+		if (!text || ((m_TextLen = textLen) > cfg::MAX_LENGTH_STRING))
 			return;
 
 		if ((m_hFont <= 0) || (m_DrawTextColor[3] <= 0.1))
@@ -167,7 +171,7 @@ public:
 
 	void PrintWText(const wchar_t *text, const int textLen)
 	{
-		if (!text || ((m_TextLen = textLen) > MAX_LENGTH_STRING))
+		if (!text || ((m_TextLen = textLen) > cfg::MAX_LENGTH_STRING))
 			return;
 
 		if ((m_hFont <= 0) || (m_DrawTextColor[3] <= 0.1))
@@ -248,7 +252,7 @@ private:
 	// current length of the text
 	int m_TextLen;
 
-	float m_BufferVertices[MAX_LENGTH_STRING];
+	float m_BufferVertices[cfg::MAX_LENGTH_STRING];
 
 	float *pBaseVertex;
 
@@ -497,9 +501,9 @@ bool CFontSystem::Initialize( void )
 
 	m_pVBODynamic = new CVertexBuffer(FVF_Simple2DColoredText, VERTEX_SIZE, 0, true);
 
-	m_pVBOStatic = new CVertexBuffer(FVF_Simple2DColoredText, VERTEX_SIZE, STATIC_CHARS, false);
+	m_pVBOStatic = new CVertexBuffer(FVF_Simple2DColoredText, VERTEX_SIZE, cfg::STATIC_CHARS, false);
 
-	MAX_STATIC_CHARS = STATIC_CHARS;
+	MAX_STATIC_CHARS = cfg::STATIC_CHARS;
 
 	return m_bIsInit = true;
 }
@@ -597,10 +601,10 @@ void CFontSystem::ClearAllState(void)
 
 void CFontSystem::ResetStaticText(void)
 {
-	if (MAX_STATIC_CHARS != STATIC_CHARS)
+	if (MAX_STATIC_CHARS != cfg::STATIC_CHARS)
 	{
-		m_pVBOStatic->ReInit(FVF_Simple2DColoredText, VERTEX_SIZE, STATIC_CHARS, true);
-		MAX_STATIC_CHARS = STATIC_CHARS;
+		m_pVBOStatic->ReInit(FVF_Simple2DColoredText, VERTEX_SIZE, cfg::STATIC_CHARS, true);
+		MAX_STATIC_CHARS = cfg::STATIC_CHARS;
 	}
 
 	m_pVBOStatic->Clear();
@@ -633,22 +637,22 @@ void CFontSystem::EndDraw(void)
 
 bool SetFontTextureWidth(const int texture_width)
 {
-	if ( (texture_width < MIN_TEXTURE_WIDTH) ||
-		(texture_width > MAX_TEXTURE_WIDTH) )
+	if ( (texture_width < cfg::MIN_TEXTURE_WIDTH) ||
+		(texture_width > cfg::MAX_TEXTURE_WIDTH) )
 		return false;
 
-	FONT_TEXTURE_WIDTH = texture_width;
+	cfg::FONT_TEXTURE_WIDTH = texture_width;
 
 	return true;
 }
 
 bool SetMaxStaticChars(const int max_Static_Chars)
 {
-	if ( (max_Static_Chars < MIN_STATIC_CHARS) ||
-		(max_Static_Chars > MAX_STATIC_CHARS) )
+	if ( (max_Static_Chars < cfg::MIN_STATIC_CHARS) ||
+		(max_Static_Chars > cfg::MAX_STATIC_CHARS) )
 		return false;
 
-	STATIC_CHARS = max_Static_Chars;
+	cfg::STATIC_CHARS = max_Static_Chars;
 
 	return true;
 }
