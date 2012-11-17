@@ -14,8 +14,10 @@
 
 #include <assert.h>
 
-#define _max(a, b) (a > b) ? a : b
-#define _min(a, b) (a < b) ? a : b
+template<typename T>
+T MaxVal(T const & a, T const & b) { return (a > b) ? a : b; }
+template<typename T>
+T MinVal(T const & a, T const & b) { return (a < b) ? a : b; }
 
 namespace util
 {

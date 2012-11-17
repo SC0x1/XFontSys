@@ -26,10 +26,8 @@ public:
 	~CShaderOGL();
 
 	// links and build the shader program
-	bool BuildShaderProgram( const char* pNameVertexFile, const char* pNameFragmentFile );
-	bool BuildShaderProgram( const char* pNameVertexFile, const char* pNameGeometryFile, const char* pNameFragmentFile );
-	bool BuildShaderProgramMem( const void* pLocVertex, const void* pLocFragment);
-	bool BuildShaderProgramMem( const void* pLocVertex, const void* pLocGeometry, const void* pLocFragment );
+	bool BuildShaderProgram( const char* pSrcVertex, const char* pSrcFragment);
+	bool BuildShaderProgram( const char* pSrcVertex, const char* pSrcGeometry, const char* pSrcFragment );
 
 	bool DestroyShaderProgram(void);
 
@@ -49,10 +47,10 @@ public:
 		return location;
 	}
 
-	void BindAttribLocation( const char* name, GLuint index )
+	void BindAttribLocation( const char* nameAttrib, GLuint index )
 	{
-		assert( name );
-		glBindAttribLocation(m_ProgramID, index, name);
+		assert( nameAttrib );
+		glBindAttribLocation(m_ProgramID, index, nameAttrib);
 	}
 
 	int Get_UniformLocation( const char* nameUnif )
@@ -69,22 +67,22 @@ public:
 
 	// Sets Uniform Matrix
 
-	int Set_Matrix2fv( const float *V, const char* nameUnif, int count = 1 );
-	void Set_Matrix2fv( const float *V, const int location, int count = 1 )
+	int Set_Matrix2fv( const char* nameUnif, const float *V, int count = 1 );
+	void Set_Matrix2fv( const int location, const float *V, int count = 1 )
 	{
 		assert(V);
 		glUniformMatrix2fv(location, count, m_bIsTranspMat, V);
 	}
 
-	int Set_Matrix3fv( const float *V, const char* nameUnif, int count = 1 );
-	void Set_Matrix3fv( const float *V, const int location, int count = 1 )
+	int Set_Matrix3fv( const char* nameUnif, const float *V, int count = 1 );
+	void Set_Matrix3fv( const int location, const float *V, int count = 1 )
 	{
 		assert(V);
 		glUniformMatrix3fv(location, count, m_bIsTranspMat, V);
 	}
 
-	int Set_Matrix4fv( const float *V, const char* nameUnif, int count = 1 );
-	void Set_Matrix4fv( const float *V, const int location, int count = 1 )
+	int Set_Matrix4fv( const char* nameUnif, const float *V, int count = 1 );
+	void Set_Matrix4fv( const int location, const float *V, int count = 1 )
 	{
 		assert(V);
 		glUniformMatrix4fv(location, count, m_bIsTranspMat, V);
@@ -92,100 +90,100 @@ public:
 
 	// Sets Uniform Integers
 
-	int Set_Integer1( int V, const char* nameUnif );
-	void Set_Integer1( int V, const int location )
+	int Set_Integer1( const char* nameUnif, int V );
+	void Set_Integer1( const int location, int V )
 	{
 		glUniform1i(location, V);
 	}
 
-	int Set_Integer2v( int *V, const char* nameUnif, int count = 1 );
-	void Set_Integer2v( int *V, const int location, int count = 1 )
+	int Set_Integer2v( const char* nameUnif, int *V, int count = 1 );
+	void Set_Integer2v( const int location, int *V, int count = 1 )
 	{
 		assert(V);
 		glUniform2iv(location, count, V);
 	}
 
-	int Set_Integer2( int V0, int V1, const char* nameUnif );
-	void Set_Integer2( int V0, int V1, const int location )
+	int Set_Integer2( const char* nameUnif, int V0, int V1 );
+	void Set_Integer2( const int location, int V0, int V1 )
 	{
 		glUniform2i(location, V0, V1);
 	}
 
-	int Set_Integer3v( int* V, const char* nameUnif, int count = 1 );
-	void Set_Integer3v( int* V, const int location, int count = 1 )
+	int Set_Integer3v( const char* nameUnif, int* V, int count = 1 );
+	void Set_Integer3v( const int location, int* V, int count = 1 )
 	{
 		assert(V);
 		glUniform3iv(location, count, V);
 	}
 
-	int Set_Integer3( int V0, int V1, int V2, const char* nameUnif );
-	void Set_Integer3( int V0, int V1, int V2, const int location )
+	int Set_Integer3( const char* nameUnif, int V0, int V1, int V2 );
+	void Set_Integer3( const int location, int V0, int V1, int V2 )
 	{
 		glUniform3i(location, V0, V1, V2);
 	}
 
-	int Set_Integer4v( int* V, const char* nameUnif, int count = 1 );
-	void Set_Integer4v( int* V, const int location, int count = 1 )
+	int Set_Integer4v( const char* nameUnif, int* V, int count = 1 );
+	void Set_Integer4v( const int location, int* V, int count = 1 )
 	{
 		assert(V);
 		glUniform4iv(location, count, V);
 	}
 
-	int Set_Integer4( int V0, int V1, int V2, int V3, const char* nameUnif );
-	void Set_Integer4( int V0, int V1, int V2, int V3, const int location )
+	int Set_Integer4( const char* nameUnif, int V0, int V1, int V2, int V3 );
+	void Set_Integer4( const int location, int V0, int V1, int V2, int V3 )
 	{
 		glUniform4i(location, V0, V1, V2, V3);
 	}
 
 	// Sets Uniform Floats
 
-	int Set_Float1( float V, const char* nameUnif );
-	void Set_Float1( float V, const int location )
+	int Set_Float1( const char* nameUnif, float V );
+	void Set_Float1( const int location, float V )
 	{
 		glUniform1f( location, V );
 	}
 
-	int Set_Float2v( float *V, const char* nameUnif, int count = 1 );
-	void Set_Float2v( float *V, const int location, int count = 1 )
+	int Set_Float2v( const char* nameUnif, float *V,  int count = 1 );
+	void Set_Float2v( const int location, float *V,  int count = 1 )
 	{
 		assert(V);
 		glUniform2fv(location, count, V);
 	}
 
-	int Set_Float2( float V0, float V1, const char* nameUnif );
-	void Set_Float2( float V0, float V1, const int location )
+	int Set_Float2( const char* nameUnif, float V0, float V1 );
+	void Set_Float2( const int location, float V0, float V1 )
 	{
 		glUniform2f(location, V0, V1);
 	}
 
-	int Set_Float3v( float *V, const char* nameUnif, int count = 1 );
-	void Set_Float3v( float *V, const int location, int count = 1 )
+	int Set_Float3v( const char* nameUnif, float *V,  int count = 1 );
+	void Set_Float3v( const int location, float *V,  int count = 1 )
 	{
 		assert(V);
 		glUniform3fv(location, count, V);
 	}
 
-	int Set_Float3( float V0, float V1, float V2, const char* nameUnif );
-	void Set_Float3( float V0, float V1, float V2, const int location )
+	int Set_Float3( const char* nameUnif, float V0, float V1, float V2 );
+	void Set_Float3( const int location, float V0, float V1, float V2 )
 	{
 		glUniform3f(location, V0, V1, V2);
 	}
 
-	int Set_Float4v( float *V, const char* nameUnif, int count = 1 );
-	void Set_Float4v( float *V, const int location, int count = 1 )
+	int Set_Float4v( const char* nameUnif, float *V, int count = 1 );
+	void Set_Float4v( const int location, float *V,  int count = 1 )
 	{
 		assert(V);
 		glUniform4fv(location, count, V);
 	}
 
-	int Set_Float4( float V0, float V1, float V2, float V3, const char* nameUnif );
-	void Set_Float4( float V0, float V1, float V2, float V3, const int location )
+	int Set_Float4( const char* nameUnif, float V0, float V1, float V2, float V3 );
+	void Set_Float4( const int location, float V0, float V1, float V2, float V3 )
 	{
 		glUniform4f(location, V0, V1, V2, V3);
 	}
 
-	int Set_Parameter( int *V, const char* nameUnif, int numParameter );
-	int Set_Parameter( float *V, const char* nameUnif, int numParameter );
+	int Set_Parameter( const char* nameUnif, int *V,  int numParameter );
+	int Set_Parameter( const char* nameUnif, float *V,  int numParameter );
 
 	// Begin/End usage the shader program
 

@@ -493,11 +493,14 @@ bool CFontSystem::Initialize( void )
 	if (m_bIsInit)
 		return false;
 
-	if (!ftLib::InitFT2Lib())
+	if ( !ftLib::InitFT2Lib() )
 		return false;
 
-	if (!m_fontShader.BuildShaderProgramMem(VertexShader, GeometryShader, FragmentShader))
+	if (!m_fontShader.BuildShaderProgram(VertexShader, GeometryShader, FragmentShader))
+	{
+		ftLib::DoneFT2Lib();
 		return false;
+	}
 
 	m_pVBODynamic = new CVertexBuffer(FVF_Simple2DColoredText, VERTEX_SIZE, 0, true);
 
@@ -517,7 +520,7 @@ bool CFontSystem::SetScreenSize(int sWidth, int sHeight)
 
 	bool isSetScale = false;
 
-	isSetScale = m_fontShader.Set_Float2(m_scaleX, m_scaleY, "u_Scale");
+	isSetScale = m_fontShader.Set_Float2("u_Scale", m_scaleX, m_scaleY);
 
 	return isSetScale;
 }

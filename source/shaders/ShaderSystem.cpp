@@ -6,7 +6,7 @@
 */
 
 #include "shaders/ShaderSystem.h"
-#include "public/common.h"
+#include <stdio.h>
 
 #define ASSERT(x) assert(x)
 
@@ -97,28 +97,6 @@ inline GLuint CreateShader(GLenum type, const char* pSource)
 		shaderID = 0;
 	}
 
-	return shaderID;
-}
-
-//---------------------------------------------------------------------------*/
-// Purpose: Read file of shader, creation and compile it.
-// Input  : GLenum type					- enum shader type,
-//			const char* pNameShaderFile - name shader file
-// Output : If successful creation and compilation	- return shader ID;
-//			If failed to load shader from file		- retun -1;
-//			If wrong compilation or creation		- return 0;
-//---------------------------------------------------------------------------*/
-inline GLuint CreateShaderFromFile(GLenum type, const char* pNameShaderFile)
-{
-	const char * pSource = util::ReadWholeFileIntoString(pNameShaderFile);
-
-	if (!pSource)
-		return -1;
-
-	GLuint shaderID = CreateShader(type, pSource);
-
-	delete[] pSource;
-	
 	return shaderID;
 }
 
@@ -215,84 +193,19 @@ CShaderOGL::~CShaderOGL()
 	DestroyShaderProgram();
 }
 
-bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameFragment)
+bool CShaderOGL::BuildShaderProgram(const char* pSrcVertex, const char* pSrcFragment)
 {
-	ASSERT(pNameVertex && pNameFragment);
+	ASSERT(pSrcVertex && pSrcFragment);
 	ASSERT((m_FragmentShaderID == 0) && (m_VertexShaderID == 0));
 	ASSERT((m_ProgramID == 0) && !m_bInit);
 
-	m_VertexShaderID = CreateShaderFromFile(GL_VERTEX_SHADER, pNameVertex);
-	if (m_VertexShaderID <= 0)
-	{
-		return false;
-	}
-
-	m_FragmentShaderID = CreateShaderFromFile(GL_FRAGMENT_SHADER, pNameFragment);
-	if (m_FragmentShaderID <= 0)
-	{
-		DestroyShaderProgram();
-		return false;
-	}
-
-	m_ProgramID = CreateShaderProgram(m_VertexShaderID, m_FragmentShaderID);
-	if (m_ProgramID == 0)
-	{
-		DestroyShaderProgram();
-		return false;
-	}
-
-	return true;
-}
-
-bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameGeometry, const char* pNameFragment)
-{
-	ASSERT(pNameVertex && pNameFragment && pNameGeometry);
-	ASSERT((m_FragmentShaderID == 0) && (m_GeometryShaderID == 0) && (m_VertexShaderID == 0));
-	ASSERT((m_ProgramID == 0) && !m_bInit);
-
-	m_VertexShaderID = CreateShaderFromFile(GL_VERTEX_SHADER, pNameVertex);
-	if (m_VertexShaderID <= 0)
-	{
-		return false;
-	}
-
-	m_GeometryShaderID = CreateShaderFromFile(GL_GEOMETRY_SHADER, pNameGeometry);
-	if (m_GeometryShaderID <= 0)
-	{
-		DestroyShaderProgram();
-		return false;
-	}
-
-	m_FragmentShaderID = CreateShaderFromFile(GL_FRAGMENT_SHADER, pNameFragment);
-	if (m_FragmentShaderID <= 0)
-	{
-		DestroyShaderProgram();
-		return false;
-	}
-
-	m_ProgramID = CreateShaderProgram(m_VertexShaderID, m_GeometryShaderID, m_FragmentShaderID);
-	if (m_ProgramID == 0)
-	{
-		DestroyShaderProgram();
-		return false;
-	}
-
-	return true;
-}
-
-bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocFragment)
-{
-	ASSERT(pLocVertex && pLocFragment);
-	ASSERT((m_FragmentShaderID == 0) && (m_VertexShaderID == 0));
-	ASSERT((m_ProgramID == 0) && !m_bInit);
-
-	m_VertexShaderID = CreateShader(GL_VERTEX_SHADER, (const char*)pLocVertex);
+	m_VertexShaderID = CreateShader(GL_VERTEX_SHADER, pSrcVertex);
 	if (m_VertexShaderID == 0)
 	{
 		return false;
 	}
 
-	m_FragmentShaderID = CreateShader(GL_FRAGMENT_SHADER, (const char*)pLocFragment);
+	m_FragmentShaderID = CreateShader(GL_FRAGMENT_SHADER, pSrcFragment);
 	if (m_FragmentShaderID == 0)
 	{
 		this->DestroyShaderProgram();
@@ -309,26 +222,26 @@ bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocF
 	return true;
 }
 
-bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocGeometry, const void* pLocFragment)
+bool CShaderOGL::BuildShaderProgram(const char* pSrcVertex, const char* pSrcGeometry, const char* pSrcFragment)
 {
-	ASSERT(pLocVertex && pLocFragment && pLocGeometry);
+	ASSERT(pSrcVertex && pSrcFragment && pSrcGeometry);
 	ASSERT((m_FragmentShaderID == 0) && (m_GeometryShaderID == 0) && (m_VertexShaderID == 0));
 	ASSERT((m_ProgramID == 0) && !m_bInit);
 
-	m_VertexShaderID = CreateShader(GL_VERTEX_SHADER, (const char*)pLocVertex);
+	m_VertexShaderID = CreateShader(GL_VERTEX_SHADER, pSrcVertex);
 	if (m_VertexShaderID == 0)
 	{
 		return false;
 	}
 
-	m_GeometryShaderID = CreateShader(GL_GEOMETRY_SHADER, (const char*)pLocGeometry);
+	m_GeometryShaderID = CreateShader(GL_GEOMETRY_SHADER, pSrcGeometry);
 	if (m_GeometryShaderID == 0)
 	{
 		this->DestroyShaderProgram();
 		return false;
 	}
 
-	m_FragmentShaderID = CreateShader(GL_FRAGMENT_SHADER, (const char*)pLocFragment);
+	m_FragmentShaderID = CreateShader(GL_FRAGMENT_SHADER, pSrcFragment);
 	if (m_FragmentShaderID == 0)
 	{
 		this->DestroyShaderProgram();
@@ -369,7 +282,7 @@ bool CShaderOGL::DestroyShaderProgram()
 	return true;
 }
 
-int CShaderOGL::Set_Parameter( int *V, const char* nameUnif, int numParameter )
+int CShaderOGL::Set_Parameter( const char* nameUnif, int *V, int numParameter )
 {
 	ASSERT(V && nameUnif);
 	ASSERT(numParameter < 0 && numParameter > 5);
@@ -408,7 +321,7 @@ int CShaderOGL::Set_Parameter( int *V, const char* nameUnif, int numParameter )
 	return location;
 }
 
-int CShaderOGL::Set_Parameter( float *V, const char* nameUnif, int numParameter )
+int CShaderOGL::Set_Parameter( const char* nameUnif, float *V, int numParameter )
 {
 	ASSERT(V && nameUnif);
 	ASSERT(numParameter < 0 && numParameter > 5);
@@ -448,7 +361,7 @@ int CShaderOGL::Set_Parameter( float *V, const char* nameUnif, int numParameter 
 	return location;
 }
 
-int CShaderOGL::Set_Matrix2fv( const float *V, const char* nameUnif, int count )
+int CShaderOGL::Set_Matrix2fv( const char* nameUnif, const float *V, int count )
 {
 	ASSERT(V && nameUnif);
 
@@ -462,7 +375,7 @@ int CShaderOGL::Set_Matrix2fv( const float *V, const char* nameUnif, int count )
 	return location;
 }
 
-int CShaderOGL::Set_Matrix3fv( const float *V, const char* nameUnif, int count )
+int CShaderOGL::Set_Matrix3fv( const char* nameUnif, const float *V, int count )
 {
 	ASSERT(V && nameUnif);
 
@@ -476,7 +389,7 @@ int CShaderOGL::Set_Matrix3fv( const float *V, const char* nameUnif, int count )
 	return location;
 }
 
-int CShaderOGL::Set_Matrix4fv(const float *V, const char* nameUnif, GLsizei count)
+int CShaderOGL::Set_Matrix4fv( const char* nameUnif, const float *V, int count )
 {
 	ASSERT(V && nameUnif);
 
@@ -490,7 +403,7 @@ int CShaderOGL::Set_Matrix4fv(const float *V, const char* nameUnif, GLsizei coun
 	return location;
 }
 
-int CShaderOGL::Set_Integer1( int V, const char* nameUnif )
+int CShaderOGL::Set_Integer1( const char* nameUnif, int V )
 {
 	ASSERT(nameUnif);
 
@@ -504,7 +417,7 @@ int CShaderOGL::Set_Integer1( int V, const char* nameUnif )
 	return location;
 }
 
-int CShaderOGL::Set_Integer2v( int* V, const char* nameUnif, int count )
+int CShaderOGL::Set_Integer2v( const char* nameUnif, int* V, int count )
 {
 	ASSERT(V && nameUnif);
 
@@ -518,7 +431,7 @@ int CShaderOGL::Set_Integer2v( int* V, const char* nameUnif, int count )
 	return location;
 }
 
-int CShaderOGL::Set_Integer2( int V0, int V1, const char* nameUnif )
+int CShaderOGL::Set_Integer2( const char* nameUnif, int V0, int V1 )
 {
 	ASSERT(nameUnif);
 
@@ -532,7 +445,7 @@ int CShaderOGL::Set_Integer2( int V0, int V1, const char* nameUnif )
 	return location;
 }
 
-int CShaderOGL::Set_Integer3v( int* V, const char* nameUnif, int count )
+int CShaderOGL::Set_Integer3v( const char* nameUnif, int* V, int count )
 {
 	ASSERT(V && nameUnif);
 
@@ -546,7 +459,7 @@ int CShaderOGL::Set_Integer3v( int* V, const char* nameUnif, int count )
 	return location;
 }
 
-int CShaderOGL::Set_Integer3( int V0, int V1, int V2, const char* nameUnif )
+int CShaderOGL::Set_Integer3( const char* nameUnif, int V0, int V1, int V2 )
 {
 	ASSERT(nameUnif);
 
@@ -560,7 +473,7 @@ int CShaderOGL::Set_Integer3( int V0, int V1, int V2, const char* nameUnif )
 	return location;
 }
 
-int CShaderOGL::Set_Integer4v( int* V, const char* nameUnif, int count )
+int CShaderOGL::Set_Integer4v( const char* nameUnif, int* V, int count )
 {
 	ASSERT(V && nameUnif);
 
@@ -574,7 +487,7 @@ int CShaderOGL::Set_Integer4v( int* V, const char* nameUnif, int count )
 	return location;
 }
 
-int CShaderOGL::Set_Integer4( int V0, int V1, int V2, int V3, const char* nameUnif )
+int CShaderOGL::Set_Integer4( const char* nameUnif, int V0, int V1, int V2, int V3 )
 {
 	ASSERT(nameUnif);
 
@@ -588,7 +501,7 @@ int CShaderOGL::Set_Integer4( int V0, int V1, int V2, int V3, const char* nameUn
 	return location;
 }
 
-int CShaderOGL::Set_Float1( float V, const char* nameUnif )
+int CShaderOGL::Set_Float1( const char* nameUnif, float V )
 {
 	ASSERT(nameUnif);
 
@@ -602,7 +515,7 @@ int CShaderOGL::Set_Float1( float V, const char* nameUnif )
 	return location;
 }
 
-int CShaderOGL::Set_Float2v( float *V, const char* nameUnif, int count )
+int CShaderOGL::Set_Float2v( const char* nameUnif, float *V, int count )
 {
 	ASSERT(V && nameUnif);
 
@@ -616,7 +529,7 @@ int CShaderOGL::Set_Float2v( float *V, const char* nameUnif, int count )
 	return location;
 }
 
-int CShaderOGL::Set_Float2( float V0, float V1, const char* nameUnif )
+int CShaderOGL::Set_Float2( const char* nameUnif, float V0, float V1 )
 {
 	ASSERT(nameUnif);
 
@@ -630,7 +543,7 @@ int CShaderOGL::Set_Float2( float V0, float V1, const char* nameUnif )
 	return location;
 }
 
-int CShaderOGL::Set_Float3v( float *V, const char* nameUnif, int count )
+int CShaderOGL::Set_Float3v( const char* nameUnif, float *V, int count )
 {
 	ASSERT(V && nameUnif);
 
@@ -644,7 +557,7 @@ int CShaderOGL::Set_Float3v( float *V, const char* nameUnif, int count )
 	return location;
 }
 
-int CShaderOGL::Set_Float3( float V0, float V1, float V2, const char* nameUnif )
+int CShaderOGL::Set_Float3( const char* nameUnif, float V0, float V1, float V2 )
 {
 	ASSERT(nameUnif);
 
@@ -658,7 +571,7 @@ int CShaderOGL::Set_Float3( float V0, float V1, float V2, const char* nameUnif )
 	return location;
 }
 
-int CShaderOGL::Set_Float4v( float *V, const char* nameUnif, int count )
+int CShaderOGL::Set_Float4v( const char* nameUnif, float *V, int count )
 {
 	ASSERT(V && nameUnif);
 
@@ -672,7 +585,7 @@ int CShaderOGL::Set_Float4v( float *V, const char* nameUnif, int count )
 	return location;
 }
 
-int CShaderOGL::Set_Float4( float V0, float V1, float V2, float V3, const char* nameUnif )
+int CShaderOGL::Set_Float4( const char* nameUnif, float V0, float V1, float V2, float V3 )
 {
 	ASSERT(nameUnif);
 

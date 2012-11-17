@@ -146,7 +146,7 @@ bool CFont::Build( void )
 		return false;
 	}
 
-	int offsetX = 0, heightLine = 0, numLines = 1;
+	short offsetX = 0, heightLine = 0, numLines = 1;
 
 	for (int nRange = 0; nRange < m_iNumRange; ++nRange)
 	{
@@ -172,7 +172,7 @@ bool CFont::Build( void )
 			}
 
 			offsetX += g.bitmapWidth + 1;
-			heightLine = _max(heightLine, g.bitmapHeight);
+			heightLine = MaxVal(heightLine, g.bitmapHeight);
 		}
 	}
 
@@ -476,7 +476,7 @@ bool CFont::InitFromCache(const char* fileName)
 
 	fread(m_pGlyphData, 1, sizeof(GlyphDesc_t) * m_iNumCharacter, pFile);
 
-	int offsetX = 0, heightLine = 0, numLines = 1;
+	short offsetX = 0, heightLine = 0, numLines = 1;
 
 	for (int nRange = 0; nRange < m_iNumRange; ++nRange)
 	{
@@ -495,7 +495,7 @@ bool CFont::InitFromCache(const char* fileName)
 			}
 
 			offsetX += g.bitmapWidth + 1;
-			heightLine = _max(heightLine, g.bitmapHeight);
+			heightLine = MaxVal(heightLine, g.bitmapHeight);
 		}
 	}
 
