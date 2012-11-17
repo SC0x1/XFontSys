@@ -1,9 +1,9 @@
-/****************************************************************************/
-/*	Copyright (c) 2012 Vitaly Lyaschenko < scxv86@gmail.com >
 /*
-/*	Purpose: Wrapper for GLSL shaders
-/*
-/****************************************************************************/
+	Copyright (c) 2012 Vitaly Lyaschenko "scxv86@gmail.com"
+
+	Purpose: Wrapper for the GLSL shaders
+	
+*/
 
 #include "shaders/ShaderSystem.h"
 #include "public/common.h"
@@ -15,7 +15,7 @@
 /* Input  : id shader
 /* Output : returns true on success
 /*---------------------------------------------------------------------------*/
-bool Check_Shader(unsigned int checkShaderID)
+bool Check_Shader(GLuint checkShaderID)
 {
 	GLint  compiled = GL_FALSE;
 
@@ -23,11 +23,10 @@ bool Check_Shader(unsigned int checkShaderID)
 
 	if (!compiled)
 	{
-		GLint length;
 		static char bufferErr[512];
+		GLint length;
 		glGetShaderInfoLog(checkShaderID, sizeof(bufferErr), &length, bufferErr);
-		bufferErr[length+1] = '\0';
-		fprintf(stderr, "\nERROR_Shader %s\n", bufferErr);
+		fprintf(stderr, "\nShader Error: %s\n", bufferErr);
 		return false;
 	}
 
@@ -40,24 +39,29 @@ bool Check_Shader(unsigned int checkShaderID)
 /*			param - specifies the object parameter
 /* Output : returns true on success
 /*---------------------------------------------------------------------------*/
-inline bool Check_Program(unsigned int program, GLenum param)
+inline bool Check_Program(GLuint program, GLenum param)
 {
 	GLint  status = GL_FALSE;
-	static GLchar buffer[512];
 
 	glGetProgramiv(program, param, &status);
 
 	if (!status)
 	{
+		static GLchar bufferErr[512];
 		GLint length;
-		glGetProgramInfoLog( program, sizeof(buffer), &length, buffer );
-		fprintf(stderr,"\nWrong check Program %d error: %s\n", program, buffer);
+		glGetProgramInfoLog( program, sizeof(bufferErr), &length, bufferErr );
+		fprintf(stderr,"\nShader Program %d Error: %s\n", program, bufferErr);
 		return false;
 	}
 
 	return true;
 }
 
+//---------------------------------------------------------------------------*/
+// Purpose: Validation the shader program
+// Input  : GLuint program	- shader program ID
+// Output : return true if success
+//---------------------------------------------------------------------------*/
 inline bool ValidateProgram(GLuint program)
 {
 	glValidateProgram(program);
@@ -65,43 +69,68 @@ inline bool ValidateProgram(GLuint program)
 	return Check_Program(program, GL_VALIDATE_STATUS) == true;
 }
 
-inline bool CreateShader(GLenum type, const char* pSource, GLuint&  vertShaderID)
+//---------------------------------------------------------------------------*/
+// Purpose: Creation and compile shader from source.
+// Input  : GLenum type			- enum shader type,
+//			const char* pSource	- pointer to shader source
+// Output : If successful creation and compilation	- return shader ID,
+//			otherwise will be returned 0;
+//---------------------------------------------------------------------------*/
+inline GLuint CreateShader(GLenum type, const char* pSource)
 {
 	ASSERT(pSource);
 
-	char *codeVertexFile = nullptr;
-	int lenghtVertexFile = strlen(pSource);
+	GLuint shaderID = glCreateShader(type);
 
-	vertShaderID = glCreateShader( type );
+	if (shaderID == GL_FALSE)
+		return 0;
 
-	glShaderSource( vertShaderID, 1, (const char**)&pSource, &lenghtVertexFile );
+	const int lenghtSource = strlen(pSource);
 
-	delete[] codeVertexFile;
+	glShaderSource(shaderID, 1, (const char**)&pSource, &lenghtSource);
 
-	glCompileShader( vertShaderID );
+	glCompileShader(shaderID);
 
-	if (!Check_Shader(vertShaderID))
+	if (!Check_Shader(shaderID))
 	{
-		glDeleteShader( vertShaderID );
-
-		vertShaderID = 0;
-
-		return false;
+		glDeleteShader(shaderID);
+		shaderID = 0;
 	}
 
-	return true;
+	return shaderID;
+}
+
+//---------------------------------------------------------------------------*/
+// Purpose: Read file of shader, creation and compile it.
+// Input  : GLenum type					- enum shader type,
+//			const char* pNameShaderFile - name shader file
+// Output : If successful creation and compilation	- return shader ID;
+//			If failed to load shader from file		- retun -1;
+//			If wrong compilation or creation		- return 0;
+//---------------------------------------------------------------------------*/
+inline GLuint CreateShaderFromFile(GLenum type, const char* pNameShaderFile)
+{
+	const char * pSource = util::ReadWholeFileIntoString(pNameShaderFile);
+
+	if (!pSource)
+		return -1;
+
+	GLuint shaderID = CreateShader(type, pSource);
+
+	delete[] pSource;
+	
+	return shaderID;
 }
 
 /*---------------------------------------------------------------------------*/
 /* Purpose: removing shader
 /* Input : shader - id shader
 /*---------------------------------------------------------------------------*/
-inline bool DestroyShader(unsigned int shader)
+inline bool DestroyShader(GLuint shaderID)
 {
-	if( glIsShader(shader) == GL_TRUE )
+	if( glIsShader(shaderID) == GL_TRUE )
 	{
-		glDeleteShader( shader );
-		shader = 0;
+		glDeleteShader(shaderID);
 		return true;
 	}
 	return false;
@@ -112,12 +141,12 @@ inline bool DestroyShader(unsigned int shader)
 /* Input  : vertShaderID/fragShaderID - id vertex/fragment shader
 /* Output : program - id шейдерной программы
 /*---------------------------------------------------------------------------*/
-inline bool CreateShaderProgram(GLuint vertShaderID, GLuint fragShaderID, GLuint& program)
+inline GLuint CreateShaderProgram(GLuint vertShaderID, GLuint fragShaderID)
 {
-	program = glCreateProgram();
+	GLuint program = glCreateProgram();
 
 	if (program == GL_FALSE)
-		return false;
+		return 0;
 
 	glAttachShader(program, vertShaderID);
 	glAttachShader(program, fragShaderID);
@@ -130,18 +159,17 @@ inline bool CreateShaderProgram(GLuint vertShaderID, GLuint fragShaderID, GLuint
 		glDetachShader(program, fragShaderID);
 		glDeleteProgram( program );
 		program = 0;
-		return false;
 	}
 
-	return true;
+	return program;
 }
 
-inline bool CreateShaderProgram(GLuint vertShaderID, GLuint geomShaderID, GLuint fragShaderID, GLuint& program)
+inline GLuint CreateShaderProgram(GLuint vertShaderID, GLuint geomShaderID, GLuint fragShaderID)
 {
-	program = glCreateProgram();
+	GLuint program = glCreateProgram();
 
 	if (program == GL_FALSE)
-		return false;
+		return 0;
 
 	glAttachShader(program, vertShaderID);
 	glAttachShader(program, geomShaderID);
@@ -156,46 +184,35 @@ inline bool CreateShaderProgram(GLuint vertShaderID, GLuint geomShaderID, GLuint
 		glDetachShader(program, fragShaderID);
 		glDeleteProgram( program );
 		program = 0;
-		return false;
 	}
 
-	return true;
+	return program;
 }
 
 inline bool DestroyProgram(GLuint program)
 {
-	if ( glIsProgram(program) == GL_TRUE)
+	if (glIsProgram(program) == GL_TRUE)
 	{
 		glUseProgram(0);
 		glDeleteProgram(program);
-		program = 0;
 		return true;
 	}
 
 	return false;
 }
 
-CShaderOGL::CShaderOGL() 
+CShaderOGL::CShaderOGL( bool Transpoce ) 
 :	m_VertexShaderID(0),
 	m_FragmentShaderID(0),
 	m_GeometryShaderID(0),
 	m_ProgramID(0),
+	m_bIsTranspMat(Transpoce),
 	m_bInit(false)
 { }
 
 CShaderOGL::~CShaderOGL()
 {
-	if (ValidateProgram(m_ProgramID))
-	{
-		
-		glDetachShader(m_ProgramID, m_VertexShaderID);
-		glDetachShader(m_ProgramID, m_FragmentShaderID);
-	}
-
-	DestroyShader(m_VertexShaderID);
-	DestroyShader(m_FragmentShaderID);
-
-	DestroyProgram(m_ProgramID);
+	DestroyShaderProgram();
 }
 
 bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameFragment)
@@ -204,16 +221,23 @@ bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameFr
 	ASSERT((m_FragmentShaderID == 0) && (m_VertexShaderID == 0));
 	ASSERT((m_ProgramID == 0) && !m_bInit);
 
-	if (!this->BuildVertexShader(pNameVertex)) {
+	m_VertexShaderID = CreateShaderFromFile(GL_VERTEX_SHADER, pNameVertex);
+	if (m_VertexShaderID <= 0)
+	{
 		return false;
 	}
 
-	if (!this->BuildFragmentShader(pNameFragment)) {
+	m_FragmentShaderID = CreateShaderFromFile(GL_FRAGMENT_SHADER, pNameFragment);
+	if (m_FragmentShaderID <= 0)
+	{
+		DestroyShaderProgram();
 		return false;
 	}
 
-	if (!CreateShaderProgram(m_VertexShaderID, m_FragmentShaderID, m_ProgramID)) {
-		fprintf(stderr,"Failed create the Shader Program %d \n", m_ProgramID);
+	m_ProgramID = CreateShaderProgram(m_VertexShaderID, m_FragmentShaderID);
+	if (m_ProgramID == 0)
+	{
+		DestroyShaderProgram();
 		return false;
 	}
 
@@ -226,20 +250,30 @@ bool CShaderOGL::BuildShaderProgram(const char* pNameVertex, const char* pNameGe
 	ASSERT((m_FragmentShaderID == 0) && (m_GeometryShaderID == 0) && (m_VertexShaderID == 0));
 	ASSERT((m_ProgramID == 0) && !m_bInit);
 
-	if (!this->BuildVertexShader(pNameVertex)) {
+	m_VertexShaderID = CreateShaderFromFile(GL_VERTEX_SHADER, pNameVertex);
+	if (m_VertexShaderID <= 0)
+	{
 		return false;
 	}
 
-	if (!this->BuildGeometryShader(pNameGeometry)) {
+	m_GeometryShaderID = CreateShaderFromFile(GL_GEOMETRY_SHADER, pNameGeometry);
+	if (m_GeometryShaderID <= 0)
+	{
+		DestroyShaderProgram();
 		return false;
 	}
 
-	if (!this->BuildFragmentShader(pNameFragment)) {
+	m_FragmentShaderID = CreateShaderFromFile(GL_FRAGMENT_SHADER, pNameFragment);
+	if (m_FragmentShaderID <= 0)
+	{
+		DestroyShaderProgram();
 		return false;
 	}
 
-	if (!CreateShaderProgram(m_VertexShaderID, m_GeometryShaderID, m_FragmentShaderID, m_ProgramID)) {
-		fprintf(stderr,"Failed create the Shader Program %d \n", m_ProgramID);
+	m_ProgramID = CreateShaderProgram(m_VertexShaderID, m_GeometryShaderID, m_FragmentShaderID);
+	if (m_ProgramID == 0)
+	{
+		DestroyShaderProgram();
 		return false;
 	}
 
@@ -252,15 +286,23 @@ bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocF
 	ASSERT((m_FragmentShaderID == 0) && (m_VertexShaderID == 0));
 	ASSERT((m_ProgramID == 0) && !m_bInit);
 
-	if (!CreateShader(GL_VERTEX_SHADER, (const char*)pLocVertex, m_VertexShaderID)) {
+	m_VertexShaderID = CreateShader(GL_VERTEX_SHADER, (const char*)pLocVertex);
+	if (m_VertexShaderID == 0)
+	{
 		return false;
 	}
 
-	if (!CreateShader(GL_FRAGMENT_SHADER, (const char*)pLocFragment, m_FragmentShaderID)) {
+	m_FragmentShaderID = CreateShader(GL_FRAGMENT_SHADER, (const char*)pLocFragment);
+	if (m_FragmentShaderID == 0)
+	{
+		this->DestroyShaderProgram();
 		return false;
 	}
 
-	if (!CreateShaderProgram(m_VertexShaderID, m_FragmentShaderID, m_ProgramID)) {
+	m_ProgramID = CreateShaderProgram(m_VertexShaderID, m_FragmentShaderID);
+	if (m_ProgramID == 0)
+	{
+		this->DestroyShaderProgram();
 		return false;
 	}
 
@@ -273,445 +315,375 @@ bool CShaderOGL::BuildShaderProgramMem(const void* pLocVertex, const void* pLocG
 	ASSERT((m_FragmentShaderID == 0) && (m_GeometryShaderID == 0) && (m_VertexShaderID == 0));
 	ASSERT((m_ProgramID == 0) && !m_bInit);
 
-	if (!CreateShader(GL_VERTEX_SHADER, (const char*)pLocVertex, m_VertexShaderID)) {
+	m_VertexShaderID = CreateShader(GL_VERTEX_SHADER, (const char*)pLocVertex);
+	if (m_VertexShaderID == 0)
+	{
 		return false;
 	}
 
-	if (!CreateShader(GL_GEOMETRY_SHADER, (const char*)pLocGeometry, m_GeometryShaderID)) {
+	m_GeometryShaderID = CreateShader(GL_GEOMETRY_SHADER, (const char*)pLocGeometry);
+	if (m_GeometryShaderID == 0)
+	{
+		this->DestroyShaderProgram();
 		return false;
 	}
 
-	if (!CreateShader(GL_FRAGMENT_SHADER, (const char*)pLocFragment, m_FragmentShaderID)) {
+	m_FragmentShaderID = CreateShader(GL_FRAGMENT_SHADER, (const char*)pLocFragment);
+	if (m_FragmentShaderID == 0)
+	{
+		this->DestroyShaderProgram();
 		return false;
 	}
 
-	if (!CreateShaderProgram(m_VertexShaderID, m_GeometryShaderID, m_FragmentShaderID, m_ProgramID)) {
+	m_ProgramID = CreateShaderProgram(m_VertexShaderID, m_GeometryShaderID, m_FragmentShaderID);
+	if (m_ProgramID == 0)
+	{
+		this->DestroyShaderProgram();
 		return false;
 	}
 
-	return true;
-}
-
-bool CShaderOGL::BuildVertexShader(const char* pNameVertexShaderFile)
-{
-	const char * codeVertexShader = util::ReadWholeFileIntoString(pNameVertexShaderFile);
-
-	if (!codeVertexShader) {
-		return false;
-	}
-
-	if (!CreateShader(GL_VERTEX_SHADER, codeVertexShader, m_VertexShaderID)) {
-		return false;
-	}
-	return true;
-}
-
-bool CShaderOGL::BuildGeometryShader(const char* pNameGeometryShaderFile)
-{
-	const char * codeVertexShader = util::ReadWholeFileIntoString(pNameGeometryShaderFile);
-
-	if (!codeVertexShader) {
-		return false;
-	}
-
-	if (!CreateShader(GL_GEOMETRY_SHADER, codeVertexShader, m_GeometryShaderID)) {
-		return false;
-	}
-	return true;
-}
-
-bool CShaderOGL::BuildFragmentShader(const char* pNameFragmentShaderFile)
-{
-	const char * codeFragmentShader = util::ReadWholeFileIntoString(pNameFragmentShaderFile);
-
-	if (!codeFragmentShader) {
-		return false;
-	}
-
-	if (!CreateShader(GL_FRAGMENT_SHADER, codeFragmentShader, m_FragmentShaderID)) {
-		return false;
-	}
 	return true;
 }
 
 bool CShaderOGL::ValidateShaderProgram()
 {
-	if (!ValidateProgram(m_ProgramID)) {
-		fprintf(stderr, "\nShader Program %d Not Validate!\n", m_ProgramID);
-		return false;
-	}
-
-	return true;
+	return ValidateProgram(m_ProgramID);
 }
 
 bool CShaderOGL::DestroyShaderProgram()
 {
-	m_bInit = false;
-
-	if (!DestroyProgram(m_ProgramID))
-		return false;
-
 	if (m_VertexShaderID > 0)
-		DestroyVertexShader();
+		DestroyShader(m_VertexShaderID);
 
 	if (m_GeometryShaderID > 0)
-		DestroyGeometryShader();
+		DestroyShader(m_GeometryShaderID);
 
 	if (m_FragmentShaderID > 0)
-		DestroyFragmentShader();
+		DestroyShader(m_FragmentShaderID);
+
+	if (m_ProgramID > 0 )
+		DestroyProgram(m_ProgramID);
+
+	m_bInit = false;
 
 	return true;
 }
 
-bool CShaderOGL::DestroyVertexShader(void)
-{
-	return DestroyShader(m_VertexShaderID);
-}
-
-bool CShaderOGL::DestroyGeometryShader(void)
-{
-	return DestroyShader(m_GeometryShaderID);
-}
-
-bool CShaderOGL::DestroyFragmentShader(void)
-{
-	return DestroyShader(m_FragmentShaderID);
-}
-
-bool CShaderOGL::Set_Parameter(int *V, const char* nameUnif, int numParameter, int *loc)
+int CShaderOGL::Set_Parameter( int *V, const char* nameUnif, int numParameter )
 {
 	ASSERT(V && nameUnif);
 	ASSERT(numParameter < 0 && numParameter > 5);
-	int location = -1;
+
+	int location(-1);
 
 	switch(numParameter) {
 	case 1: {
 		location = glGetUniformLocation(m_ProgramID, nameUnif);
 		if (location < 0)
-			return false;
+			return -1;
 			glUniform1iv(location, numParameter, V);
 		} break;
 	case 2: {
 		location = glGetUniformLocation(m_ProgramID, nameUnif);
 		if (location < 0)
-			return false;
+			return -2;
 			glUniform2iv(location, numParameter, V);
 		} break;
 	case 3:	{
 		location = glGetUniformLocation(m_ProgramID, nameUnif);
 		if (location < 0)
-			return false;
+			return -3;
 			glUniform3iv(location, numParameter, V);
 		} break;
 	case 4:	{
 		location = glGetUniformLocation(m_ProgramID, nameUnif);
 		if (location < 0)
-			return false;
+			return -4;
 			glUniform4iv(location, numParameter, V);
 		} break;
 	default:
-		return false;
+		return -5;
 	}
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Parameter(float *V, const char* nameUnif,int numParameter, int *loc)
+int CShaderOGL::Set_Parameter( float *V, const char* nameUnif, int numParameter )
 {
 	ASSERT(V && nameUnif);
 	ASSERT(numParameter < 0 && numParameter > 5);
-	int location = -1;
+
+	int location(-1);
 
 	switch(numParameter)
 	{
 	case 1: {
 		location = glGetUniformLocation(m_ProgramID, nameUnif);
 		if (location < 0)
-			return false;
+			return -1;
 		glUniform1fv(location, numParameter, V);
 			} break;
 	case 2: {
 		location = glGetUniformLocation(m_ProgramID, nameUnif);
 		if (location < 0)
-			return false;
+			return -2;
 		glUniform2fv(location, numParameter, V);
 			} break;
 	case 3: {
 		location = glGetUniformLocation(m_ProgramID, nameUnif);
 		if (location < 0)
-			return false;
+			return -3;
 		glUniform3fv(location, numParameter, V);
 			} break;
 	case 4:	{
 		location = glGetUniformLocation(m_ProgramID, nameUnif);
 		if (location < 0)
-			return false;
+			return -4;
 		glUniform4fv(location, numParameter, V);
 			} break;
 	default:
-		return false;
+		return -5;
 	}
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Matrix2fv(const GLfloat *V, const char* nameUnif, int *loc, GLsizei count, bool transpose)
+int CShaderOGL::Set_Matrix2fv( const float *V, const char* nameUnif, int count )
 {
 	ASSERT(V && nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
-	glUniformMatrix2fv(location, count, transpose, V);
+	int location(-1);
 
-	if (loc) *loc = location;
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif) ) < 0)
+		return -1;
 
-	return true;
+	glUniformMatrix2fv(location, count, m_bIsTranspMat, V);
+
+	return location;
 }
 
-bool CShaderOGL::Set_Matrix3fv(const GLfloat *V, const char* nameUnif, int *loc, GLsizei count, bool transpose)
+int CShaderOGL::Set_Matrix3fv( const float *V, const char* nameUnif, int count )
 {
 	ASSERT(V && nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
-	glUniformMatrix3fv(location, count, transpose, V);
+	int location(-1);
 
-	if (loc) *loc = location;
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif) ) < 0)
+		return -1;
 
-	return true;
+	glUniformMatrix3fv(location, count, m_bIsTranspMat, V);
+
+	return location;
 }
 
-bool CShaderOGL::Set_Matrix4fv(const GLfloat *V, const char* nameUnif, int *loc, GLsizei count, bool transpose)
+int CShaderOGL::Set_Matrix4fv(const float *V, const char* nameUnif, GLsizei count)
 {
 	ASSERT(V && nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
-	glUniformMatrix4fv(location, count, transpose, V);
+	int location(-1);
 
-	if (loc) *loc = location;
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
 
-	return true;
+	glUniformMatrix4fv(location, count, m_bIsTranspMat, V);
+
+	return location;
 }
 
-bool CShaderOGL::Set_Integer1(int V, const char* nameUnif, int *loc)
+int CShaderOGL::Set_Integer1( int V, const char* nameUnif )
 {
 	ASSERT(nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform1i(location, V);
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Integer2v(int* V, const char* nameUnif, int *loc, int count)
+int CShaderOGL::Set_Integer2v( int* V, const char* nameUnif, int count )
 {
 	ASSERT(V && nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform2iv(location, count, V);
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Integer2(int V0, int V1, const char* nameUnif, int *loc)
+int CShaderOGL::Set_Integer2( int V0, int V1, const char* nameUnif )
 {
 	ASSERT(nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform2i(location, V0, V1);
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Integer3v(int* V, const char* nameUnif, int *loc, int count)
+int CShaderOGL::Set_Integer3v( int* V, const char* nameUnif, int count )
 {
 	ASSERT(V && nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform3iv(location, count, V);
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Integer3(int V0, int V1, int V2, const char* nameUnif, int *loc)
+int CShaderOGL::Set_Integer3( int V0, int V1, int V2, const char* nameUnif )
 {
 	ASSERT(nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform3i(location, V0, V1, V2);
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Integer4v(int* V, const char* nameUnif, int *loc, int count)
+int CShaderOGL::Set_Integer4v( int* V, const char* nameUnif, int count )
 {
 	ASSERT(V && nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform4iv(location, count, V);
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Integer4(int V0, int V1, int V2, int V3, const char* nameUnif, int *loc)
+int CShaderOGL::Set_Integer4( int V0, int V1, int V2, int V3, const char* nameUnif )
 {
 	ASSERT(nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform4i(location, V0, V1, V2, V3);
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Float1(float V, const char* nameUnif, int *loc)
+int CShaderOGL::Set_Float1( float V, const char* nameUnif )
 {
 	ASSERT(nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform1f( location, V );
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Float2v(float *V, const char* nameUnif, int *loc, int count)
+int CShaderOGL::Set_Float2v( float *V, const char* nameUnif, int count )
 {
 	ASSERT(V && nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform2fv(location, count, V);
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Float2(float V0, float V1, const char* nameUnif, int *loc)
+int CShaderOGL::Set_Float2( float V0, float V1, const char* nameUnif )
 {
 	ASSERT(nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform2f(location, V0, V1);
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Float3v(float *V, const char* nameUnif, int *loc, int count)
+int CShaderOGL::Set_Float3v( float *V, const char* nameUnif, int count )
 {
 	ASSERT(V && nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform3fv(location, count, V);
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Float3(float V0, float V1, float V2, const char* nameUnif, int *loc)
+int CShaderOGL::Set_Float3( float V0, float V1, float V2, const char* nameUnif )
 {
 	ASSERT(nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform3f(location, V0, V1, V2);
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Float4v(float *V, const char* nameUnif, int *loc, int count)
+int CShaderOGL::Set_Float4v( float *V, const char* nameUnif, int count )
 {
 	ASSERT(V && nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform4fv(location, count, V);
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
-bool CShaderOGL::Set_Float4(float V0, float V1, float V2, float V3, const char* nameUnif, int *loc)
+int CShaderOGL::Set_Float4( float V0, float V1, float V2, float V3, const char* nameUnif )
 {
 	ASSERT(nameUnif);
-	int location = -1;
 
-	location = glGetUniformLocation(m_ProgramID, nameUnif);
-	if (location < 0)
-		return false;
+	int location(-1);
+
+	if ( (location = glGetUniformLocation(m_ProgramID, nameUnif)) < 0)
+		return -1;
+
 	glUniform4f(location, V0, V1, V2, V3);
 
-	if (loc) *loc = location;
-
-	return true;
+	return location;
 }
 
 void CShaderOGL::Begin_Use()
