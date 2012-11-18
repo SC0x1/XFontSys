@@ -14,10 +14,19 @@
 
 #include <assert.h>
 
+#define INLINE inline
+#define FORCEINLINE __forceinline
+
 template<typename T>
-T MaxVal(T const & a, T const & b) { return (a > b) ? a : b; }
+INLINE T Max( const T & a, const T & b ) { return (a > b) ? a : b; }
 template<typename T>
-T MinVal(T const & a, T const & b) { return (a < b) ? a : b; }
+INLINE T Min( const T & a, const T & b ) { return !(a > b) ? a : b; }
+
+template<typename T>
+INLINE T Clamp( const T & val, const T & min, const T & max )
+{
+	return ((val > max) ? max : ((val < min) ? min : val));
+}
 
 namespace util
 {

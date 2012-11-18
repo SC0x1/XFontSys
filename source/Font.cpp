@@ -172,7 +172,7 @@ bool CFont::Build( void )
 			}
 
 			offsetX += g.bitmapWidth + 1;
-			heightLine = MaxVal(heightLine, g.bitmapHeight);
+			heightLine = Max(heightLine, g.bitmapHeight);
 		}
 	}
 
@@ -495,7 +495,7 @@ bool CFont::InitFromCache(const char* fileName)
 			}
 
 			offsetX += g.bitmapWidth + 1;
-			heightLine = MaxVal(heightLine, g.bitmapHeight);
+			heightLine = Max(heightLine, g.bitmapHeight);
 		}
 	}
 

@@ -6,15 +6,16 @@
 // the vertex shader simply passes through data
 const char VertexShader[] = "#version 150 core\n \
 							#extension GL_ARB_explicit_attrib_location : enable\n \
-							layout(location = 0) in vec4 a_Vertex;\n \
-							layout(location = 1) in vec4 a_TexCoord0;\n \
-							layout(location = 2) in vec4 a_Color;\n \
+							layout(location = 0) in vec4 inVertex;\n \
+							layout(location = 1) in vec4 inTexCoord0;\n \
+							layout(location = 2) in vec4 inColor;\n \
+							uniform vec2 u_Scale;\n \
 							out vec4 vs_TexCoord0;\n \
 							out vec4 vs_Color;\n \
 							void main( void ) {\n \
-								vs_TexCoord0 = a_TexCoord0;\n \
-								vs_Color = (a_Color / 255);\n \
-								gl_Position = a_Vertex;\n \
+								vs_TexCoord0 = inTexCoord0;\n \
+								vs_Color = inColor / 255;\n \
+								gl_Position = inVertex * vec4(u_Scale, u_Scale);\n \
 							}\n";
 
 // the geometry shader creates the billboard quads
@@ -25,25 +26,24 @@ const char GeometryShader[] = "#version 150 core\n \
 							in vec4 vs_Color[];\n \
 							out vec2 gs_TexCoord0;\n \
 							out vec4 gs_Color;\n \
-							uniform vec2 u_Scale;\n \
 							void main() {\n \
 								vec4 qv = gl_in[0].gl_Position;\n \
 								vec4 tex = vs_TexCoord0 [0];\n \
-								gl_Position = vec4(-1 + (qv.x * u_Scale.x), 1 - (qv.y * u_Scale.y), 0, 1);\n \
+								gl_Position = vec4(-1 + qv.x, 1 - qv.y, 0, 1);\n \
 								gs_TexCoord0.xy = tex.xy;\n \
 								gs_Color = vs_Color[0];\n \
 								EmitVertex();\n \
-								gl_Position = vec4(-1 + (qv.z * u_Scale.x), 1 - (qv.y * u_Scale.y), 0, 1);\n \
+								gl_Position = vec4(-1 + qv.z, 1 - qv.y, 0, 1);\n \
 								gs_TexCoord0.x = tex.x + tex.z;\n \
 								gs_TexCoord0.y = tex.y;\n \
 								gs_Color = vs_Color[0];\n \
 								EmitVertex();\n \
-								gl_Position = vec4(-1 + (qv.x * u_Scale.x), 1 - (qv.w * u_Scale.y), 0, 1);\n \
+								gl_Position = vec4(-1 + qv.x, 1 - qv.w, 0, 1);\n \
 								gs_TexCoord0.x = tex.x;\n \
 								gs_TexCoord0.y = tex.y + tex.w;\n \
 								gs_Color = vs_Color[0];\n \
 								EmitVertex();\n \
-								gl_Position = vec4(-1 + (qv.z * u_Scale.x), 1 - (qv.w * u_Scale.y), 0, 1);\n \
+								gl_Position = vec4(-1 + qv.z, 1 - qv.w, 0, 1);\n \
 								gs_TexCoord0.x = tex.x + tex.z;\n \
 								gs_TexCoord0.y = tex.y + tex.w;\n \
 								gs_Color = vs_Color[0];\n \
