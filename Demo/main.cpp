@@ -14,7 +14,7 @@
 #include <codecvt>
 
 // font descriptors
-HFont g_hDejaVuSans_10 = INVALID_FONT,
+HFont	g_hDejaVuSans_10 = INVALID_FONT,
 		g_hFreeSans_14 = INVALID_FONT,
 
 		g_hVerdana_11 = INVALID_FONT,

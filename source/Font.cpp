@@ -13,23 +13,13 @@
 #include "public/common.h"
 
 CFont::CFont(void)
-: m_bBuild(false), m_bIsAsci(false)
+	:
+	m_bBuild(false), m_bIsAsci(false),
+	m_size(0), m_iNumCharacter(0), m_iNeedNumLines(0), m_iNumRange(0),
+	m_pFT_Face(nullptr), m_pGlyphData(nullptr), m_iTextureWidth(0),
+	m_CurrentIndex(0)
 {
 	m_fontName[0] = 0;
-	
-	m_size = 0;
-
-	m_iNumCharacter = 0;
-
-	m_iNeedNumLines = 0;
-
-	m_iNumRange = 0;
-	m_pFT_Face = nullptr;
-	m_pGlyphData = nullptr;
-
-	m_iTextureWidth = 0;
-
-	m_CurrentIndex = -1;
 
 	// allocate memory for the two ranges
 	m_UChRanges.Resize(2, 2);

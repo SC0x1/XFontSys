@@ -37,7 +37,7 @@ public:
 
 private:
 
-	int		m_NumElements;
+	int		m_Num;
 	int		m_size;
 	int		m_growth;
 	T*		m_pData;
@@ -61,7 +61,7 @@ void CUtlVector<T>::SetGrowth( int growth )
 	if (m_pData)
 	{
 		// изменим размер до заданной велечины
-		newsize = m_NumElements + growth - 1;
+		newsize = m_Num + growth - 1;
 		newsize -= newsize % growth;
 		if (newsize != m_size)
 		{
@@ -78,7 +78,7 @@ INLINE CUtlVector<T>::CUtlVector( int growth )
 	m_pData = nullptr;
 	m_growth = growth;
 
-	m_NumElements = 0;
+	m_Num = 0;
 
 	Clear();
 }
@@ -88,7 +88,7 @@ INLINE CUtlVector<T>::CUtlVector( const CUtlVector<T> &other )
 {
 	m_pData = nullptr;
 
-	m_NumElements = 0;
+	m_Num = 0;
 
 	*this = other;
 }
@@ -102,7 +102,7 @@ INLINE CUtlVector<T>::~CUtlVector( void )
 template<typename T>
 INLINE int CUtlVector<T>::FindIndex( const T& obj ) const
 {
-	for (int i = 0; i < m_NumElements; ++i)
+	for (int i = 0; i < m_Num; ++i)
 	{
 		if (m_pData[i] == obj) {
 			return i;
@@ -127,14 +127,14 @@ INLINE bool CUtlVector<T>::RemoveIndex( int index )
 {
 	assert( m_pData != nullptr );
 	assert( index >= 0 );
-	assert( index < m_NumElements );
+	assert( index < m_Num );
 
-	if ( (index < 0 ) || ( index >= m_NumElements) ) {
+	if ( (index < 0 ) || ( index >= m_Num) ) {
 		return false;
 	}
-	--m_NumElements;
+	--m_Num;
 
-	for (int i = index; i < m_NumElements; ++i)	{
+	for (int i = index; i < m_Num; ++i)	{
 		m_pData[i] = m_pData[ i + 1 ];
 	}
 
@@ -144,14 +144,14 @@ INLINE bool CUtlVector<T>::RemoveIndex( int index )
 template<typename T>
 INLINE int CUtlVector<T>::Num( void ) const
 {
-	return m_NumElements;
+	return m_Num;
 }
 
 template<typename T>
 INLINE T& CUtlVector<T>::operator[]( int index )
 {
 	assert( index >= 0 );
-	assert( index <= m_NumElements );
+	assert( index <= m_Num );
 
 	return m_pData[ index ];
 }
@@ -160,7 +160,7 @@ template<typename T>
 INLINE const T& CUtlVector<T>::operator[]( int index ) const
 {
 	assert( index >= 0 );
-	assert( index < m_NumElements );
+	assert( index < m_Num );
 
 	return m_pData[ index ];
 }
@@ -170,14 +170,14 @@ INLINE CUtlVector<T>& CUtlVector<T>::operator=( const CUtlVector<T> & other )
 {
 	Clear();
 
-	m_NumElements = other.m_NumElements;
+	m_Num = other.m_NumElements;
 	m_size = other.m_size;
 	m_growth = other.m_growth;
 
 	if ( m_size )
 	{
 		m_pData = new T[ m_size ];
-		for (int i = 0; i < m_NumElements; ++i)	{
+		for (int i = 0; i < m_Num; ++i)	{
 			m_pData[ i ] = other.m_pData[ i ];
 		}
 	}
@@ -206,14 +206,14 @@ INLINE void CUtlVector<T>::Resize( int newsize )
 	temp = m_pData;
 	m_size = newsize;
 
-	if ( m_size < m_NumElements ) {
-		m_NumElements = m_size;
+	if ( m_size < m_Num ) {
+		m_Num = m_size;
 	}
 
 	// копируем старый вектор в новый
 	m_pData = new T[ m_size ];
 
-	for (int i = 0; i < m_NumElements; ++i) {
+	for (int i = 0; i < m_Num; ++i) {
 		m_pData[ i ] = temp[ i ];
 	}
 
@@ -240,13 +240,13 @@ void CUtlVector<T>::Resize(int newsize, int growth)
 	T	*temp = m_pData;
 	m_size = newsize;
 
-	if ( m_size < m_NumElements )
+	if ( m_size < m_Num )
 	{
-		m_NumElements = m_size;
+		m_Num = m_size;
 	}
 
 	m_pData = new T[ m_size ];
-	for (int i = 0; i < m_NumElements; ++i)
+	for (int i = 0; i < m_Num; ++i)
 	{
 		m_pData[i] = temp[i];
 	}
@@ -258,7 +258,7 @@ void CUtlVector<T>::Resize(int newsize, int growth)
 template<typename T>
 INLINE void CUtlVector<T>::DeleteContents( bool clear )
 {
-	for (int i = 0; i < m_NumElements; ++i) {
+	for (int i = 0; i < m_Num; ++i) {
 		SAFE_DELETE(m_pData[i]);
 	}
 
@@ -276,17 +276,17 @@ T& CUtlVector<T>::AddToTail(int *id_el /*= nullptr */)
 		Resize( m_growth );
 	}
 
-	if ( m_NumElements == m_size ) {
+	if ( m_Num == m_size ) {
 		Resize( m_size + m_growth );
 	}
 
-	++m_NumElements;
+	++m_Num;
 
 	if (id_el) {
-		*id_el = m_NumElements;
+		*id_el = m_Num;
 	}
 	
-	return m_pData[ m_NumElements ];
+	return m_pData[ m_Num ];
 }
 
 template<typename T>
@@ -296,7 +296,7 @@ INLINE int CUtlVector<T>::Append( const T& obj )
 		Resize( m_growth );
 	}
 
-	if ( m_NumElements == m_size )
+	if ( m_Num == m_size )
 	{
 		int newsize;
 
@@ -307,10 +307,10 @@ INLINE int CUtlVector<T>::Append( const T& obj )
 		Resize( newsize - newsize % m_growth );
 	}
 
-	m_pData[ m_NumElements ] = obj;
-	++m_NumElements;
+	m_pData[ m_Num ] = obj;
+	++m_Num;
 
-	return m_NumElements - 1;
+	return m_Num - 1;
 }
 
 template<typename T>
@@ -320,5 +320,5 @@ INLINE void CUtlVector<T>::Clear( void )
 		delete[] m_pData;
 	}
 	m_pData = nullptr;
-	m_NumElements = m_size = 0;
+	m_Num = m_size = 0;
 }

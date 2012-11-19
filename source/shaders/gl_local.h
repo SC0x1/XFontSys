@@ -45,9 +45,14 @@ enum VertexFormats
 
 typedef void(*VERTEXATTRIB)(void);
 
-void DrawSimple2DText(const TextInfo_s& txtInfo);
+void DrawSimple2DText(const TextInfo_s & txtInfo);
 
-void UploadFontTextureToGL(int w, int h, unsigned char* pRawTex, GLuint &idTex);
+void UploadFontTextureToGL( int w, int h, unsigned char* pRawTex, GLuint & idTex );
+
+inline void FreeGLTexture( GLsizei num, GLuint const * idTex )
+{
+	glDeleteTextures(num, idTex);
+}
 
 inline void Set_Attrib2DText( void )
 {

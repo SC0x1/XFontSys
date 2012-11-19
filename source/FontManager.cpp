@@ -13,12 +13,12 @@
 
 #include "public/common.h"
 
-FontManager::FontManager()
- : m_bIsBuildAllFonts(false)
-{
-	m_Fonts.Resize(4, 2);
+#define Handle2Index( x ) (x - 1)
 
-	m_texID = 0;
+FontManager::FontManager()
+ : m_bIsBuildAllFonts(false), m_texID(0)
+{
+	m_Fonts.Resize(3, 2);
 }
 
 FontManager::~FontManager()
@@ -33,12 +33,7 @@ HFont FontManager::Create_Font(const char* fontName, int size)
 			return i + 1;
 	}
 
-	HFont h = 0;
-	m_Fonts.AddToTail( &h ); // h == number of elements in the vector
-
-	const int index = h - 1;
-
-	m_Fonts[ index ] = new CFont;
+	const int index = m_Fonts.Append( new CFont );
 
 	if (!m_Fonts[ index ]->Create(fontName, size))
 	{
@@ -48,13 +43,14 @@ HFont FontManager::Create_Font(const char* fontName, int size)
 		return INVALID_FONT;
 	}
 
-	return h;
+	return index + 1;
 }
 
 bool FontManager::AddGlyphSetToFont(HFont handle, int lowRange, int upperRange)
 {
-	int index = handle - 1;
-	if( (m_Fonts.Num() - 1) < index)
+	int index( Handle2Index(handle) );
+
+	if( ( Handle2Index( m_Fonts.Num() ) ) < index)
 		return false;
 
 	// if we have something to add
@@ -97,12 +93,15 @@ bool FontManager::BuildAllFonts( void )
 		}
 	}
 
-	// tex. dimens.
-	const size_t size_tex = tW * tH;
 	// allocate memory for texture
-	unsigned char* pRawTexture = (unsigned char*)malloc(size_tex);
+	unsigned char* pRawTexture = (unsigned char*)calloc(tW * tH, sizeof(unsigned char));
 
-	memset(pRawTexture, 0, sizeof(unsigned char) * size_tex);
+	if (pRawTexture == nullptr)
+	{
+		fprintf(stderr, "\nFailed to allocate memory for texture %dx%d", tW, tH);
+		ClearAllFonts();
+		return false;
+	}
 
 	int yoffset = 0;
 	for (int i = 0; i < num_fonts; ++i)
@@ -130,13 +129,13 @@ void FontManager::ClearAllFonts()
 
 	if (m_texID != 0)
 	{
-		glDeleteTextures(1, &m_texID);
+		FreeGLTexture(1, &m_texID);
 	}
 }
 
 bool FontManager::GetGlyphDesc(HFont handle, int wch, GlyphDesc_t &desc) const
 {
-	if (! m_Fonts[ handle - 1 ]->GetGlyphDesc(wch, desc))
+	if (! m_Fonts[ Handle2Index(handle) ]->GetGlyphDesc(wch, desc))
 		return false;
 
 	return true;
@@ -144,7 +143,7 @@ bool FontManager::GetGlyphDesc(HFont handle, int wch, GlyphDesc_t &desc) const
 
 bool FontManager::AssignCacheForChar(HFont handle, int wch)
 {
-	if (!m_Fonts[ handle - 1]->AssignCacheForChar(wch))
+	if (!m_Fonts[ Handle2Index(handle) ]->AssignCacheForChar(wch))
 		return false;
 
 	return true;
@@ -152,40 +151,37 @@ bool FontManager::AssignCacheForChar(HFont handle, int wch)
 
 GlyphDesc_t const * FontManager::GetGlyphDescFromCache(HFont handle, int wch) const
 {
-	return m_Fonts[ handle - 1 ]->GetGlyphDesc();
+	return m_Fonts[ Handle2Index(handle) ]->GetGlyphDesc();
 }
 
 bool FontManager::IsCharInFont(HFont handle, wchar_t wch) const
 {
-	assert( m_Fonts[ handle-1 ]->IsValid() );
-	return m_Fonts[ handle-1 ]->IsCharInFont( wch );
+	assert( m_Fonts[ Handle2Index(handle) ]->IsValid() );
+	return m_Fonts[ Handle2Index(handle) ]->IsCharInFont( wch );
 }
 
-CFont* FontManager::GetFontByID(HFont fnt) const
+CFont* FontManager::GetFontByID(HFont handle) const
 {
-	assert(m_Fonts[ fnt - 1 ]);
+	assert(m_Fonts[ Handle2Index(handle) ]);
 
-	return m_Fonts[ fnt - 1 ];
+	return m_Fonts[ Handle2Index(handle) ];
 }
 
 int FontManager::GetFontHeight(HFont handle) const
 {
-	return m_Fonts[ handle - 1 ]->Height();
+	return m_Fonts[ Handle2Index(handle) ]->Height();
 }
 
 bool FontManager::HasKerning(HFont handle) const
 {
-	return m_Fonts[ handle - 1 ]->HasKerning();
+	return m_Fonts[ Handle2Index(handle) ]->HasKerning();
 }
 
 bool FontManager::DumpFontCache(HFont handle, const char* path) const
 {
-	const int index = handle - 1;
+	const int index( Handle2Index(handle) );
 
-	const int num_fonts = m_Fonts.Num();
-
-	if ( (num_fonts - 1) < index )
-	{
+	if ( ( Handle2Index( m_Fonts.Num() ) ) < index ) {
 		return false;
 	}
 
@@ -197,13 +193,7 @@ HFont FontManager::LoadFontCache(const char* filename)
 	if (!filename)
 		return INVALID_FONT;
 
-	HFont h = INVALID_FONT;
-
-	m_Fonts.AddToTail( &h );
-	
-	const int index = h - 1;
-
-	m_Fonts[ index ] = new CFont;
+	const int index = m_Fonts.Append( new CFont );
 
 	if ( !m_Fonts[ index ]->InitFromCache(filename) )
 	{
@@ -212,7 +202,7 @@ HFont FontManager::LoadFontCache(const char* filename)
 		return INVALID_FONT;
 	}
 
-	return h;
+	return index + 1;
 }
 
 bool FontManager::BuildCacheFonts( void )
@@ -226,15 +216,13 @@ bool FontManager::BuildCacheFonts( void )
 
 	const int num_fonts = m_Fonts.Num();
 
-	if ( num_fonts <= 0 )
-	{
+	if ( num_fonts <= 0 ) {
 		return false;
 	}
 
 	for (int i = 0; i < num_fonts; ++i)
 	{
-		if ( !m_Fonts[i]->IsValid() )
-		{
+		if ( !m_Fonts[i]->IsValid() ) {
 			return false;
 		}
 
@@ -242,10 +230,15 @@ bool FontManager::BuildCacheFonts( void )
 		tH += m_Fonts[i]->Height() * m_Fonts[i]->NeedTextureLines();
 	}
 
-	const int size_tex = tW * tH;
-	unsigned char* pTexBase = (unsigned char*)malloc(size_tex);
+	// allocate memory for texture
+	unsigned char* pRawTexture = (unsigned char*)calloc(tW * tH, sizeof(unsigned char));
 
-	memset(pTexBase, 0, size_tex);
+	if (pRawTexture == nullptr)
+	{
+		fprintf(stderr, "\nFailed to allocate memory for texture %dx%d", tW, tH);
+		ClearAllFonts();
+		return false;
+	}
 
 	int texDimY = 0;
 
@@ -257,13 +250,13 @@ bool FontManager::BuildCacheFonts( void )
 
 		sprintf(gName, "%s/%s_%d.tga", font.GetPath(), font.GetName(), font.GetSize());
 
-		unsigned char * pTexOffset = pTexBase + ( texDimY * tW );
+		unsigned char * pTexOffset = pRawTexture + ( texDimY * tW );
 
-		int w, h;
+		int w(0), h(0);
 		if ( !util::LoadTGA(gName, &pTexOffset, w, h) )
 		{
 			// just release the memory and exit
-			free(pTexBase);
+			free(pRawTexture);
 			return m_bIsBuildAllFonts = false;
 		}
 
@@ -274,9 +267,9 @@ bool FontManager::BuildCacheFonts( void )
 
 	//util::SaveAsTGA("ShowMeResult.tga", tW, tH, pTexBase);
 
-	UploadFontTextureToGL(tW, tH, pTexBase, m_texID);
+	UploadFontTextureToGL(tW, tH, pRawTexture, m_texID);
 
-	free(pTexBase);
+	free(pRawTexture);
 
 	return m_bIsBuildAllFonts = true;
 }
