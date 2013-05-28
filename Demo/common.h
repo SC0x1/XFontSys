@@ -1,9 +1,8 @@
-﻿/****************************************************************************/
-/*	Copyright (c) 2012 Vitaly Lyaschenko < scxv86@gmail.com >
-/*
-/*	Purpose:
-/*
-/****************************************************************************/
+﻿// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
+// Purpose: 
+//
+#ifndef common_h__
+#define common_h__
 
 #pragma once
 
@@ -29,20 +28,22 @@
 
 float GetFPS(float interval = 1.0);
 
-void NowTime( std::string& str );
+void NowTime(std::string& str);
 
-/*---------------------------------------------------------------------------*/
-/* Purpose: Initialize the GLEW library
-/*---------------------------------------------------------------------------*/
+//===========================================================================
+// Purpose: Initialize the GLEW library
+//===========================================================================
 bool InitGLEW( void );
 
-/*---------------------------------------------------------------------------*/
-/* Gets general information about the video system
-/*---------------------------------------------------------------------------*/
+//===========================================================================
+// Gets general information about the video system
+//===========================================================================
 void PrintVideoInfo();
 
 char* const ReadWholeFileIntoString(const char *fileName, int *lenFile = nullptr);
 
 bool GetRelativePathToResources(std::string& out_path);
 
-bool SetWorkingDirectory( void );
+bool SetWorkingDirectory(void);
+
+#endif // common_h__

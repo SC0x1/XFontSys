@@ -1,10 +1,6 @@
-﻿/****************************************************************************/
-/*	Copyright (c) 2012 Vitaly Lyaschenko < scxv86@gmail.com >
-/*
-/*	Purpose:
-/*
-/****************************************************************************/
-
+﻿// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
+// Purpose: 
+//
 #include "common.h"
 
 #include <stdio.h>
@@ -60,20 +56,14 @@ void PrintVideoInfo()
 	fprintf(stderr,"\n  Max depth texture samples. %d", max_depth_tex);
 }
 
-
-/*---------------------------------------------------------------------------*/
-/* Purpose: Reads the entire file into a string.
-			If successful, returns a pointer to a memory with data.
-/*---------------------------------------------------------------------------*/
 char* const ReadWholeFileIntoString(const char *fileName, int *lenFile)
 {
-	if (!fileName) {
+	if (!fileName)
 		return nullptr;
-	}
-
 	FILE* pFile = fopen(fileName, "rb");
 
-	if (!pFile)	{
+	if (!pFile)
+	{
 		fclose(pFile);
 		return nullptr;
 	}
@@ -87,22 +77,18 @@ char* const ReadWholeFileIntoString(const char *fileName, int *lenFile)
 
 	// file pointer at the beginning of the file
 	rewind(pFile);
-
 	fread(pBuff, sizeof(char), _size, pFile);
-
 	fclose(pFile);
-
 	pBuff[_size] = '\0';
 
-	if (lenFile) {
+	if (lenFile)
 		*lenFile = _size;
-	}
 
 	return pBuff;
 }
 
 // only for the Mac OS
-bool SetWorkingDirectory( void )
+bool SetWorkingDirectory(void)
 {
 #ifdef __APPLE__
 	CFBundleRef mainBundle = CFBundleGetMainBundle();
@@ -125,18 +111,16 @@ bool SetWorkingDirectory( void )
 	return true;
 }
 
-float GetFPS(float interval /*= 1.0*/)
+float GetFPS(float interval)
 {
-	static float	time0 = 0;
-	static int		frameCount = 0;
-	static float	fps = 0.0;
+	static float time0 = 0;
+	static int frameCount = 0;
+	static float fps = 0.0;
 
-	float currTime = glfwGetTime();
-
+	const float currTime = glfwGetTime();
 	if ((currTime - time0) > interval)
 	{
 		fps = (float)frameCount / (currTime - time0);
-
 		frameCount = 0;
 		time0 = glfwGetTime();
 	}
@@ -166,9 +150,7 @@ void NowTime( std::string& str )
 
 	char result[100] = {0};
 	static DWORD first = GetTickCount();
-
 	sprintf(result, "%s.%03ld", buffer, (GetTickCount() - first) % 1000);
-
 	str = result;
 }
 

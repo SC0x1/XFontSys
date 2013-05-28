@@ -1,578 +1,278 @@
-﻿/****************************************************************************/
-/*	Copyright (c) 2012 Vitaly Lyaschenko < scxv86@gmail.com >
-/*
-/*	Purpose: Implementation of the CFont class.
-/*
-/****************************************************************************/
+﻿// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
+// Purpose: 
+//
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
+#include "public/utils.h"
+#include "xfontConf.h"
 #include "Font.h"
-#include "FontGlobal.h"
 
-#include "FT_Lib.h"
+using namespace xfs;
 
-#include "public/common.h"
-
-CFont::CFont(void)
-	:
-	m_bBuild(false), m_bIsAsci(false),
-	m_size(0), m_iNumCharacter(0), m_iNeedNumLines(0), m_iNumRange(0),
-	m_pFT_Face(nullptr), m_pGlyphData(nullptr), m_iTextureWidth(0),
-	m_CurrentIndex(0)
+CFont::CFont()
+    : bBuild_(false),
+      bAsciOnly_(false),
+      fontHeight_(0),
+      numChars_(0),
+      numNeedLines_(0), 
+      pGlyphData_(nullptr),
+      currIdxCache_(0)
 {
-	m_fontName[0] = 0;
-
-	// allocate memory for the two ranges
-	m_UChRanges.Resize(2, 2);
+    fontName_[0] = 0;
+    chRanges_.Resize(2, 2);	// allocate memory for the two ranges
 }
 
-CFont::~CFont(void)
+CFont::~CFont()
 {
-	FreeCacheData();
-
-	m_UChRanges.Clear();
-
-	if (m_pFT_Face)
-		delete m_pFT_Face;
+    FreeCacheData();
+    chRanges_.Clear();
 }
-
-/*---------------------------------------------------------------------------*/
-/* Creates a new font face. Returns false if font does not exist
-/*---------------------------------------------------------------------------*/
-bool CFont::Create(const char* fontName, const int size)
+//---------------------------------------------------------------------------
+// Creates a new font face. Returns false if font does not exist
+//---------------------------------------------------------------------------
+bool CFont::Create(const char* file, int size)
 {
-	if (!fontName || ((size < 7) || (size > 128)))
-		return false;
+    if (!file || ((size < 7) || (size > 128)))
+        return false;
 
-	m_size = size;
+    fontHeight_ = size;
+    if (!ftFace_.Create(file))
+        return false;
 
-	m_pFT_Face = new ftLib::FTFace;
-
-	if (!m_pFT_Face->CreateFace(fontName))
-	{
-		delete m_pFT_Face;
-		m_pFT_Face = nullptr;
-		return false;
-	}
-
-	m_pFT_Face->SetPixelSize(m_size);
-	
-	int nch;
-	const char *name = util::ExtractFileName(fontName, nch);
-	strncpy(m_fontName, name, nch);
-	m_fontName[nch] = '\0';
-
-	nch = util::LenghtPath(fontName);
-	strncpy(m_fontPath, fontName, nch);
-	m_fontPath[nch] = '\0';
-
-	return true;
+    ftFace_.SetPixelSize(fontHeight_);
+    utils::ExtractFileName(file, fontName_);
+    //utils::ExtractFilePath(file, fontPath_);
+    return true;
 }
-
-/*---------------------------------------------------------------------------*/
-/* Adds glyphs to a font
-/*---------------------------------------------------------------------------*/
-bool CFont::AddCharacterRange(const int lowRange, const int upperRange)
+//---------------------------------------------------------------------------
+// Add glyphs to a font
+//---------------------------------------------------------------------------
+bool CFont::AddCharacterRange(int lower, int upper)
 {
-	if (!m_fontName[0] || m_bBuild || m_bIsAsci)
-		return false;
+    if (!fontName_[0] || bBuild_ || bAsciOnly_)
+        return false;
 
-	const int numChars = upperRange - lowRange;
-
-	if (numChars <= 0)
-		return false;
-
-	UCharacterRange range;
-	range.lowRange = lowRange;
-	range.upperRange = upperRange;
-	range.chOffset = m_iNumCharacter;
-
-	m_UChRanges.Append(range);
-
-	++m_iNumRange;
-
-	m_iNumCharacter += numChars;
-
-	return true;
+    assert((upper - lower) > 0);
+    chRanges_.Append(UChRange(lower, upper, numChars_));
+    numChars_ += upper - lower;
+    return true;
 }
 
 bool CFont::AllocateCacheData()
 {
-	if (m_iNumCharacter <= 0)
-		return false;
+    if (numChars_ <= 0)
+        return false;
 
-	if (!(m_pGlyphData = new GlyphDesc_t[m_iNumCharacter]))
-		return false;
+    pGlyphData_ = new GlyphDesc[numChars_];
+    if (!pGlyphData_)
+        return false;
 
-	return true;
+    return true;
 }
 
-void CFont::FreeCacheData(void)
+void CFont::FreeCacheData()
 {
-	if (m_pGlyphData)
-		delete[] m_pGlyphData;
+    if (pGlyphData_)
+        delete[] pGlyphData_;
 }
 
-bool CFont::Build( void )
+bool CFont::Build()
 {
-	if (!m_fontName[0] || m_bBuild)
-		return false;
+    if (!fontName_[0] || bBuild_)
+        return false;
 
-	if (m_iNumRange == 1)
-	{
-		// if we have only one range of characters, check it is ASCII range
-		if (!IsRange(0, 127)) {
-			return false;
-		}
-		pAssignCacheForChar = &CFont::AssignCacheForAsciCharSet;
-		m_bIsAsci = true;
-	} else {
-		pAssignCacheForChar = &CFont::AssignCacheForUnicodeCharSet;
-		m_bIsAsci = false;
-	}
+    if (chRanges_.Count() == 1)
+    {
+        // if we have only one range of characters, check it is ASCII range
+        if (!IsRange(0, 127))
+            return false;
 
-	if ( !AllocateCacheData() )
-	{
-		FreeCacheData();
-		return false;
-	}
+        pAssignCacheForChar = &CFont::AssignCacheForAsciCharSet;
+        bAsciOnly_ = true;
+    }
+    else
+    {
+        pAssignCacheForChar = &CFont::AssignCacheForUnicodeCharSet;
+        bAsciOnly_ = false;
+    }
+    if (!AllocateCacheData())
+    {
+        FreeCacheData();
+        return false;
+    }
+    short offsetX(0);
+    short heightLine(0);
+    short numLines(1);
+    const int numRanges = chRanges_.Count();
+    for (int i(0); i < numRanges; ++i)
+    {
+        const UChRange& r = chRanges_[i];
+        for (int c(r.lower_), i(0); c < r.upper_;  ++c, ++i)
+        {
+            GlyphDesc& g = pGlyphData_[r.chOffset_ + i];
 
-	short offsetX = 0, heightLine = 0, numLines = 1;
-
-	for (int nRange = 0; nRange < m_iNumRange; ++nRange)
-	{
-		const int lowRange = m_UChRanges[nRange].lowRange;
-		const int upperRange = m_UChRanges[nRange].upperRange;
-		const int charOffset = m_UChRanges[nRange].chOffset;
-
-		for (int chId = lowRange, i = 0; chId < upperRange;  ++chId, ++i)
-		{
-			GlyphDesc_t &g = m_pGlyphData[ charOffset + i ];
-
-			// gets data from the FreeType
-			if (!GetGlyphDesc(chId, g))
-			{
-				fprintf(stderr, "\nFailed loading char: %s\n", (wchar_t)chId);
-				continue;
-			}
-
-			if ((offsetX + g.bitmapWidth + 1) >= m_iTextureWidth)
-			{
-				offsetX = 0;
-				++numLines;
-			}
-
-			offsetX += g.bitmapWidth + 1;
-			heightLine = Max(heightLine, g.bitmapHeight);
-		}
-	}
-
-	m_iHeight = heightLine;
-	m_iNeedNumLines = numLines;
-
-	const int m_Ascender = m_pFT_Face->GlyphAscender();
-	const int m_Descender = m_pFT_Face->GlyphDescender();
-
-	m_iAbsoluteVal = m_Ascender + m_Descender;
-
-	return m_bBuild = true;
+            // gets data from the FreeType
+            if (!GetGlyph(c, g))
+            {
+                fprintf(stderr, "\nFailed loading char: %s\n", (wchar_t)c);
+                continue;
+            }
+            if ((offsetX + g.bitmapWidth + 1) >= Config::currTextFontWidth)
+            {
+                offsetX = 0;
+                ++numLines;
+            }
+            offsetX += g.bitmapWidth + 1;
+            heightLine = utils::Max(heightLine, g.bitmapHeight);
+        }
+    }
+    lineHeight_ = heightLine;
+    numNeedLines_ = numLines;
+    absoluteVal_ = ftFace_.GlyphAscender() + ftFace_.GlyphDescender();
+    return bBuild_ = true;
 }
 
-bool CFont::IsValid( void ) const
+bool CFont::IsFontEqual(const char* name, int fontSize) const
 {
-	if (m_fontName[0] && m_bBuild) {
-		return true;
-	}
+    static char buffer[256];
+    const int nch = utils::ExtractFileName(name, buffer);
+    if (!strncmp(buffer, fontName_, nch) && fontHeight_ == fontSize)
+        return true;
 
-	return false;
+    return false;
 }
 
-bool CFont::IsEqualTo(const char* fontName, int fontSize) const
+unsigned char const* CFont::GetGlyphBitmap(wchar_t ch) const
 {
-	int nch;
-	const char* name = util::ExtractFileName(fontName, nch);
+    if (!IsValid())
+        return nullptr;
 
-	if (!strncmp(name, m_fontName, nch) && m_size == fontSize) {
-		return true;
-	}
-
-	return false;
+    if (!ftFace_.LoadChar(ch))
+    {
+        fprintf(stderr, "\nFailed loading char: %s\n", ch);
+        return nullptr;
+    }
+    return ftFace_.GlyphBitmapBuffer();
 }
 
-unsigned char const* CFont::GetGlyphBitmap(wchar_t wch) const
+bool CFont::CalcTexCoords(int offsetX, int offsetY, int width, int height)
 {
-	if ( !IsValid() ) {
-		return nullptr;
-	}
+    if (!fontName_[0] || !bBuild_)
+        return false;
 
-	if (!m_pFT_Face->RenderGlyph(wch))
-	{
-		fprintf(stderr, "\nFailed loading char: %s\n", wch);
-		return nullptr;
-	}
+    const int numRanges = chRanges_.Count();
+    for (int i(0); i < numRanges; ++i)
+    {
+        const UChRange& rng = chRanges_[i];
+        for (int chId(rng.lower_), i(0); chId < rng.upper_; ++chId, ++i)
+        {
+            GlyphDesc& g = pGlyphData_[rng.chOffset_ + i];
+            if ((offsetX + g.bitmapWidth) >= width)
+            {
+                offsetY += lineHeight_;
+                offsetX = 0;
+            }
+            if ((offsetY + g.bitmapHeight) > height)
+                return false;
 
-	return m_pFT_Face->GlyphBitmap();
+            g.s = (float)offsetX / (float)width;
+            g.t = (float)offsetY / (float)height;
+            g.p = (float)g.bitmapWidth / (float)width;
+            g.q = (float)g.bitmapHeight / (float)height;
+            offsetX += g.bitmapWidth + 1;
+        }
+    }
+    return true;
 }
 
-bool CFont::CalculateTextureCoords(const int xoffset, const int yoffset, const int width, const int height)
+bool CFont::GlyphTexSubImage(int offsetX, int offsetY, int width, int height, unsigned char* pRawTex) const
 {
-	if (!m_fontName[0] || !m_bBuild)
-		return false;
+    if ((!fontName_[0]) || (!bBuild_) || (!pRawTex))
+        return false;
 
-	int iOffsetX = xoffset;
-	int iOffsetY = yoffset;
+    const int numRanges = chRanges_.Count();
+    for (int i(0); i < numRanges; ++i)
+    {
+        const UChRange& r = chRanges_[i];
+        for (int chId(r.lower_), i(0); chId < r.upper_; ++chId, ++i)
+        {
+            GlyphDesc& g = pGlyphData_[r.chOffset_ + i];
+            if ((offsetX + g.bitmapWidth) >= width)
+            {
+                offsetY += lineHeight_;
+                offsetX = 0;
+            }
+            if ((offsetY + g.bitmapHeight) > height)
+                return false;
 
-	int inc = 0;
-
-	for (int nRange = 0; nRange < m_iNumRange; ++nRange)
-	{
-		const int lowRange = m_UChRanges[nRange].lowRange;
-		const int upperRange = m_UChRanges[nRange].upperRange;
-		const int charOffset = m_UChRanges[nRange].chOffset;
-
-		for (int chId = lowRange, i = 0; chId < upperRange; ++chId, ++i)
-		{
-			GlyphDesc_t &g = m_pGlyphData[ charOffset + i ];
-			
-			if ((iOffsetX + g.bitmapWidth) >= width)
-			{
-				iOffsetY += m_iHeight;
-				iOffsetX = 0;
-			}
-
-			if ((iOffsetY + g.bitmapHeight) > height)
-				return false;
-
-			g.s = (float)iOffsetX / (float)width;
-			g.t = (float)iOffsetY / (float)height;
-			g.s2 = (float)g.bitmapWidth / (float)width;
-			g.t2 = (float)g.bitmapHeight / (float)height;
-
-			iOffsetX += g.bitmapWidth + 1;
-		}
-	}
-
-	return true;
+            const unsigned char *pBitMap = this->GetGlyphBitmap((wchar_t)chId);
+            for (int ih(0); ih < g.bitmapHeight; ++ih)
+            {
+                for (int iw(0); iw < g.bitmapWidth; ++iw)
+                {
+                    const int pxlIdx((iw + offsetX) + ((ih  + offsetY) * width));
+                    pRawTex[pxlIdx] = pBitMap[iw + ih * g.bitmapWidth];
+                }
+            }
+            offsetX += g.bitmapWidth + 1;
+        }
+    }
+    return true;
 }
 
-bool CFont::GlyphTexSubImage(const int xoffset, const int yoffset, int width, int height, unsigned char* pRawTex) const
+bool CFont::GetGlyph(wchar_t ch, GlyphDesc& desc) const
 {
-	if ((!m_fontName[0]) || (!m_bBuild) || (!pRawTex))
-		return false;
+    assert(ftFace_.IsValid());
+    if (!ftFace_.LoadChar(ch))
+        return false;
 
-	assert(m_pFT_Face);
-
-	int iOffsetX = xoffset;
-	int iOffsetY = yoffset;
-
-	for (int nRange = 0; nRange < m_iNumRange; ++nRange)
-	{
-		const int lowRange = m_UChRanges[nRange].lowRange;
-		const int upperRange = m_UChRanges[nRange].upperRange;
-		const int charOffset = m_UChRanges[nRange].chOffset;
-
-		for (int chId = lowRange, i = 0; chId < upperRange; ++chId, ++i)
-		{
-			GlyphDesc_t &g = m_pGlyphData[ charOffset + i ];
-
-			if ((iOffsetX + g.bitmapWidth) >= width)
-			{
-				iOffsetY += m_iHeight;
-				iOffsetX = 0;
-			}
-
-			if ((iOffsetY + g.bitmapHeight) > height)
-				return false;
-
-			const unsigned char *pBitMap = this->GetGlyphBitmap((wchar_t)chId);
-
-			for (int row = 0; row < g.bitmapHeight; ++row)
-			{
-				for (int pxl = 0; pxl < g.bitmapWidth; ++pxl)
-				{
-					int pxlIndex = (pxl + iOffsetX) + ((row  + iOffsetY) * width);
-
-					pRawTex[pxlIndex] = pBitMap[pxl + row * g.bitmapWidth];
-				}
-			}
-
-			iOffsetX += g.bitmapWidth + 1;
-		}
-	}
-
-	return true;
+    desc.advanceX = ftFace_.GlyphAdvanceX();
+    desc.advanceY = ftFace_.GlyphAdvanceY();
+    desc.bitmapWidth = ftFace_.GlyphBitmapWidth();
+    desc.bitmapHeight = ftFace_.GlyphBitmapHeight();
+    desc.bitmapLeft = ftFace_.GlyphBitmapLeft();
+    desc.bitmapTop = ftFace_.GlyphBitmapTop();
+    desc.ch = ch;
+    return true;
 }
 
-bool CFont::AssignCacheForUnicodeCharSet(const wchar_t wch)
+bool CFont::HasKerning()
 {
-	if ( (m_CurrentIndex = FindCharInCache( wch )) != -1) {
-		return true;
-	}
-
-	m_CurrentIndex = 0;
-
-	return false;
+    return ftFace_.HasKerning();
 }
 
-bool CFont::AssignCacheForAsciCharSet(const wchar_t wch)
+int CFont::GetKerningX(wchar_t ch_prev, wchar_t ch_next) const
 {
-	if ( (unsigned int)wch < 127 )
-	{
-		m_CurrentIndex = wch;
-		return true;
-	}
-
-	m_CurrentIndex = 0;
-
-	return false;
+    assert(ftFace_.IsValid());
+    return ftFace_.GetKerningX(ch_prev, ch_next);
 }
 
-int CFont::FindCharInCache(wchar_t wch) const
+int CFont::GetKerningY(wchar_t ch_prev, wchar_t ch_next) const
 {
-	for (int i = 0; i < m_iNumRange; ++i)
-	{
-		if ((wch >= m_UChRanges[i].lowRange) && (wch <= m_UChRanges[i].upperRange))
-		{
-			// returns the index in the cache
-			return m_UChRanges[i].chOffset + (wch - m_UChRanges[i].lowRange);
-		}
-	}
-	return -1;
+    assert(ftFace_.IsValid());
+    return ftFace_.GetKerningY(ch_prev, ch_next);
 }
 
-bool CFont::GetGlyphDesc(wchar_t wch, GlyphDesc_t &desc) const
+bool CFont::IsRange(const int lower, const int upper) const
 {
-	if (!m_pFT_Face || !m_pFT_Face->RenderGlyph(wch)) {
-		return false;
-	}
-
-	ftLib::FTFace &f = *m_pFT_Face;
-
-	desc.advanceX = f.GlyphAdvanceX();
-	desc.advanceY = f.GlyphAdvanceY();
-
-	desc.bitmapWidth = f.GlyphBitmapWidth();
-	desc.bitmapHeight = f.GlyphBitmapHeight();
-	desc.bitmapLeft = f.GlyphBitmapLeft();
-	desc.bitmapTop = f.GlyphBitmapTop();
-
-	desc.glyphID = wch;
-
-	return true;
+    for (int i(0); i < chRanges_.Count(); ++i)
+    {
+        if ((lower >= chRanges_[i].lower_) && 
+            (upper <= chRanges_[i].upper_))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
-GlyphDesc_t const * CFont::GetGlyphDesc(void) const
+bool CFont::IsCharInFont(wchar_t ch) const
 {
-	return &m_pGlyphData[m_CurrentIndex];
-}
+    if (FindCharInCache(ch) != -1)
+        return true;
 
-bool CFont::HasKerning(void)
-{
-	return m_pFT_Face->HasKerning();
-}
-
-int CFont::GetKerningX(wchar_t wch_prev, wchar_t wch_next) const
-{
-	if (!m_pFT_Face)
-		return 0;
-
-	return m_pFT_Face->GetKerningX(wch_prev, wch_next);
-}
-
-int CFont::GetKerningY(wchar_t wch_prev, wchar_t wch_next) const
-{
-	if (!m_pFT_Face)
-		return 0;
-
-	return m_pFT_Face->GetKerningY(wch_prev, wch_next);
-}
-
-struct FontInfo_s 
-{
-	char fontName[64];
-	int size;
-	int numRanges;
-	int absoluteValue;
-	int maxTextureWidth;
-};
-
-bool CFont::InitFromCache(const char* fileName)
-{
-	if ( m_fontName[0] )
-		return false;
-
-	FILE* pFile = fopen(fileName, "rb");
-
-	if ( !pFile )
-		return false;
-
-	FontInfo_s info;
-
-	fread(&info, 1, sizeof(FontInfo_s), pFile);
-
-	strcpy(m_fontName, info.fontName);
-
-	if (!SetFontTextureWidth(info.maxTextureWidth))
-	{
-		fclose(pFile);
-		return false;
-	}
-
-	m_iTextureWidth = info.maxTextureWidth;
-
-	int nch = util::LenghtPath(fileName);
-	strncpy(m_fontPath, fileName, nch);
-	m_fontPath[nch] = '\0';
-
-	m_size = info.size;
-
-	// if we have only one range
-	if (info.numRanges == 1)
-	{
-		UCharacterRange rng;
-		fread(&rng, 1, sizeof(UCharacterRange), pFile);
-
-		// If this range is not ASCII
-		if (rng.lowRange != 0 || rng.upperRange != 127)
-		{
-			// just close the file and return FAIL
-			fclose(pFile);
-			return false;
-		}
-
-		AddCharacterRange(0, 127);
-
-		pAssignCacheForChar = &CFont::AssignCacheForAsciCharSet;
-
-		m_bIsAsci = true;
-
-	} else {
-
-		for (int i = 0; i < info.numRanges; ++i)
-		{
-			UCharacterRange rng;
-			fread(&rng, 1, sizeof(UCharacterRange), pFile);
-
-			AddCharacterRange(rng.lowRange, rng.upperRange);
-		}
-
-		pAssignCacheForChar = &CFont::AssignCacheForUnicodeCharSet;
-	}
-
-	if (!AllocateCacheData())
-	{
-		FreeCacheData();
-		return false;
-	}
-
-	fread(m_pGlyphData, 1, sizeof(GlyphDesc_t) * m_iNumCharacter, pFile);
-
-	short offsetX = 0, heightLine = 0, numLines = 1;
-
-	for (int nRange = 0; nRange < m_iNumRange; ++nRange)
-	{
-		const int lowRange = m_UChRanges[nRange].lowRange;
-		const int upperRange = m_UChRanges[nRange].upperRange;
-		const int charOffset = m_UChRanges[nRange].chOffset;
-
-		for (int chId = lowRange, i = 0; chId < upperRange;  ++chId, ++i)
-		{
-			GlyphDesc_t &g = m_pGlyphData[charOffset + i];
-
-			if ((offsetX + g.bitmapWidth) >= m_iTextureWidth)
-			{
-				offsetX = 0;
-				++numLines;
-			}
-
-			offsetX += g.bitmapWidth + 1;
-			heightLine = Max(heightLine, g.bitmapHeight);
-		}
-	}
-
-	m_iHeight = heightLine;
-	m_iNeedNumLines = numLines;
-
-	m_iAbsoluteVal = info.absoluteValue;
-
-	return m_bBuild = true;
-}
-
-bool CFont::DumpCache(const char* path) const
-{
-	if ( !path 	|| !m_fontName[0] || !m_bBuild )
-		return false;
-
-	FontInfo_s info;
-	char buffer[512];
-
-	// copy the font information
-	strcpy(info.fontName, m_fontName);
-	info.size = m_size;
-	info.numRanges = m_iNumRange;
-	info.absoluteValue = m_iAbsoluteVal;
-	info.maxTextureWidth = m_iTextureWidth;
-
-	sprintf(buffer, "%s/%s_%d.cfnt", path, m_fontName, info.size);
-
-	FILE* pFile = fopen(buffer, "wb");
-
-	if ( !pFile )
-	{
-		fprintf(stderr, "\nError open file for write: %s", buffer);
-		return false;
-	}
-
-	fwrite(&info, 1, sizeof(FontInfo_s), pFile);
-
-	for (int nr = 0; nr < info.numRanges; ++nr)
-	{
-		const UCharacterRange &rng = m_UChRanges[nr];
-
-		fwrite(&rng, 1, sizeof(UCharacterRange), pFile);
-	}
-
-	fwrite(m_pGlyphData, 1, sizeof(GlyphDesc_t) * m_iNumCharacter, pFile);
-
-	fclose(pFile);
-
-	const int tH = m_iHeight * m_iNeedNumLines;
-	const int tW = cfg::FONT_TEXTURE_WIDTH;
-
-	const size_t size_tex = tW * tH;
-	unsigned char* pRawTexture = (uint8*)malloc(size_tex);
-
-	memset(pRawTexture, 0, sizeof(uint8) * size_tex);
-
-	GlyphTexSubImage(0, 0, tW, tH, pRawTexture);
-
-	sprintf(buffer, "%s/%s_%d.tga", path, m_fontName, m_size);
-
-	if( !util::SaveAsTGA(buffer, tW, tH, pRawTexture) )
-	{
-		free(pRawTexture);
-		return false;
-	}
-
-	free(pRawTexture);
-
-	return true;
-}
-
-bool CFont::IsRange(const int lowerRange, const int upperRange) const
-{
-	for (int i = 0; i < m_iNumRange; ++i)
-	{
-		if ((lowerRange >= m_UChRanges[i].lowRange) && 
-			(upperRange <= m_UChRanges[i].upperRange))
-			return true;
-	}
-	return false;
-}
-
-bool CFont::IsCharInFont(wchar_t wch) const
-{
-	if ( FindCharInCache(wch) != -1) {
-		return true;
-	}
-	return false;
+    return false;
 }

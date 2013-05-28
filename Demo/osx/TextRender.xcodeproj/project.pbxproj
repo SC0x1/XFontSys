@@ -9,13 +9,13 @@
 /* Begin PBXBuildFile section */
 		D82794C815D5A83900389FB6 /* Logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D82794C615D5A83900389FB6 /* Logger.cpp */; };
 		D843A65015D53C4E00225917 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D843A64F15D53C4E00225917 /* IOKit.framework */; };
+		D8A3489E17553DCB00638FF0 /* libxfontSys.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8A3489D17553DCB00638FF0 /* libxfontSys.a */; };
 		D8ADB37315C0885000239E31 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8ADB37015C0885000239E31 /* common.cpp */; };
 		D8ADB37415C0885000239E31 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8ADB37215C0885000239E31 /* main.cpp */; };
 		D8ADB37815C08B0800239E31 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8ADB37715C08B0800239E31 /* Cocoa.framework */; };
 		D8ADB37A15C08B1400239E31 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8ADB37915C08B1400239E31 /* OpenGL.framework */; };
 		D8ADB38215C08B9B00239E31 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8ADB38115C08B9B00239E31 /* libGLEW.a */; };
 		D8ADB38415C08BBD00239E31 /* libglfw.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8ADB38315C08BBD00239E31 /* libglfw.a */; };
-		D8ADB38615C08EAD00239E31 /* libFSGL3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8ADB38515C08EAD00239E31 /* libFSGL3.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +35,7 @@
 		D82794C715D5A83900389FB6 /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Logger.h; path = ../Logger.h; sourceTree = "<group>"; };
 		D843A64F15D53C4E00225917 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		D85DA09215C08542002BB325 /* TextRender */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TextRender; sourceTree = BUILT_PRODUCTS_DIR; };
+		D8A3489D17553DCB00638FF0 /* libxfontSys.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxfontSys.a; path = /Users/Vitaly/Desktop/XFontSys/compiler/XCode4/../../build/osx/libxfontSys.a; sourceTree = "<absolute>"; };
 		D8ADB37015C0885000239E31 /* common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = common.cpp; path = ../common.cpp; sourceTree = "<group>"; };
 		D8ADB37115C0885000239E31 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = ../common.h; sourceTree = "<group>"; };
 		D8ADB37215C0885000239E31 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
@@ -42,7 +43,6 @@
 		D8ADB37915C08B1400239E31 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		D8ADB38115C08B9B00239E31 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = ../../externals/glew/libUnix/libGLEW.a; sourceTree = "<group>"; };
 		D8ADB38315C08BBD00239E31 /* libglfw.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglfw.a; path = ../../externals/glfw/libUnix/libglfw.a; sourceTree = "<group>"; };
-		D8ADB38515C08EAD00239E31 /* libFSGL3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libFSGL3.a; path = ../../build/osx/libFSGL3.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,8 +50,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8A3489E17553DCB00638FF0 /* libxfontSys.a in Frameworks */,
 				D843A65015D53C4E00225917 /* IOKit.framework in Frameworks */,
-				D8ADB38615C08EAD00239E31 /* libFSGL3.a in Frameworks */,
 				D8ADB38415C08BBD00239E31 /* libglfw.a in Frameworks */,
 				D8ADB38215C08B9B00239E31 /* libGLEW.a in Frameworks */,
 				D8ADB37A15C08B1400239E31 /* OpenGL.framework in Frameworks */,
@@ -88,6 +88,7 @@
 		D85DA08715C08542002BB325 = {
 			isa = PBXGroup;
 			children = (
+				D8A3489D17553DCB00638FF0 /* libxfontSys.a */,
 				D85DA09315C08542002BB325 /* Products */,
 				D8AD1FAF15D5328400D103A2 /* Lib */,
 				D834BC0F160E060A00B02367 /* Public */,
@@ -107,7 +108,6 @@
 			isa = PBXGroup;
 			children = (
 				D834BC12160E071700B02367 /* Externals */,
-				D8ADB38515C08EAD00239E31 /* libFSGL3.a */,
 			);
 			name = Lib;
 			sourceTree = "<group>";

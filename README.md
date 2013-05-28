@@ -1,6 +1,8 @@
-﻿FSGL3 is a cross-platform C++ text rendering library for OpenGL 3.2 and above with Unicode support.
+﻿XFS is a library of font management (FreeType2 based),
+which allows you to flexibly combine different fonts to display text.
 
-Note: The library does not use the C runtime library, it does not matter which version (single-threaded, multi-threaded or multi-threaded DLL) it is linked.
+XFS does not use the C runtime library, so it does not matter which version
+(single-threaded, multi-threaded or multi-threaded DLL) it is linked with.
 
 Depends
 ------
@@ -12,93 +14,75 @@ http://freetype.org/
 
 ####1. Initialize and configure
 
-C++:
-
 ```c++
 // Initialize
-FontSystem().Initialize();
+xfs::Initialize();
 
 // Pass the window size
-FontSystem().SetScreenSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+xfs::SetScreenSize(WIDTH, HEIGHT);
 
 // Create a font from a TrueType file, set it size and obtain its handle
-HFont hFreeSans_14 = FontSystem().Create_Font( "YourPath/FreeSans.ttf", 14 );
+HFont hFreeSans_14 = xfs::Create_Font("YourPath/FreeSans.ttf", 14);
 
 // If something went wrong
-assert( hFreeSans_14 != INVALID_FONT );
+assert(hFreeSans_14 != INVALID_FONT);
 
 // Adds the character ranges for fonts, using the obtained handle
-FontSystem().AddGlyphSetToFont( hFreeSans_14, BASIC_LATIN );
-FontSystem().AddGlyphSetToFont( hFreeSans_14, CYRILLIC );
+xfs::AddGlyphSetToFont(hFreeSans_14, BASIC_LATIN);
+xfs::AddGlyphSetToFont(hFreeSans_14, CYRILLIC);
 
 // or like this
-FontSystem().AddGlyphSetToFont( hFreeSans_14, 31, 127 );
-FontSystem().AddGlyphSetToFont( hFreeSans_14, 1024, 1104 );
+xfs::AddGlyphSetToFont(hFreeSans_14, 31, 127);
+xfs::AddGlyphSetToFont(hFreeSans_14, 1024, 1104);
 
 // Now simply call
-FontSystem().BuildAllFonts();
+xfs::BuildAllFonts();
 ```
 
 The resulting texture for these ranges:
 
 ![alt text](https://dl.dropbox.com/u/45284518/ShamanCode/TextRederSystem/FreeSans14.png "The font texture atlas")
 
-You can also save a cache font (metrics glyphs + texture) on a disk (using font handle),
-as shown below:
-
-```c++
-// Just dump font cache to the disk
-FontSystem().DumpFontCache( hFreeSans_14, "./YourPath/" );
-
-// For load it
-hFreeSans_14 = FontSystem().LoadFontCache( "./YourPath/FreeSans_14.cfnt" );
-
-// After the load, you must build a font cache
-FontSystem().BuildCache();
-```
-
-####2. Rendering text
-
-C++:
+####2. Text Rendering
 
 ```c++
 // Unicode text string
-const wchar_t WText[] = L"Hello World\nили Здравствуй мир! :)";
+const wchar_t wText[] = L"Hello World\nили Здравствуй мир! :)";
 
 // Bind the font handle
-FontSystem().BindFont( hFreeSans_14 );
+xfs::BindFont(hFreeSans_14);
 
 // Sets position for the text in screen space
-FontSystem().SetTextPos(100, 25);
+xfs::SetTextPos(100, 25);
 
 // Sets text color
-FontSystem().SetTextColor(255, 0, 200);
+xfs::SetTextColor(255, 0, 200);
 
 // Pass a string of text and obtain its id
-int id_SText = FontSystem().SetStaticWText(WText, wcslen(WText));
+int staticTextID = xfs::SetStaticWText(wText, wcslen(wText));
 
 // then at runtime
-while( run )
+while(true)
 {
 	// Bind the shader program, clear all state etc.
-	FontSystem().BeginDraw();
+	xfs::Draw2D_Begin();
 
 	// Draw a static text
-	FontSystem().PrintStaticText( id_SText );
+	xfs::PrintStaticText(staticTextID);
 
 	// Bind a next font handle
-	FontSystem().BindFont( hVerdanaB_11 );
+	xfs::BindFont(hVerdanaB_11);
 
-	FontSystem().SetTextColor(0, 0, 255);
-	FontSystem().SetTextPos(100, 10);
+	xfs::SetTextColor(0, 0, 255);
+	xfs::SetTextPos(100, 10);
 
 	std::string time;
 	NowTime(time);
 
-	// Draw a dynamic text
-	FontSystem().PrintText( time.c_str(), time.length() );
+	// Draw a dynamic text string
+	xfs::PrintText(time.c_str(), time.length());
 
-	FontSystem().EndDraw();
+	xfs::Draw2D_End();
 }
 ```
 
@@ -110,18 +94,17 @@ For any text you can get its bounding box (BBox).
 
 ```c++
 // for example, load any text from a file
-std::wstring wstr = ReadWholeFileIntoString( "SomeFile.txt" );
+std::wstring wstr = ReadWholeFileIntoString("SomeFile.txt");
 
-// pass it and obtain its index (id)
-int idText = FontSystem.SetStaticWText( wstr.c_str(), wstr.lenght() );
+// pass it and obtain its index (ID)
+int textID = FontSystem.SetStaticWText(wstr.c_str(), wstr.lenght());
 
 // obtain its bounding box
 BBox_t bbox;
-FontSystem().GetWTextBBox( wstr.c_str(), wstr.lenght(), bbox );
+xfs::GetWTextBBox(wstr.c_str(), wstr.lenght(), bbox);
 
-// simply draws the entire contents of the file and its bbox
-FontSystem().DrawOutLinedRect( bbox, 255, 0, 255 );
-FontSystem().PrintStaticText( idText );
+// draws the entire contents of the file
+xfs::PrintStaticText(textID);
 ```
 
 Result:
@@ -131,4 +114,3 @@ Result:
 ##License
 
 [GNU Library or Lesser General Public License (LGPL)](http://www.gnu.org/licenses/lgpl.html "License")
-

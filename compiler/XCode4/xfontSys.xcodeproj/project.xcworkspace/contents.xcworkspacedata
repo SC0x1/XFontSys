@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "self:XFS.xcodeproj"
+      name = "XFontSys_Source">
+      <FileRef
+         location = "group:">
+      </FileRef>
+      <FileRef
+         location = "group:../../../Demo/osx/TextRender.xcodeproj">
+      </FileRef>
+   </Group>
+</Workspace>

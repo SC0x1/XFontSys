@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="public">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Shaders\ogl_3">
+      <UniqueIdentifier>{42ca7548-4012-4301-9e69-250a30a8f7be}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\source\shaders\shaders_gl3.inl">
+      <Filter>Shaders\ogl_3</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\FontManager.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Font.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\public\utils.cpp">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\ft2Lib.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\shaders\shader_util.cpp">
+      <Filter>Shaders\ogl_3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\xfontSys.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\xfontConf.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\shaders\xsurfRender_ogl3.cpp">
+      <Filter>Shaders\ogl_3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\shaders\ogl.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\source\FontManager.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\Font.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\public\utlvector.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\public\utils.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\public\singleton.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\public\color.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\ft2Lib.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\shaders\shader_util.h">
+      <Filter>Shaders\ogl_3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\shaders\dvbuffer.h">
+      <Filter>Shaders\ogl_3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\xfontSys.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\xfontTypes.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\xfontConf.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\xsurfRender.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\shaders\xsurfRender_ogl3.h">
+      <Filter>Shaders\ogl_3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\shaders\ogl.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

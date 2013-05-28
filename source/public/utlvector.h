@@ -1,324 +1,306 @@
-﻿#pragma once
+﻿#ifndef utlvector_h__
+#define utlvector_h__
 
-#include <assert.h>
+#pragma once
+
 #define BASE_SIZE 16
 #define INLINE __forceinline
 
-#define SAFE_DELETE(x) if (x) delete x; x = nullptr;
-#define SAFE_DELETE_ARRAY(x) if (x) delete[] x; x = nullptr;
+#define SAFE_DELETE(x) if (x) { delete x; x = nullptr; }
+#define SAFE_DELETE_ARRAY(x) if (x) { delete[] x; x = nullptr; }
 
 template<typename T>
-class CUtlVector {
+class CUtlVector
+{
 public:
 
-	CUtlVector( int m_growth = BASE_SIZE );
-	CUtlVector( const CUtlVector<T> &other );
-	~CUtlVector( void );
+    explicit CUtlVector(int m_growth = BASE_SIZE);
+    CUtlVector(const CUtlVector<T>& other);
+    ~CUtlVector();
 
-	void		Clear( void );                      // удаляет все данные из вектора
-	int			Num( void ) const;                  // возвращает количество элементов в векторе
-	void		SetGrowth( int growth );
-	int			GetGrowth( void );
+    void Clear();
+    int  Count() const;
+    void SetGrowth(int growth);
+    int  GetGrowth();
 
-	T&			AddToTail( int *id_el = nullptr );  // возвращает ссылку на новый элемент в конце вектора id_el = m_NumElements 
-	int			Append( const T& obj );             // добав элемента
-	int			FindIndex( const T& obj ) const;    // возвращает индекс данного элемента
-	bool		RemoveIndex( int index );           // удаляет элемент по индексу
-	bool		Remove( const T & obj );            // удалить элемент
+    int  AddToTail(void);
+    int  Append(const T& obj);
+    int  FindIdx(const T& obj) const;
+    bool RemoveIdx(int index);
+    bool Remove(const T& obj);
 
-	CUtlVector<T>& operator=( const CUtlVector<T> & other );
-	const T&	operator[]( int index ) const;
-	T&			operator[]( int index );
+    T&   Last() const;
+    T&   First() const;
 
-	void		Resize( int newsize );
-	void		Resize( int newsize, int growth );
+    CUtlVector<T>& operator=(const CUtlVector<T>& other);
+    const T& operator[](int index) const;
+    T&   operator[](int index);
 
-	void		DeleteContents( bool clear );
+    void Resize(int newsize);
+    void Resize(int newsize, int growth);
+
+    void DeleteContents(bool clear);
 
 private:
-
-	int		m_Num;
-	int		m_size;
-	int		m_growth;
-	T*		m_pData;
+    int numElements_;
+    int allocSize_;
+    int growthSize_;
+    T* pData_;
 };
-
 template<typename T>
 int CUtlVector<T>::GetGrowth(void)
 {
-	return m_growth;
+    return growthSize_;
+}
+template<typename T>
+void CUtlVector<T>::SetGrowth(int growth)
+{
+    assert(growth > 0);
+    int newsize(0);
+    growthSize_ = growth;
+    if (pData_)
+    {
+        // изменим размер до заданной велечины
+        newsize = numElements_ + growth - 1;
+        newsize -= newsize % growth;
+
+        if (newsize != allocSize_)
+        {
+            Resize(newsize);
+        }
+    }
+}
+template<typename T>
+INLINE CUtlVector<T>::CUtlVector(int growth)
+{
+    assert(growth > 0);
+    pData_ = nullptr;
+    growthSize_ = growth;
+    numElements_ = 0;
+    Clear();
 }
 
 template<typename T>
-void CUtlVector<T>::SetGrowth( int growth )
+INLINE CUtlVector<T>::CUtlVector(const CUtlVector<T>& other)
 {
-	assert( growth > 0 );
-
-	int newsize;
-
-	m_growth = growth;
-
-	if (m_pData)
-	{
-		// изменим размер до заданной велечины
-		newsize = m_Num + growth - 1;
-		newsize -= newsize % growth;
-		if (newsize != m_size)
-		{
-			Resize(newsize);
-		}
-	}
-}
-
-template< typename T >
-INLINE CUtlVector<T>::CUtlVector( int growth )
-{
-	assert( growth > 0 );
-
-	m_pData = nullptr;
-	m_growth = growth;
-
-	m_Num = 0;
-
-	Clear();
+    pData_ = nullptr;
+    numElements_ = 0;
+    *this = other;
 }
 
 template<typename T>
-INLINE CUtlVector<T>::CUtlVector( const CUtlVector<T> &other )
+INLINE CUtlVector<T>::~CUtlVector()
 {
-	m_pData = nullptr;
-
-	m_Num = 0;
-
-	*this = other;
+    Clear();
 }
 
 template<typename T>
-INLINE CUtlVector<T>::~CUtlVector( void )
+INLINE int CUtlVector<T>::FindIdx(const T& obj) const
 {
-	Clear();
+    for (int i = 0; i < numElements_; ++i)
+    {
+        if (pData_[i] == obj)
+            return i;
+    }
+    return -1;
 }
 
 template<typename T>
-INLINE int CUtlVector<T>::FindIndex( const T& obj ) const
+INLINE bool CUtlVector<T>::Remove(const T& obj)
 {
-	for (int i = 0; i < m_Num; ++i)
-	{
-		if (m_pData[i] == obj) {
-			return i;
-		}
-	}
-	return -1;
+    const int id(FindIdx(obj));
+    if (id >= 0)
+        return RemoveIdx(id);
+
+    return false;
 }
 
 template<typename T>
-INLINE bool CUtlVector<T>::Remove( const T& obj )
+INLINE bool CUtlVector<T>::RemoveIdx(int index)
 {
-	int id = FindIndex(obj);
-	if (id >= 0) {
-		return RemoveIndex(id);
-	}
+    assert(pData_ != nullptr);
+    assert(index >= 0);
+    assert(index < numElements_);
+    if ((index < 0 ) || ( index >= numElements_))
+        return false;
 
-	return false;
+    --numElements_;
+    for (int i = index; i < numElements_; ++i)
+        pData_[i] = pData_[i + 1];
+
+    return true;
 }
 
 template<typename T>
-INLINE bool CUtlVector<T>::RemoveIndex( int index )
+INLINE int CUtlVector<T>::Count() const
 {
-	assert( m_pData != nullptr );
-	assert( index >= 0 );
-	assert( index < m_Num );
-
-	if ( (index < 0 ) || ( index >= m_Num) ) {
-		return false;
-	}
-	--m_Num;
-
-	for (int i = index; i < m_Num; ++i)	{
-		m_pData[i] = m_pData[ i + 1 ];
-	}
-
-	return true;
+    return numElements_;
 }
 
 template<typename T>
-INLINE int CUtlVector<T>::Num( void ) const
+INLINE T& CUtlVector<T>::operator[](int index)
 {
-	return m_Num;
+    assert(index >= 0);
+    assert(index <= numElements_);
+    return pData_[index];
 }
 
 template<typename T>
-INLINE T& CUtlVector<T>::operator[]( int index )
+INLINE const T& CUtlVector<T>::operator[](int index) const
 {
-	assert( index >= 0 );
-	assert( index <= m_Num );
-
-	return m_pData[ index ];
+    assert(index >= 0);
+    assert(index < numElements_);
+    return pData_[index];
 }
 
 template<typename T>
-INLINE const T& CUtlVector<T>::operator[]( int index ) const
+INLINE CUtlVector<T>& CUtlVector<T>::operator=(const CUtlVector<T>& other)
 {
-	assert( index >= 0 );
-	assert( index < m_Num );
-
-	return m_pData[ index ];
+    Clear();
+    numElements_ = other.m_NumElements;
+    allocSize_ = other.m_size;
+    growthSize_ = other.m_growth;
+    if (allocSize_)
+    {
+        pData_ = new T[allocSize_];
+        for (int i = 0; i < numElements_; ++i)
+            pData_[i] = other.m_pData[i];
+    }
+    return *this;
 }
 
 template<typename T>
-INLINE CUtlVector<T>& CUtlVector<T>::operator=( const CUtlVector<T> & other )
+INLINE void CUtlVector<T>::Resize(int newsize)
 {
-	Clear();
+    T* temp;
+    assert(newsize >= 0);
 
-	m_Num = other.m_NumElements;
-	m_size = other.m_size;
-	m_growth = other.m_growth;
+    if (newsize <= 0)
+    {
+        Clear();
+        return;
+    }
 
-	if ( m_size )
-	{
-		m_pData = new T[ m_size ];
-		for (int i = 0; i < m_Num; ++i)	{
-			m_pData[ i ] = other.m_pData[ i ];
-		}
-	}
+    if (newsize == allocSize_)
+        return;
 
-	return *this;
-}
+    temp = pData_;
+    allocSize_ = newsize;
+    if (allocSize_ < numElements_)
+        numElements_ = allocSize_;
 
-template<typename T>
-INLINE void CUtlVector<T>::Resize( int newsize )
-{
-	T* temp;
-	assert( newsize >= 0 );
+    pData_ = new T[allocSize_];
+    for (int i(0); i < numElements_; ++i)
+        pData_[i] = temp[i];
 
-	// очищаем вектор если нет данных
-	if ( newsize <= 0 )
-	{
-		Clear();
-		return;
-	}
-
-	if ( newsize == m_size ) {
-		// если размеры совпадают, просто выходим
-		return;
-	}
-
-	temp = m_pData;
-	m_size = newsize;
-
-	if ( m_size < m_Num ) {
-		m_Num = m_size;
-	}
-
-	// копируем старый вектор в новый
-	m_pData = new T[ m_size ];
-
-	for (int i = 0; i < m_Num; ++i) {
-		m_pData[ i ] = temp[ i ];
-	}
-
-	// удаляем данные старого вектора
-	if ( temp )	{
-		delete[] temp;
-	}
+    if (temp)
+        delete[] temp;
 }
 
 template<typename T>
 void CUtlVector<T>::Resize(int newsize, int growth)
 {
-	assert( newsize >= 0);
-	assert( growth > 0);
+    assert(newsize >= 0);
+    assert(growth > 0);
 
-	m_growth = growth;
+    growthSize_ = growth;
 
-	if ( newsize <= 0 )
-	{
-		Clear();
-		return;
-	}
+    if (newsize <= 0)
+    {
+        Clear();
+        return;
+    }
 
-	T	*temp = m_pData;
-	m_size = newsize;
+    T* temp = pData_;
+    allocSize_ = newsize;
 
-	if ( m_size < m_Num )
-	{
-		m_Num = m_size;
-	}
+    if (allocSize_ < numElements_)
+    {
+        numElements_ = allocSize_;
+    }
 
-	m_pData = new T[ m_size ];
-	for (int i = 0; i < m_Num; ++i)
-	{
-		m_pData[i] = temp[i];
-	}
+    pData_ = new T[allocSize_];
+    for (int i = 0; i < numElements_; ++i)
+    {
+        pData_[i] = temp[i];
+    }
 
-	if ( temp )
-		delete[] temp;
+    if (temp)
+        delete[] temp;
 }
 
 template<typename T>
-INLINE void CUtlVector<T>::DeleteContents( bool clear )
+INLINE void CUtlVector<T>::DeleteContents(bool clear)
 {
-	for (int i = 0; i < m_Num; ++i) {
-		SAFE_DELETE(m_pData[i]);
-	}
+    for (int i = 0; i < numElements_; ++i)
+        SAFE_DELETE(pData_[i]);
 
-	if ( clear ) {
-		Clear();
-	} else {
-		memset( m_pData, 0, m_size * sizeof( T ) );
-	}
+    if (clear)
+    {
+        this->Clear();
+    }
+    else
+    {
+        memset(pData_, 0, allocSize_ * sizeof(T));
+    }
 }
 
 template<typename T>
-T& CUtlVector<T>::AddToTail(int *id_el /*= nullptr */)
+int CUtlVector<T>::AddToTail()
 {
-	if ( !m_pData ) {
-		Resize( m_growth );
-	}
-
-	if ( m_Num == m_size ) {
-		Resize( m_size + m_growth );
-	}
-
-	++m_Num;
-
-	if (id_el) {
-		*id_el = m_Num;
-	}
-	
-	return m_pData[ m_Num ];
+    if (!pData_)
+    {
+        Resize(growthSize_);
+    }
+    if (numElements_ == allocSize_)
+    {
+        Resize(allocSize_ + growthSize_);
+    }
+    ++numElements_;
 }
 
 template<typename T>
-INLINE int CUtlVector<T>::Append( const T& obj )
+INLINE int CUtlVector<T>::Append(const T& obj)
 {
-	if ( !m_pData) {
-		Resize( m_growth );
-	}
+    if (!pData_)
+        Resize(growthSize_);
 
-	if ( m_Num == m_size )
-	{
-		int newsize;
+    if (numElements_ == allocSize_)
+    {
+        if (growthSize_ == 0)
+            growthSize_ = 16;
 
-		if (m_growth == 0 )
-			m_growth = 16;
-
-		newsize = m_size + m_growth;
-		Resize( newsize - newsize % m_growth );
-	}
-
-	m_pData[ m_Num ] = obj;
-	++m_Num;
-
-	return m_Num - 1;
+        int newsize = allocSize_ + growthSize_;
+        Resize(newsize - newsize % growthSize_);
+    }
+    pData_[numElements_] = obj;
+    ++numElements_;
+    return numElements_ - 1;
 }
 
 template<typename T>
-INLINE void CUtlVector<T>::Clear( void )
+INLINE void CUtlVector<T>::Clear()
 {
-	if ( m_pData ) {
-		delete[] m_pData;
-	}
-	m_pData = nullptr;
-	m_Num = m_size = 0;
+    if (pData_)
+        delete[] pData_;
+
+    pData_ = nullptr;
+    numElements_ = allocSize_ = 0;
 }
+
+template<typename T>
+INLINE T& CUtlVector<T>::Last() const
+{
+    assert(numElements_ > 0);
+    return pData_[numElements_ - 1];
+}
+
+template<typename T>
+INLINE T& CUtlVector<T>::First() const
+{
+    assert(numElements_ > 0);
+    assert(pData_[0]);
+    return pData_[0];
+}
+
+#endif // utlvector_h__

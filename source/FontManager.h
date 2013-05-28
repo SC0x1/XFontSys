@@ -1,66 +1,58 @@
-﻿/****************************************************************************/
-/*	Copyright (c) 2012 Vitaly Lyaschenko < scxv86@gmail.com >
-/*
-/*	Purpose: font manager
-/*
-/****************************************************************************/
+﻿// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
+// Purpose: Functional for creation and manipulation of fonts
+//
+#ifndef FontManager_h__
+#define FontManager_h__
 
 #pragma once
 
 #include "public/utlvector.h"
-#include "FontSystem.h"
+#include "public/singleton.h"
+#include "xfontTypes.h"
 
-// Forward declarations
-class CFont;
-struct GlyphDesc_t;
-struct CaheItem_t;
-
-class FontManager
+//===========================================================================
+// CFontManager
+//===========================================================================
+class CFontManager : public Singleton<CFontManager>
 {
+    friend class Singleton<CFontManager>;
 public:
-	FontManager();
-	~FontManager();
+    CFontManager(void);
+    ~CFontManager();
 
-	HFont Create_Font(const char* fontName, int size);
+    xfs::HFont Create_Font(const char* fontName, int size);
+    bool AddGlyphSetToFont(xfs::HFont hdl, int lower, int upper);
+    bool BuildFonts(void);
+    void ReleaseAllFonts(void);
 
-	bool AddGlyphSetToFont(HFont handle, const int lowRange, const int upperRange);
-	bool BuildAllFonts( void );
+    int GetHeightTextureForAllFont(void) const;
+    bool MakeFontTextureForAllFont(int texWidth, int texHeight, unsigned char** ppTex) const;
 
-	bool BuildCacheFonts( void );
+    bool GetGlyph(xfs::HFont hdl, int wch, xfs::GlyphDesc& desc) const;
+    const xfs::GlyphDesc* GetGlyphFromCache(xfs::HFont hdl, int ch) const;
 
-	void ClearAllFonts( void );
+    int GetFontHeight(xfs::HFont hdl) const;
+    bool HasKerning(xfs::HFont hdl) const;
 
-	bool GetGlyphDesc(HFont handle, int wch, GlyphDesc_t &desc) const;
+    bool IsCharInFont(xfs::HFont hdl, wchar_t ch) const;
+    CFont* GetFontByHandle(xfs::HFont hdl) const;
 
-	bool AssignCacheForChar(HFont handle, int wch);
-
-	GlyphDesc_t const *GetGlyphDescFromCache(HFont handle, int wch) const;
-
-	int GetFontHeight(HFont handle) const;
-	
-	bool HasKerning(HFont handle) const;
-
-	bool DumpFontCache(HFont handle, const char* path) const;
-	HFont LoadFontCache(const char* filename);
-
-	// TODO: modify /~! out into a separate class CFontTextureCache
-	uint32 GetTextureID( void )
-	{
-		return m_texID;
-	}
-
-	bool IsCharInFont(HFont handle, wchar_t wch) const;
-	CFont*  GetFontByID(HFont handle) const;
+    int NumFonts(void) const;
 
 private:
-
-	CUtlVector<CFont*> m_Fonts;
-	int m_Numfonts;
-
-	uint32 m_texID;
-
-	bool m_bIsBuildAllFonts;
-
+    CUtlVector<CFont*> fonts_;
+    bool bIsBuildFonts_;
 };
 
-extern FontManager& g_pFontManager;
+inline void CFontManager::ReleaseAllFonts(void)
+{
+    fonts_.DeleteContents(true);
+    bIsBuildFonts_ = false;
+}
+
+inline int CFontManager::NumFonts(void) const
+{
+    return fonts_.Count();
+}
+
+#endif // FontManager_h__

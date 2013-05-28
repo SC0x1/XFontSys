@@ -1,5 +1,12 @@
 # Auto detect text files and perform LF normalization
-* text=auto
+
+*.pbxproj -crlf
+*.xcscheme -crlf
+*.plist -crlf
+*.xcbkptlist -crlf
+*.xcworkspacedata -crlf
+*.xcuserstate -crlf
+*.xcsettings -crlf
 
 # Custom for Visual Studio
 *.cs     diff=csharp
