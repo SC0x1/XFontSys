@@ -66,14 +66,15 @@ inline bool Validate_Program(GLuint program)
 // Output : If successful creation and compilation  - return shader ID,
 //          otherwise will be returned 0;
 //---------------------------------------------------------------------------
-inline GLuint Create_Shader(GLenum type, const GLchar* pSource)
+inline GLuint Create_Shader(GLenum type, const GLchar* source)
 {
-    ASSERT(pSource);
+    ASSERT(source);
     GLuint shaderID = glCreateShader(type);
     if (shaderID == GL_FALSE)
         return 0;
-    const GLint lenghtSource = strlen(pSource);
-    glShaderSource(shaderID, 1, (const GLchar**)&pSource, &lenghtSource);
+
+    const GLint lenghtSource = strlen(source);
+    glShaderSource(shaderID, 1, (const GLchar**)&source, &lenghtSource);
     glCompileShader(shaderID);
 
     if (!Check_Shader(shaderID, GL_COMPILE_STATUS))
@@ -104,9 +105,9 @@ inline bool Destroy_Shader(GLuint shaderID)
 inline GLuint Create_Program(GLuint vertShaderID, GLuint fragShaderID)
 {
     GLuint program = glCreateProgram();
-    if (program == GL_FALSE) {
+    if (program == GL_FALSE)
         return 0;
-    }
+
     glAttachShader(program, vertShaderID);
     glAttachShader(program, fragShaderID);
     glLinkProgram(program);
@@ -123,9 +124,9 @@ inline GLuint Create_Program(GLuint vertShaderID, GLuint fragShaderID)
 inline GLuint Create_Program(GLuint vertShaderID, GLuint geomShaderID, GLuint fragShaderID)
 {
     GLuint program = glCreateProgram();
-    if (program == GL_FALSE) {
+    if (program == GL_FALSE)
         return 0;
-    }
+
     glAttachShader(program, vertShaderID);
     glAttachShader(program, geomShaderID);
     glAttachShader(program, fragShaderID);
@@ -136,7 +137,8 @@ inline GLuint Create_Program(GLuint vertShaderID, GLuint geomShaderID, GLuint fr
         glDetachShader(program, vertShaderID);
         glDetachShader(program, geomShaderID);
         glDetachShader(program, fragShaderID);
-        glDeleteProgram( program );
+
+        glDeleteProgram(program);
         program = 0;
     }
     return program;
@@ -152,9 +154,13 @@ inline bool Destroy_Program(GLuint program)
     return false;
 }
 
-CShaderOGL::CShaderOGL()
-    : vertexID_(0), fragmentID_(0), geometryID_(0),
-      programID_(0), bIsUsable_(false) {}
+CShaderOGL::CShaderOGL(void)
+    : vertexID_(0),
+      fragmentID_(0),
+      geometryID_(0),
+      programID_(0),
+      bIsUsable_(false) {}
+
 bool CShaderOGL::s_bMatrixTransp = true;
 
 CShaderOGL::~CShaderOGL()
@@ -171,9 +177,9 @@ bool CShaderOGL::BuildProgram(const GLchar* vertex, const GLchar* fragment)
     ASSERT((programID_ == 0) && !bIsUsable_);
 
     vertexID_ = Create_Shader(GL_VERTEX_SHADER, vertex);
-    if (vertexID_ == 0) {
+    if (vertexID_ == 0)
         return false;
-    }
+
     fragmentID_ = Create_Shader(GL_FRAGMENT_SHADER, fragment);
     if (fragmentID_ == 0)
     {
@@ -196,9 +202,9 @@ bool CShaderOGL::BuildProgram(const GLchar* vertex, const GLchar* geometry, cons
     ASSERT((programID_ == 0) && !bIsUsable_);
 
     vertexID_ = Create_Shader(GL_VERTEX_SHADER, vertex);
-    if (vertexID_ == 0) {
+    if (vertexID_ == 0)
         return false;
-    }
+
     geometryID_ = Create_Shader(GL_GEOMETRY_SHADER, geometry);
     if (geometryID_ == 0)
     {
@@ -220,12 +226,12 @@ bool CShaderOGL::BuildProgram(const GLchar* vertex, const GLchar* geometry, cons
     return bIsUsable_ = true;
 }
 
-bool CShaderOGL::ValidateProgram()
+bool CShaderOGL::ValidateProgram(void)
 {
     return Validate_Program(programID_);
 }
 
-void CShaderOGL::DestroyProgram()
+void CShaderOGL::DestroyProgram(void)
 {
     if (programID_ > 0 )
     {
@@ -237,23 +243,19 @@ void CShaderOGL::DestroyProgram()
     }
 }
 
-void CShaderOGL::DestroyCompiledShaders()
+void CShaderOGL::DestroyCompiledShaders(void)
 {
     if (vertexID_ > 0 )
-    {
         if (Destroy_Shader(vertexID_))
             vertexID_ = 0;
-    }
+
     if (geometryID_ > 0 )
-    {
         if (Destroy_Shader(geometryID_))
             geometryID_ = 0;
-    }
+
     if (fragmentID_ > 0 )
-    {
         if (Destroy_Shader(fragmentID_))
             fragmentID_ = 0;
-    }
 }
 
 GLint CShaderOGL::Set_IntegerNv(const GLchar* unifName, const GLint* value, GLint count) const
@@ -316,9 +318,9 @@ GLint CShaderOGL::Set_Matrix2fv(const GLchar* unifName, const GLfloat* value, GL
 {
     ASSERT(unifName && value);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniformMatrix2fv(location, count, s_bMatrixTransp, value);
-    }
+
     return location;
 }
 
@@ -326,9 +328,9 @@ GLint CShaderOGL::Set_Matrix3fv(const GLchar* unifName, const GLfloat* value, GL
 {
     ASSERT(unifName && value);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniformMatrix3fv(location, count, s_bMatrixTransp, value);
-    }
+
     return location;
 }
 
@@ -336,9 +338,9 @@ GLint CShaderOGL::Set_Matrix4fv(const GLchar* unifName, const GLfloat* value, GL
 {
     ASSERT(unifName && value);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniformMatrix4fv(location, count, s_bMatrixTransp, value);
-    }
+
     return location;
 }
 
@@ -346,9 +348,10 @@ GLint CShaderOGL::Set_Integer1(const GLchar* unifName, GLint v0) const
 {
     ASSERT(unifName);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+
+    if (location != INVALID_LOCATION)
         glUniform1i(location, v0);
-    }
+
     return location;
 }
 
@@ -356,9 +359,10 @@ GLint CShaderOGL::Set_Integer2v(const GLchar* unifName, const GLint* value, GLin
 {
     ASSERT(unifName && value);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+
+    if (location != INVALID_LOCATION)
          glUniform2iv(location, count, value);
-    }
+
     return location;
 }
 
@@ -366,9 +370,9 @@ GLint CShaderOGL::Set_Integer2(const GLchar* unifName, GLint v0, GLint v1) const
 {
     ASSERT(unifName);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniform2i(location, v0, v1);
-    }
+
     return location;
 }
 
@@ -376,9 +380,9 @@ GLint CShaderOGL::Set_Integer3v(const GLchar* unifName, const GLint* value, GLin
 {
     ASSERT(unifName && value);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniform3iv(location, count, value);
-    }
+
     return location;
 }
 
@@ -386,9 +390,9 @@ GLint CShaderOGL::Set_Integer3(const GLchar* unifName, GLint v0, GLint v1, GLint
 {
     ASSERT(unifName);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniform3i(location, v0, v1, v2);
-    }
+
     return location;
 }
 
@@ -396,9 +400,9 @@ GLint CShaderOGL::Set_Integer4v(const GLchar* unifName, const GLint* value, GLin
 {
     ASSERT(unifName && value);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniform4iv(location, count, value);
-    }
+
     return location;
 }
 
@@ -406,9 +410,9 @@ GLint CShaderOGL::Set_Integer4(const GLchar* unifName, GLint v0, GLint v1, GLint
 {
     ASSERT(unifName);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniform4i(location, v0, v1, v2, v3);
-    }
+
     return location;
 }
 
@@ -416,9 +420,9 @@ GLint CShaderOGL::Set_Float1(const GLchar* unifName, GLfloat v0) const
 {
     ASSERT(unifName);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniform1f(location, v0);
-    }
+
     return location;
 }
 
@@ -426,9 +430,9 @@ GLint CShaderOGL::Set_Float2v(const GLchar* unifName, const GLfloat* value, GLin
 {
     ASSERT(unifName && value);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniform2fv(location, count, value);
-    }
+
     return location;
 }
 
@@ -436,9 +440,9 @@ GLint CShaderOGL::Set_Float2(const GLchar* unifName, GLfloat v0, GLfloat v1) con
 {
     ASSERT(unifName);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniform2f(location, v0, v1);
-    }
+
     return location;
 }
 
@@ -446,9 +450,9 @@ GLint CShaderOGL::Set_Float3v(const GLchar* unifName, const GLfloat* value, GLin
 {
     ASSERT(unifName && value);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniform3fv(location, count, value);
-    }
+
     return location;
 }
 
@@ -456,9 +460,9 @@ GLint CShaderOGL::Set_Float3(const GLchar* unifName, GLfloat v0, GLfloat v1, GLf
 {
     ASSERT(unifName);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniform3f(location, v0, v1, v2);
-    }
+
     return location;
 }
 
@@ -466,9 +470,9 @@ GLint CShaderOGL::Set_Float4v(const GLchar* unifName, const GLfloat* value, GLin
 {
     ASSERT(unifName && value);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniform4fv(location, count, value);
-    }
+
     return location;
 }
 
@@ -476,8 +480,8 @@ GLint CShaderOGL::Set_Float4(const GLchar* unifName, GLfloat v0, GLfloat v1, GLf
 {
     ASSERT(unifName);
     const GLint location = glGetUniformLocation(programID_, unifName);
-    if (location != INVALID_LOCATION) {
+    if (location != INVALID_LOCATION)
         glUniform4f(location, v0, v1, v2, v3);
-    }
+
     return location;
 }

@@ -12,18 +12,18 @@
 class CShaderOGL
 {
 public:
-    CShaderOGL();
+    CShaderOGL(void);
     ~CShaderOGL();
 
     // Linking and building the shader program
     bool BuildProgram(const GLchar* vertex, const GLchar* fragment);
     bool BuildProgram(const GLchar* vertex, const GLchar* geometry, const GLchar* fragment);
 
-    void DestroyProgram();
-    void DestroyCompiledShaders();
+    void DestroyProgram(void);
+    void DestroyCompiledShaders(void);
 
-    bool IsUsableProgram() const;
-    bool ValidateProgram();
+    bool IsUsableProgram(void) const;
+    bool ValidateProgram(void);
 
     // Vertex attribute
     GLint Get_AttribLocation(const GLchar* attribName)  const;
@@ -39,7 +39,7 @@ public:
     //
     // Set Matrices
     //
-    static bool& MatrixTranspose();
+    static bool& MatrixTranspose(void);
     GLint       Set_Matrix2fv(const GLchar* unifName, const GLfloat* value, GLint count = 1) const;
     static void	Set_Matrix2fv(GLint location, const GLfloat* value, GLint count = 1);
     GLint       Set_Matrix3fv(const GLchar* unifName, const GLfloat* value, GLint count = 1) const;
@@ -85,15 +85,15 @@ public:
     //
     // Usage an shader program (Begin / End)
     //
-    void Use_Begin() const;
-    void Use_End() const;
+    void Use_Begin(void) const;
+    void Use_End(void) const;
     //
     // Geting the Program/Shaders indices
     //
-    GLuint IdxProgram() const;
-    GLuint IdxVertexShader() const;
-    GLuint IdxGeometryShader() const;
-    GLuint IdxFragmentShader() const;
+    GLuint IdxProgram(void) const;
+    GLuint IdxVertexShader(void) const;
+    GLuint IdxGeometryShader(void) const;
+    GLuint IdxFragmentShader(void) const;
 
 private:
     CShaderOGL(const CShaderOGL&);
@@ -107,7 +107,7 @@ private:
     static bool s_bMatrixTransp;
 };
 
-inline bool CShaderOGL::IsUsableProgram() const
+inline bool CShaderOGL::IsUsableProgram(void) const
 {
     return bIsUsable_;
 }
@@ -149,8 +149,11 @@ inline void CShaderOGL::Get_UIntegerV(GLint location, GLuint* const* params) con
 
 // Set Matrices
 //
-inline bool& CShaderOGL::MatrixTranspose()
-{ return s_bMatrixTransp; }
+inline bool& CShaderOGL::MatrixTranspose(void)
+{
+    return s_bMatrixTransp;
+}
+
 inline void CShaderOGL::Set_Matrix2fv(GLint location, const GLfloat* value, GLint count)
 {
     assert(value);
@@ -237,30 +240,30 @@ inline void CShaderOGL::Set_Float4(GLint location, GLfloat v0, GLfloat v1, GLflo
 
 // Usage an shader program (Begin / End)
 //
-inline void CShaderOGL::Use_Begin() const
+inline void CShaderOGL::Use_Begin(void) const
 {
     glUseProgram(programID_);
 }
-inline void CShaderOGL::Use_End() const
+inline void CShaderOGL::Use_End(void) const
 {
     glUseProgram(0);
 }
 
 // Geting the Program/Shaders indices
 //
-inline GLuint CShaderOGL::IdxProgram() const
+inline GLuint CShaderOGL::IdxProgram(void) const
 {
     return programID_;
 }
-inline GLuint CShaderOGL::IdxVertexShader() const
+inline GLuint CShaderOGL::IdxVertexShader(void) const
 {
     return vertexID_;
 }
-inline GLuint CShaderOGL::IdxGeometryShader() const
+inline GLuint CShaderOGL::IdxGeometryShader(void) const
 {
     return geometryID_;
 }
-inline GLuint CShaderOGL::IdxFragmentShader() const
+inline GLuint CShaderOGL::IdxFragmentShader(void) const
 {
     return fragmentID_;
 }

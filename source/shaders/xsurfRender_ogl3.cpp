@@ -1,8 +1,7 @@
-// Copyright � 2013 Vitaly Lyaschenko (scxv86@gmail.com)
+// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
 // Purpose: 
 //
 #include <assert.h>
-#include <stdio.h>
 
 #include "xfontConf.h"
 #include "xsurfRender_ogl3.h"
@@ -35,9 +34,8 @@ bool CSurfRender_OGL3::Initialize_Impl(void)
 
 #include "shaders_gl3.inl"
 
-    if (!shader_.BuildProgram(vertexShader, geometryShader, fragmentShader)) {
+    if (!shader_.BuildProgram(vertexShader, geometryShader, fragmentShader))
         return false;
-    }
 
     dynamicVBO_.CreateVB(VERTEX_SIZE, 0, nullptr, true);
     staticVBO_.CreateVB(VERTEX_SIZE, Config::noCurrStaticChars);
@@ -72,7 +70,7 @@ inline void AdjustTextVertexAttrib(void)
     glVertexAttribPointer(VA_COLOR, 4, GL_UNSIGNED_BYTE, GL_FALSE, VERTEX_SIZE, (GLvoid*)32/*8*sizeof(float)*/);
 }
 
-void CSurfRender_OGL3::Release_Impl()
+void CSurfRender_OGL3::Release_Impl(void)
 {
     staticVBO_.ReleaseVB();
     dynamicVBO_.ReleaseVB();

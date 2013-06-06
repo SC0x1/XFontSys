@@ -2,8 +2,6 @@
 // Purpose:
 //
 #include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "Font.h"
 #include "FontManager.h"
@@ -106,17 +104,22 @@ bool CFontManager::HasKerning(HFont hdl) const
     return fonts_[hdl-1]->HasKerning();
 }
 
-int CFontManager::GetHeightTextureForAllFont(void) const
+int CFontManager::GetHeightFontTexture(void) const
 {
     assert(bIsBuildFonts_);
     int texHeight(0);
     for (int i = 0; i < fonts_.Count(); ++i)
+    {
+        if (!fonts_[i]->IsValid())
+            return -1;
+
         texHeight += fonts_[i]->Height() * fonts_[i]->NumNeedTextureLines();
+    }
 
     return texHeight;
 }
 
-bool CFontManager::MakeFontTextureForAllFont(int texWidth, int texHeight, unsigned char** ppTex) const
+bool CFontManager::MakeFontTexture(int texWidth, int texHeight, unsigned char** ppTex) const
 {
     assert(bIsBuildFonts_);
     assert(*ppTex);
@@ -125,6 +128,9 @@ bool CFontManager::MakeFontTextureForAllFont(int texWidth, int texHeight, unsign
     int offsetY(0);
     for (int i = 0; i < fonts_.Count(); ++i)
     {
+        if (!fonts_[i]->IsValid())
+            return false;
+
         fonts_[i]->CalcTexCoords(0, offsetY, texWidth, texHeight);
         fonts_[i]->GlyphTexSubImage(0, offsetY, texWidth, texHeight, *ppTex);
         offsetY += fonts_[i]->Height() * fonts_[i]->NumNeedTextureLines();

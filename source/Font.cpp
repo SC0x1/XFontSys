@@ -12,12 +12,12 @@
 
 using namespace xfs;
 
-CFont::CFont()
+CFont::CFont(void)
     : bBuild_(false),
       bAsciOnly_(false),
-      fontHeight_(0),
+      fontSize_(0),
       numChars_(0),
-      numNeedLines_(0), 
+      numNeedLines_(0),
       pGlyphData_(nullptr),
       currIdxCache_(0)
 {
@@ -38,11 +38,11 @@ bool CFont::Create(const char* file, int size)
     if (!file || ((size < 7) || (size > 128)))
         return false;
 
-    fontHeight_ = size;
+    fontSize_ = size;
     if (!ftFace_.Create(file))
         return false;
 
-    ftFace_.SetPixelSize(fontHeight_);
+    ftFace_.SetPixelSize(fontSize_);
     utils::ExtractFileName(file, fontName_);
     //utils::ExtractFilePath(file, fontPath_);
     return true;
@@ -61,7 +61,7 @@ bool CFont::AddCharacterRange(int lower, int upper)
     return true;
 }
 
-bool CFont::AllocateCacheData()
+bool CFont::AllocateCacheData(void)
 {
     if (numChars_ <= 0)
         return false;
@@ -73,13 +73,13 @@ bool CFont::AllocateCacheData()
     return true;
 }
 
-void CFont::FreeCacheData()
+void CFont::FreeCacheData(void)
 {
     if (pGlyphData_)
         delete[] pGlyphData_;
 }
 
-bool CFont::Build()
+bool CFont::Build(void)
 {
     if (!fontName_[0] || bBuild_)
         return false;
@@ -137,10 +137,14 @@ bool CFont::Build()
 
 bool CFont::IsFontEqual(const char* name, int fontSize) const
 {
-    static char buffer[256];
-    const int nch = utils::ExtractFileName(name, buffer);
-    if (!strncmp(buffer, fontName_, nch) && fontHeight_ == fontSize)
-        return true;
+    if (fontSize_ == fontSize)
+    {
+        // compares font’s name
+        static char buffer[256];
+        const int nch = utils::ExtractFileName(name, buffer);
+        if (!strncmp(buffer, fontName_, nch))
+            return true;
+    }
 
     return false;
 }

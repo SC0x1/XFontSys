@@ -25,8 +25,8 @@ public:
     bool BuildFonts(void);
     void ReleaseAllFonts(void);
 
-    int GetHeightTextureForAllFont(void) const;
-    bool MakeFontTextureForAllFont(int texWidth, int texHeight, unsigned char** ppTex) const;
+    int GetHeightFontTexture(void) const;
+    bool MakeFontTexture(int texWidth, int texHeight, unsigned char** ppTex) const;
 
     bool GetGlyph(xfs::HFont hdl, int wch, xfs::GlyphDesc& desc) const;
     const xfs::GlyphDesc* GetGlyphFromCache(xfs::HFont hdl, int ch) const;

@@ -1,4 +1,4 @@
-// Copyright � 2013 Vitaly Lyaschenko (scxv86@gmail.com)
+// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
 // Purpose: Basic Surface Render
 //
 #ifndef xsurfRender_h__
@@ -154,22 +154,28 @@ INLINE bool CSurfRender<D>::BuildFonts(void)
 {
     if (!CFontManager::Spec().BuildFonts())
         return false;
-
+   
     const int width = Config::currTextFontWidth;
-    const int height = CFontManager::Spec().GetHeightTextureForAllFont();
-    
+    const int height = CFontManager::Spec().GetHeightFontTexture();
+    assert(height > 0);
+
     // allocate memory for the texture
     uint8* pTex(nullptr);
     pTex = (uint8*)calloc(width * height, sizeof(uint8));
-    if (pTex == nullptr)
+    if (!pTex)
     {
-        fprintf(stderr, "\nFailed to allocate memory for the font texture %dx%d", width, height);
+        fprintf(stderr, "\nFailed to allocate memory for the font texture %dx%d\n", width, height);
         CFontManager::Spec().ReleaseAllFonts();
         return false;
     }
 
-    CFontManager::Spec().MakeFontTextureForAllFont(width, height, &pTex);
-    utils::TGA_Save("ShowMeResult.tga", width, height, pTex);
+    if (!CFontManager::Spec().MakeFontTexture(width, height, &pTex))
+    {
+        fprintf(stderr, "\nFailed to make texture fonts\n");
+        CFontManager::Spec().ReleaseAllFonts();
+        return false;
+    }
+    //utils::TGA_Save("ShowMeResult.tga", width, height, pTex);
     static_cast<D*>(this)->Push2DTexture_Impl(width, height, pTex);
     free(pTex);
     return true;

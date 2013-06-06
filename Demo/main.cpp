@@ -34,10 +34,10 @@ bool Init(void)
 {
     LOG_FILE_INIT("logApp.txt");
 
-    if(!SetWorkingDirectory())
+    if (!SetWorkingDirectory())
         return false;
 
-    if(!glfwInit())
+    if (!glfwInit())
     {
         LOG_ERROR << "Init a library GLFW";
         return false;
@@ -51,7 +51,7 @@ bool Init(void)
     glfwOpenWindowHint(GLFW_WINDOW_NO_RESIZE, GL_TRUE);
     int is_ok = glfwOpenWindow(g_Width, g_Height, 8, 8, 8, 8, 24, 0, GLFW_WINDOW);
 
-    if(!is_ok)
+    if (!is_ok)
     {
         glfwTerminate();
         LOG_ERROR << "glfwOpenWindow ";
@@ -59,10 +59,10 @@ bool Init(void)
     }
 
     glfwEnable(GLFW_KEY_REPEAT);
-    glfwSetWindowTitle("Font System OpenGL 3 (FSGL3) Demo");
+    glfwSetWindowTitle("X Font System Demo (OpenGL 3.2)");
     glfwSetWindowPos(200, 100);
 
-    if(!InitGLEW())
+    if (!InitGLEW())
         return false;
 
     PrintVideoInfo();
@@ -70,10 +70,10 @@ bool Init(void)
     // specifies the maximum number of characters for a static text
     xfs::SetMaxStaticChars(3072);
 
-    // initialize FSGL3
-    if(!xfs::Initialize())
+    // initialize XFS
+    if (!xfs::Initialize())
     {
-        LOG_ERROR << "FSGL3 Initialize";
+        LOG_ERROR << "XFS Initialize";
         return false;
     }
     
@@ -107,26 +107,26 @@ bool Init(void)
     xfs::AddGlyphSetToFont(g_hFreeSans_14, 1024, 1104);
 
     // only ASCI 0-127
-    xfs::AddGlyphSetToFont(g_hDejaVuSans_10, xfs::BASIC_LATIN);
+    xfs::AddGlyphSetToFont(g_hDejaVuSans_10, xfs::US_BASIC_LATIN);
 
     // 0-127 + 1024-1279
-    xfs::AddGlyphSetToFont(g_hVerdana_11, xfs::BASIC_LATIN);
-    xfs::AddGlyphSetToFont(g_hVerdana_11, xfs::CYRILLIC);
+    xfs::AddGlyphSetToFont(g_hVerdana_11, xfs::US_BASIC_LATIN);
+    xfs::AddGlyphSetToFont(g_hVerdana_11, xfs::US_CYRILLIC);
     
 
     // 0-127 + 1024-1279
-    xfs::AddGlyphSetToFont(g_hVerdanaB_11, xfs::BASIC_LATIN);
-    xfs::AddGlyphSetToFont(g_hVerdanaB_11, xfs::CYRILLIC);
+    xfs::AddGlyphSetToFont(g_hVerdanaB_11, xfs::US_BASIC_LATIN);
+    xfs::AddGlyphSetToFont(g_hVerdanaB_11, xfs::US_CYRILLIC);
 
     // 1024-1279 + 0-127
-    xfs::AddGlyphSetToFont(g_hVerdanaI_11, xfs::CYRILLIC);
-    xfs::AddGlyphSetToFont(g_hVerdanaI_11, xfs::BASIC_LATIN);
+    xfs::AddGlyphSetToFont(g_hVerdanaI_11, xfs::US_CYRILLIC);
+    xfs::AddGlyphSetToFont(g_hVerdanaI_11, xfs::US_BASIC_LATIN);
 
     xfs::SetFontTextureWidth(1024);
 
     isBuild = xfs::BuildAllFonts();
 
-    if(!isBuild)
+    if (!isBuild)
         return false;
 
     g_hFontCurrent = g_hVerdana_11;
@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
 
     xfs::BindFont(0);
 
-    while(g_running)
+    while (g_running)
     {
         glClearColor(1, 1, 1, 1);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -220,7 +220,7 @@ int main(int argc, char* argv[])
         xfs::Draw2D_Begin();
 
         // (Dynamic text) Debug info
-        xfs::BindFont( g_hDejaVuSans_10 );
+        xfs::BindFont(g_hDejaVuSans_10);
 
         currLen = sprintf(buffer, "Debug Info:\nFPS : %.3f\nVertexPerFrame : %i", GetFPS(1.0), vertexPerFrame);
 
@@ -277,7 +277,7 @@ int main(int argc, char* argv[])
         xfs::SetTextColor(255, 0, 255);
         xfs::PrintText(buffer, currLen);
 
-        if(g_bChangePage)
+        if (g_bChangePage)
         {
             // Reinitializing static text
 
@@ -324,7 +324,7 @@ int main(int argc, char* argv[])
 
 void events(int key, int action)
 {
-    switch(key)
+    switch (key)
     {
     case GLFW_KEY_SPACE:
         if (glfwGetKey(GLFW_KEY_SPACE) == GLFW_RELEASE)

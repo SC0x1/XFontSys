@@ -12,11 +12,11 @@ namespace xfs
 {
     //
     // Initialize the XFS library
-    bool Initialize();
+    bool Initialize(void);
 
     //
     // Release the XFS library
-    void Release();
+    void Release(void);
 
     //
     // Screen size for a shader uniform
@@ -33,7 +33,7 @@ namespace xfs
 
     //
     // Building all fonts and do make them ready for rendering
-    bool BuildAllFonts();
+    bool BuildAllFonts(void);
 
 
     //
@@ -61,7 +61,7 @@ namespace xfs
 
     //
     // Resets a video memory for the static text
-    void ResetStaticText();
+    void ResetStaticText(void);
 
     //
     // Drawing the static text by its ID
@@ -75,8 +75,8 @@ namespace xfs
 
     //
     // All operations of text rendering must be between these two functions
-    void Draw2D_Begin();
-    void Draw2D_End();
+    void Draw2D_Begin(void);
+    void Draw2D_End(void);
 
 
     //
@@ -85,8 +85,8 @@ namespace xfs
     void UseKerning(bool flag);
 
     //
-    // Purpose: Returns a total number of vertices per frame
-    int VertexPerFrame();
+    // Returns a total number of vertices per frame
+    int VertexPerFrame(void);
 
 
     // XFS Settings:

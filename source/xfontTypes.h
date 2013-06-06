@@ -21,16 +21,16 @@ typedef unsigned int   uint32;
 typedef int HFont;
 
 #define UNICODE_CHARACTER_SETS \
-    X(BASIC_LATIN, "Base Latin", 0, 127) \
-    X(LATIN_1_SUPPLEMENT, "Latin-1 Supplement", 128, 255) \
-    X(LATIN_EXTENDED_A, "Latin Extended-A", 256, 383) \
-    X(LATIN_EXTENDED_B, "Latin Extended-B", 384, 591) \
-    X(IPA_EXTENSIONS, "IPA Extensions", 592, 687) \
-    X(SPACING_MODIFIER_LETTERS, "Spacing Modifier Letters", 688, 767) \
-    X(COMBINING_DIACRITICAL_MARKS, "Combining Diacritical Marks", 768, 879) \
-    X(GREEK_AND_COPTIC, "Greek and Coptic", 880, 1023) \
-    X(CYRILLIC, "Cyrillic", 1024, 1279) \
-    X(CYRILLIC_SUPPLEMENTARY, "Cyrillic Supplementary", 1280, 1327) \
+    X(US_BASIC_LATIN, "Base Latin", 0, 127) \
+    X(US_LATIN_1_SUPPLEMENT, "Latin-1 Supplement", 128, 255) \
+    X(US_LATIN_EXTENDED_A, "Latin Extended-A", 256, 383) \
+    X(US_LATIN_EXTENDED_B, "Latin Extended-B", 384, 591) \
+    X(US_IPA_EXTENSIONS, "IPA Extensions", 592, 687) \
+    X(US_SPACING_MODIFIER_LETTERS, "Spacing Modifier Letters", 688, 767) \
+    X(US_COMBINING_DIACRITICAL_MARKS, "Combining Diacritical Marks", 768, 879) \
+    X(US_GREEK_AND_COPTIC, "Greek and Coptic", 880, 1023) \
+    X(US_CYRILLIC, "Cyrillic", 1024, 1279) \
+    X(US_CYRILLIC_SUPPLEMENTARY, "Cyrillic Supplementary", 1280, 1327) \
     X(MAX_CHAR_SETS, "", 0, 0) // add more ...
 
 #define X(a, b, c, d) a,

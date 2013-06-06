@@ -60,7 +60,7 @@ protected:
 
 private:
     char fontName_[32];
-    int fontHeight_;
+    int fontSize_;
     int numChars_;
     int lineHeight_;
     int numNeedLines_;
@@ -159,7 +159,7 @@ inline int CFont::GetAbsoluteValue(void) const
 // gets the font size
 inline int CFont::GetSize(void) const
 {
-    return fontHeight_;
+    return fontSize_;
 }
 
 // gets the total number of characters in the font

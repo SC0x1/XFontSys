@@ -7,10 +7,6 @@
 #include "Font.h"
 #include "FontManager.h"
 
-#include "public/color.h"
-#include "public/utlvector.h"
-#include "public/utils.h"
-
 #include "xfontConf.h"
 #include "shaders/xsurfRender_ogl3.h"
 #include "xfontSys.h"
