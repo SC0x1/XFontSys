@@ -2,9 +2,6 @@
 // Purpose: 
 //
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
 #include "public/utils.h"
 #include "xfontConf.h"

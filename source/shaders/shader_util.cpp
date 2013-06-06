@@ -3,9 +3,10 @@
 //
 #include <assert.h>
 #include <stdio.h>
-#include <string.h>
+
 #include "shaders/ogl.h"
 #include "shaders/shader_util.h"
+
 #define ASSERT(x) assert(x)
 
 enum { INVALID_LOCATION = -1 };
