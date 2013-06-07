@@ -137,7 +137,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\shaders\ogl.cpp" />
-    <ClCompile Include="..\..\source\shaders\xsurfRender_ogl3.cpp" />
     <ClCompile Include="..\..\source\xfontConf.cpp" />
     <ClCompile Include="..\..\source\Font.cpp" />
     <ClCompile Include="..\..\source\FontManager.cpp" />

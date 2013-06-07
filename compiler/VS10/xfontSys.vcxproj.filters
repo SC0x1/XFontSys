@@ -44,9 +44,6 @@
     <ClCompile Include="..\..\source\xfontConf.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\shaders\xsurfRender_ogl3.cpp">
-      <Filter>Shaders\ogl_3</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\shaders\ogl.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>

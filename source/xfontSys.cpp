@@ -4,8 +4,6 @@
 #include <assert.h>
 
 #include "ft2Lib.h"
-#include "Font.h"
-#include "FontManager.h"
 
 #include "xfontConf.h"
 #include "shaders/xsurfRender_ogl3.h"
@@ -67,12 +65,12 @@ void BindFont(HFont hdl)
 
 void GetTextBBox(const char* text, int lenght, BBox& bbox)
 {
-    surfBase.GetTextBBox(text, lenght, bbox);
+    surfBase.GetTextBBox<char>(text, lenght, bbox);
 }
 
 void GetWTextBBox(const wchar_t* text, int lenght, BBox& bbox)
 {
-    surfBase.GetWTextBBox(text, lenght, bbox);
+    surfBase.GetTextBBox<wchar_t>(text, lenght, bbox);
 }
 
 void SetTextColor(uint8 r, uint8 g, uint8 b, uint8 a)
@@ -92,12 +90,12 @@ void GetTextPos(int& posX, int& posY)
 
 int SetStaticText(const char* text, int lenght)
 {
-    return surfBase.SetStaticText(text, lenght);
+    return surfBase.SetStaticText<char>(text, lenght);
 }
 
 int SetStaticWText(const wchar_t* text, int lenght)
 {
-    return surfBase.SetStaticWText(text, lenght);
+    return surfBase.SetStaticText<wchar_t>(text, lenght);
 }
 
 void ResetStaticText(void)
@@ -112,12 +110,12 @@ void PrintStaticText(int idx)
 
 void PrintText(const char* text, int lenght)
 {
-    surfBase.PrintText(text, lenght);
+    surfBase.PrintText<char>(text, lenght);
 }
 
 void PrintWText(const wchar_t* text, int lenght)
 {
-    surfBase.PrintWText(text, lenght);
+    surfBase.PrintText<wchar_t>(text, lenght);
 }
 
 bool HasKerning(HFont hdl)
