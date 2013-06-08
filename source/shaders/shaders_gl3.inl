@@ -4,25 +4,28 @@
 
 // Vertex shader
 const char vertexShader[] = 
-    "#version 150 core\n \
+    "\
+    #version 150 core\n \
     #extension GL_ARB_explicit_attrib_location : enable\n \
     layout(location = 0) in vec4 Position;\n \
     layout(location = 5) in vec4 Texcoord0;\n \
     layout(location = 2) in vec4 Color;\n \
-    uniform vec2 UScale;\n \
+    uniform vec2 uScale;\n \
     out block{\n \
         vec4 Texcoord0;\n \
         vec4 Color;\n \
     } Out;\n \
-    void main() {\n \
+    void main()\n \
+    {\n \
         Out.Texcoord0 = Texcoord0;\n \
         Out.Color = Color / 255;\n \
-        gl_Position = vec4(UScale, UScale) * Position;\n \
+        gl_Position = vec4(uScale, uScale) * Position;\n \
     }\n";
 
 // Geometry shader
 const char geometryShader[] = 
-    "#version 150 core\n \
+    "\
+    #version 150 core\n \
     layout (points) in;\n \
     layout (triangle_strip, max_vertices = 4) out;\n \
     in block{\n \
@@ -34,7 +37,8 @@ const char geometryShader[] =
         vec4 Color;\n \
     } Out;\n \
     #define IN_POS (gl_in[0].gl_Position)\n \
-    void main() {\n \
+    void main()\n \
+    {\n \
         gl_Position = vec4(-1 + IN_POS.x, 1 - IN_POS.y, 0, 1);\n \
         Out.Texcoord0 = In[0].Texcoord0.st;\n \
         Out.Color = In[0].Color;\n \
@@ -59,13 +63,15 @@ const char geometryShader[] =
 
 // Fragment shader
 const char fragmentShader[] = 
-    "#version 150 core\n \
-    uniform sampler2D textureUnit0;\n \
+    "\
+    #version 150 core\n \
+    uniform sampler2D uTexUnit0;\n \
     in block{\n \
     vec2 Texcoord0;\n \
     vec4 Color;\n \
     } In;\n \
     out vec4 FragColor;\n \
-    void main() {\n \
-        FragColor = vec4(1, 1, 1, texture(textureUnit0, In.Texcoord0).r ) * In.Color;\n \
+    void main()\n \
+    {\n \
+        FragColor = vec4(1, 1, 1, texture(uTexUnit0, In.Texcoord0).r ) * In.Color;\n \
     }\n";

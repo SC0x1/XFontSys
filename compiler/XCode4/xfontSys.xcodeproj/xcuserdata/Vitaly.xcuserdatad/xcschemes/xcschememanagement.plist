@@ -1,16 +1,7 @@
-<<<<<<< HEAD:compiler/XCode4/xfontSys.xcodeproj/xcuserdata/Vitaly.xcuserdatad/xcschemes/xcschememanagement.plist
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>SchemeUserState</key>
-	<dict>
-		<key>xfontSys.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>0</integer>
-		</dict>
-	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>D85DA07C15C0847C002BB325</key>
@@ -21,27 +12,3 @@
 	</dict>
 </dict>
 </plist>
-=======
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>SchemeUserState</key>
-	<dict>
-		<key>xfontSys.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>0</integer>
-		</dict>
-	</dict>
-	<key>SuppressBuildableAutocreation</key>
-	<dict>
-		<key>D85DA07C15C0847C002BB325</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-	</dict>
-</dict>
-</plist>
->>>>>>> Rendering Interface - refactor:compiler/XCode4/xfontSys.xcodeproj/xcuserdata/Vitaly.xcuserdatad/xcschemes/xcschememanagement.plist

@@ -6,9 +6,10 @@
 
 #pragma once
 
-#define XFS_RENDER_OGL_3_2
+//#define XFS_RENDER_OGL_3_2
+#define XFS_RENDER_OGL_2_0
 
-struct Config 
+struct Config
 {
     enum { MAX_LENGTH_STRING = 1024 };
 

@@ -30,6 +30,8 @@ int g_fileID = 0;
 
 void events(int, int);
 
+//#define OGL_3_2
+
 bool Init(void)
 {
     LOG_FILE_INIT("logApp.txt");
@@ -42,13 +44,19 @@ bool Init(void)
         LOG_ERROR << "Init a library GLFW";
         return false;
     }
-
+    glfwOpenWindowHint(GLFW_WINDOW_NO_RESIZE, GL_TRUE);
+#ifdef OGL_3_2
     glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
     glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 2);
     glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    const char windowTitle[] = "X Font System Demo (OpenGL 3.2)";
+#else
+    glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 2);
+    glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 0);
+    const char windowTitle[] = "X Font System Demo (OpenGL 2.0)";
+#endif
 
-    glfwOpenWindowHint(GLFW_WINDOW_NO_RESIZE, GL_TRUE);
     int is_ok = glfwOpenWindow(g_Width, g_Height, 8, 8, 8, 8, 24, 0, GLFW_WINDOW);
 
     if (!is_ok)
@@ -59,7 +67,7 @@ bool Init(void)
     }
 
     glfwEnable(GLFW_KEY_REPEAT);
-    glfwSetWindowTitle("X Font System Demo (OpenGL 3.2)");
+    glfwSetWindowTitle(windowTitle);
     glfwSetWindowPos(200, 100);
 
     if (!InitGLEW())
@@ -76,15 +84,15 @@ bool Init(void)
         LOG_ERROR << "XFS Initialize";
         return false;
     }
-    
+
     xfs::SetScreenSize(g_Width, g_Height);
-    
+
     glViewport(0, 0, g_Width, g_Height);
 
     bool isBuild = false;
 
     // Load and create fonts
-    
+
     g_hFreeSans_14 = xfs::Create_Font(DIR_FONT"FreeSans.ttf", 14);
     assert(g_hFreeSans_14 !=  INVALID_FONT);
 
@@ -101,7 +109,7 @@ bool Init(void)
     assert(g_hVerdanaI_11 !=  INVALID_FONT);
 
     // Add character ranges
-    
+
     // 0-127 + 1024-1279
     xfs::AddGlyphSetToFont(g_hFreeSans_14, 31, 127);
     xfs::AddGlyphSetToFont(g_hFreeSans_14, 1024, 1104);
@@ -112,7 +120,7 @@ bool Init(void)
     // 0-127 + 1024-1279
     xfs::AddGlyphSetToFont(g_hVerdana_11, xfs::US_BASIC_LATIN);
     xfs::AddGlyphSetToFont(g_hVerdana_11, xfs::US_CYRILLIC);
-    
+
 
     // 0-127 + 1024-1279
     xfs::AddGlyphSetToFont(g_hVerdanaB_11, xfs::US_BASIC_LATIN);
@@ -231,7 +239,7 @@ int main(int argc, char* argv[])
         xfs::BindFont(0);
         xfs::PrintStaticText(idTextFromFile); // (Static  text) Text from File
         xfs::PrintStaticText(idTextLink);     // (Static  text) link
-        xfs::PrintStaticText(idTextHelp);     // (Static  text) Help 
+        xfs::PrintStaticText(idTextHelp);     // (Static  text) Help
 
         xfs::BindFont(g_hFreeSans_14);        // font to display the time
         static float time0 = 0;
@@ -250,7 +258,7 @@ int main(int argc, char* argv[])
         xfs::BindFont(0);
 
         // (Dynamic text) Cursor position
-         
+
         xfs::BindFont(g_hFreeSans_14);
 
         glfwGetMousePos(&mouseX, &mouseY);
@@ -258,11 +266,11 @@ int main(int argc, char* argv[])
         if((mouseX < g_halfWidth) && (mouseY < g_halfHeight))
         {
             xfs::SetTextPos(mouseX+15, mouseY+10);
-        } 
+        }
         else if((mouseX > g_halfWidth) && (mouseY < g_halfHeight))
         {
             xfs::SetTextPos(mouseX-100, mouseY+10);
-        } 
+        }
         else if((mouseX < g_halfWidth) && (mouseY > g_halfHeight))
         {
             xfs::SetTextPos(mouseX+15, mouseY-20);
@@ -281,11 +289,11 @@ int main(int argc, char* argv[])
         {
             // Reinitializing static text
 
-            xfs::ResetStaticText(); 
+            xfs::ResetStaticText();
 
             if ((g_fileID >= 3) || (g_fileID < 0))
                 g_fileID = 0;
-            
+
             sprintf(buffer, "%s%d.txt", NameFile, g_fileID);
 
             idTextFromFile = InitStaticTextFromFile(buffer, bboxTextFromFile);
@@ -293,7 +301,7 @@ int main(int argc, char* argv[])
                 return -1;
 
             xfs::BindFont(g_hFreeSans_14);
-            
+
             xfs::SetTextPos(1, 1);
             xfs::SetTextColor(10, 158, 10);
             const int len = strlen(strLink);

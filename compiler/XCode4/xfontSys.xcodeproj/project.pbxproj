@@ -18,7 +18,6 @@
 		D8A69AF31755325500692168 /* ogl.h in Headers */ = {isa = PBXBuildFile; fileRef = D8A69ADF1755325500692168 /* ogl.h */; };
 		D8A69AF41755325500692168 /* shader_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8A69AE01755325500692168 /* shader_util.cpp */; };
 		D8A69AF51755325500692168 /* shader_util.h in Headers */ = {isa = PBXBuildFile; fileRef = D8A69AE11755325500692168 /* shader_util.h */; };
-		D8A69AF61755325500692168 /* xsurfRender_ogl3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8A69AE31755325500692168 /* xsurfRender_ogl3.cpp */; };
 		D8A69AF71755325500692168 /* xsurfRender_ogl3.h in Headers */ = {isa = PBXBuildFile; fileRef = D8A69AE41755325500692168 /* xsurfRender_ogl3.h */; };
 		D8A69AF81755325500692168 /* xfontConf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8A69AE51755325500692168 /* xfontConf.cpp */; };
 		D8A69AF91755325500692168 /* xfontConf.h in Headers */ = {isa = PBXBuildFile; fileRef = D8A69AE61755325500692168 /* xfontConf.h */; };
@@ -32,6 +31,7 @@
 		D8ADB35115C0880000239E31 /* FontManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D8ADB34815C0880000239E31 /* FontManager.cpp */; };
 		D8ADB35215C0880000239E31 /* FontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D8ADB34915C0880000239E31 /* FontManager.h */; };
 		D8ADB36F15C0883700239E31 /* utlvector.h in Headers */ = {isa = PBXBuildFile; fileRef = D8ADB36A15C0883700239E31 /* utlvector.h */; };
+		D8FEB88617638161008BD156 /* xsurfRender_ogl2.h in Headers */ = {isa = PBXBuildFile; fileRef = D8FEB88517638161008BD156 /* xsurfRender_ogl2.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,7 +48,6 @@
 		D8A69AE01755325500692168 /* shader_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shader_util.cpp; path = ../../source/shaders/shader_util.cpp; sourceTree = "<group>"; };
 		D8A69AE11755325500692168 /* shader_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shader_util.h; path = ../../source/shaders/shader_util.h; sourceTree = "<group>"; };
 		D8A69AE21755325500692168 /* shaders_gl3.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = shaders_gl3.inl; path = ../../source/shaders/shaders_gl3.inl; sourceTree = "<group>"; };
-		D8A69AE31755325500692168 /* xsurfRender_ogl3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xsurfRender_ogl3.cpp; path = ../../source/shaders/xsurfRender_ogl3.cpp; sourceTree = "<group>"; };
 		D8A69AE41755325500692168 /* xsurfRender_ogl3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xsurfRender_ogl3.h; path = ../../source/shaders/xsurfRender_ogl3.h; sourceTree = "<group>"; };
 		D8A69AE51755325500692168 /* xfontConf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xfontConf.cpp; path = ../../source/xfontConf.cpp; sourceTree = "<group>"; };
 		D8A69AE61755325500692168 /* xfontConf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xfontConf.h; path = ../../source/xfontConf.h; sourceTree = "<group>"; };
@@ -62,6 +61,8 @@
 		D8ADB34815C0880000239E31 /* FontManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FontManager.cpp; path = ../../source/FontManager.cpp; sourceTree = "<group>"; };
 		D8ADB34915C0880000239E31 /* FontManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontManager.h; path = ../../source/FontManager.h; sourceTree = "<group>"; };
 		D8ADB36A15C0883700239E31 /* utlvector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utlvector.h; path = ../../source/public/utlvector.h; sourceTree = "<group>"; };
+		D8FEB88417638161008BD156 /* shaders_gl2.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = shaders_gl2.inl; path = ../../source/shaders/shaders_gl2.inl; sourceTree = "<group>"; };
+		D8FEB88517638161008BD156 /* xsurfRender_ogl2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xsurfRender_ogl2.h; path = ../../source/shaders/xsurfRender_ogl2.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,11 +107,7 @@
 		D8A69AFE1755326B00692168 /* ogl_3 */ = {
 			isa = PBXGroup;
 			children = (
-				D8A69AE31755325500692168 /* xsurfRender_ogl3.cpp */,
 				D8A69AE41755325500692168 /* xsurfRender_ogl3.h */,
-				D8A69ADD1755325500692168 /* dvbuffer.h */,
-				D8A69AE01755325500692168 /* shader_util.cpp */,
-				D8A69AE11755325500692168 /* shader_util.h */,
 				D8A69AE21755325500692168 /* shaders_gl3.inl */,
 			);
 			name = ogl_3;
@@ -131,8 +128,12 @@
 		D8ADB35915C0881500239E31 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				D8A69AE11755325500692168 /* shader_util.h */,
+				D8A69AE01755325500692168 /* shader_util.cpp */,
+				D8A69ADD1755325500692168 /* dvbuffer.h */,
 				D8A69ADE1755325500692168 /* ogl.cpp */,
 				D8A69ADF1755325500692168 /* ogl.h */,
+				D8FEB8871763817D008BD156 /* ogl_2 */,
 				D8A69AFE1755326B00692168 /* ogl_3 */,
 			);
 			name = Shaders;
@@ -157,6 +158,15 @@
 			name = Core;
 			sourceTree = "<group>";
 		};
+		D8FEB8871763817D008BD156 /* ogl_2 */ = {
+			isa = PBXGroup;
+			children = (
+				D8FEB88517638161008BD156 /* xsurfRender_ogl2.h */,
+				D8FEB88417638161008BD156 /* shaders_gl2.inl */,
+			);
+			name = ogl_2;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -179,6 +189,7 @@
 				D8A69AFB1755325500692168 /* xfontSys.h in Headers */,
 				D8A69AFC1755325500692168 /* xfontTypes.h in Headers */,
 				D8A69AFD1755325500692168 /* xsurfRender.h in Headers */,
+				D8FEB88617638161008BD156 /* xsurfRender_ogl2.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,7 +233,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D85DA07C15C0847C002BB325 /* XFS */,
+				D85DA07C15C0847C002BB325 /* xfontSys */,
 			);
 		};
 /* End PBXProject section */
@@ -238,7 +249,6 @@
 				D8A69AEF1755325500692168 /* utils.cpp in Sources */,
 				D8A69AF21755325500692168 /* ogl.cpp in Sources */,
 				D8A69AF41755325500692168 /* shader_util.cpp in Sources */,
-				D8A69AF61755325500692168 /* xsurfRender_ogl3.cpp in Sources */,
 				D8A69AF81755325500692168 /* xfontConf.cpp in Sources */,
 				D8A69AFA1755325500692168 /* xfontSys.cpp in Sources */,
 			);

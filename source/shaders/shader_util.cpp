@@ -3,6 +3,7 @@
 //
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "shaders/ogl.h"
 #include "shaders/shader_util.h"

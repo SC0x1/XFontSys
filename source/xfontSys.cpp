@@ -1,18 +1,26 @@
 ﻿// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
-// Purpose: 
+// Purpose:
 //
 #include <assert.h>
 
 #include "ft2Lib.h"
 
 #include "xfontConf.h"
-#include "shaders/xsurfRender_ogl3.h"
+#include "xsurfRender.h"
 #include "xfontSys.h"
+
+#if defined XFS_RENDER_OGL_3_2
+#include "shaders/xsurfRender_ogl3.h"
+#elif defined XFS_RENDER_OGL_2_0
+#include "shaders/xsurfRender_ogl2.h"
+#else
+#error "XFS render is not defined!"
+#endif
 
 namespace xfs
 {
 
-static CSurfRender_OGL3 surfBase;
+#define surfBase SurfaceRender::Spec()
 
 bool Initialize(void)
 {
