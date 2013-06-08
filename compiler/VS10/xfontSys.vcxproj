@@ -133,6 +133,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="..\..\source\shaders\shaders_gl2.inl" />
     <None Include="..\..\source\shaders\shaders_gl3.inl" />
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +147,7 @@
     <ClCompile Include="..\..\source\shaders\shader_util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\source\shaders\xsurfRender_ogl2.h" />
     <ClInclude Include="..\..\source\shaders\xsurfRender_ogl3.h" />
     <ClInclude Include="..\..\source\xfontConf.h" />
     <ClInclude Include="..\..\source\Font.h" />

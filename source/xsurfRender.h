@@ -1,4 +1,4 @@
-// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
+// Copyright (c) 2013 Vitaly Lyaschenko (scxv86@gmail.com)
 // Purpose: Basic Surface Render
 //
 #ifndef xsurfRender_h__
@@ -19,6 +19,16 @@
 #include "shaders/shader_util.h"
 #include "shaders/dvbuffer.h"
 
+#ifdef XFS_RENDER_OGL_3_2
+enum { VERTEX_PER_CHAR = 1, };
+// 4float(pos1,pos2) + 4float(tex1,tex2) + 1float(1 byte per color) = 9
+enum { ATTRIB_PER_VERTEX = 9, };
+#else
+enum { VERTEX_PER_CHAR = 6, };
+// 4float(x,y,s,t) = 4
+enum { ATTRIB_PER_VERTEX = 4, };
+#endif
+
 namespace xfs
 {
 
@@ -31,6 +41,29 @@ static struct UChRanges
 #define X(a, b, c, d) {b, c, d},
 static UChRanges g_UTRanges[] = { UNICODE_CHARACTER_SETS };
 #undef X
+
+struct TextRenderInfo
+{
+    TextRenderInfo(void) {}
+    TextRenderInfo(const int& vertOffset, const int& vertCount)
+        : vertOffset_(vertOffset), vertCount_(vertCount) {}
+
+#ifdef XFS_RENDER_OGL_2_0
+    TextRenderInfo(const int& vertOffset, const int& vertCount, Color& color)
+        : vertOffset_(vertOffset),
+          vertCount_(vertCount)
+    {
+        color_[0] = (float)color[0];
+        color_[1] = (float)color[1];
+        color_[2] = (float)color[2];
+        color_[3] = (float)color[3];
+    }
+    float color_[4];
+#endif
+
+    int vertOffset_;
+    int vertCount_;
+};
 
 //===========================================================================
 // CSurfRender
@@ -91,59 +124,46 @@ protected:
     void BuildTextVertices(const T* text);
 
     // Vertices Builder
-    void PosQuad4f(const float& x0, const float& y0, const float& x1, const float& y1) const;
-    void TexCoord4f(const float* texCoords) const;
-    void Color4b(const unsigned char* color) const;
-
-    struct TextRenderInfo
-    {
-        TextRenderInfo(void) {}
-        TextRenderInfo(const int& vertOffset, const int& vertCount)
-            : vertOffset_(vertOffset), vertCount_(vertCount) {}
-
-        int vertOffset_;
-        int vertCount_;
-    };
+    void Pointer4f(const float&, const float&, const float&, const float&) const;
+    void Pointer4f(const float*) const;
+    void Pointer4ub(const unsigned char*) const;
 
     CUtlVector<TextRenderInfo> textInfo_;
-    float verticesBuffer_[Config::MAX_LENGTH_STRING];
+    float verticesBuffer_[Config::MAX_LENGTH_STRING * VERTEX_PER_CHAR];
 
-    CVertexBuffer staticVBO_;
-    CVertexBuffer dynamicVBO_;
     enum ETextType
     {
-        TT_STATIC,
-        TT_DYNAMIC,
+        TT_Satic,
+        TT_Dynamic,
         TT_MAX,
     };
     ETextType currTT;
+    CVertexBuffer vbo_[TT_MAX];
 
     mutable float* pBaseVertex_;
-    Color currTextColor_;	// color for the text
-    int currTextPos_[2];	// current position in screen space
-    int currTextLent_;		// current length of the text
-    HFont hFont_;			// descriptor (id) of the current font
+    Color currColor_;    // color for the text
+    int currTextPos_[2]; // current position in screen space
+    int currTextLent_;   // current length of the text
+    HFont hFont_;        // descriptor (id) of the current font
     int noMaxChars_;
     
     int vertexCount_;
-    int vertexPerFrame_;	// debug info
+    int vertexPerFrame_;    // debug info
     bool bInit_;
 };
 
 template<typename D>
 INLINE CSurfRender<D>::CSurfRender(void)
-    : currTT(TT_DYNAMIC),
+    : currTT(TT_Dynamic),
       pBaseVertex_(nullptr),
-      currTextColor_(0),
+      currColor_(0),
+      currTextPos_(),
       currTextLent_(0),
       hFont_(0),
+      noMaxChars_(Config::noCurrStaticChars),
       vertexCount_(0),
       vertexPerFrame_(0),
-      bInit_(false)
-{
-    noMaxChars_ = Config::noCurrStaticChars;
-    currTextPos_[0] = currTextPos_[1] = 0;
-}
+      bInit_(false) {}
 
 template<typename D>
 INLINE bool CSurfRender<D>::Initialize(void)
@@ -219,7 +239,7 @@ INLINE bool CSurfRender<D>::BuildFonts(void)
         return false;
     }
     //utils::TGA_Save("ShowMeResult.tga", width, height, pTex);
-    static_cast<D*>(this)->Push2DTexture_Impl(width, height, pTex);
+    static_cast<D*>(this)->Push2DTexture(width, height, pTex);
     free(pTex);
     return true;
 }
@@ -239,10 +259,14 @@ INLINE void CSurfRender<D>::PrintText(const T* text, int lenght)
 
     currTextLent_ = lenght;
     pBaseVertex_ = verticesBuffer_;
-    currTT = TT_DYNAMIC;
+    currTT = TT_Dynamic;
     BuildTextVertices<T>(text);
-    dynamicVBO_.PushVertexData(vertexCount_, verticesBuffer_);
-    static_cast<D*>(this)->Draw2DAlphaBlend(0, vertexCount_);
+    vbo_[TT_Dynamic].PushVertexData(vertexCount_, verticesBuffer_);
+#ifdef XFS_RENDER_OGL_3_2
+    static_cast<D*>(this)->Draw2DAlphaBlend(TextRenderInfo(0, vertexCount_));
+#else
+    static_cast<D*>(this)->Draw2DAlphaBlend(TextRenderInfo(0, vertexCount_, currColor_));
+#endif
 }
 
 template<typename D> template<typename T>
@@ -255,7 +279,7 @@ INLINE void CSurfRender<D>::GetTextBBox(const T* text, int lenght, BBox& bbox)
 template<typename D>
 INLINE void CSurfRender<D>::SetTextColor(uint8 r, uint8 g, uint8 b, uint8 a)
 {
-    currTextColor_.SetColor(r, g, b, a);
+    currColor_.SetColor(r, g, b, a);
 }
 
 template<typename D>
@@ -280,7 +304,7 @@ INLINE int CSurfRender<D>::SetStaticText(const T* text, int lenght)
         return -1;
 
     // since we use a type GL_POINTS so textLenght == vertex count
-    if (!staticVBO_.HasEnoughSpace(currTextLent_)) // TODO: review for OGL 2
+    if (!vbo_[TT_Satic].HasEnoughSpace(currTextLent_ * VERTEX_PER_CHAR))
         return -1;
 
     currTextLent_ = lenght;
@@ -291,9 +315,9 @@ template<typename D>
 INLINE void CSurfRender<D>::PrintStaticText(int idx /*= 0*/)
 {
     assert(textInfo_.Count() > 0);
-    currTT = TT_STATIC;
+    currTT = TT_Satic;
     const TextRenderInfo& info = textInfo_[idx - 1];
-    static_cast<D*>(this)->Draw2DAlphaBlend(info.vertOffset_, info.vertCount_);
+    static_cast<D*>(this)->Draw2DAlphaBlend(info);
     vertexPerFrame_ += info.vertCount_;
 }
 
@@ -302,10 +326,10 @@ INLINE void CSurfRender<D>::ResetStaticText(void)
 {
     if (noMaxChars_ != Config::noCurrStaticChars)
     {
-        staticVBO_.PushVertexData(Config::noCurrStaticChars, nullptr);
+        vbo_[TT_Satic].PushVertexData(Config::noCurrStaticChars * VERTEX_PER_CHAR, nullptr);
         noMaxChars_ = Config::noCurrStaticChars;
     }
-    staticVBO_.BorderToBeginVB();
+    vbo_[TT_Satic].BorderToBeginVB();
     textInfo_.Clear();
 }
 
@@ -391,19 +415,22 @@ template<typename D> template<typename T>
 INLINE int CSurfRender<D>::BuildStaticText(const T* text)
 {
     int baseVertex(0);
-    void* ptrVM = staticVBO_.Lock(currTextLent_, baseVertex);
+    void* ptrVM = vbo_[TT_Satic].Lock(currTextLent_, baseVertex);
     if (!ptrVM)
     {
         fprintf(stderr, "\nError Lock Vertex Buffer\n");
         return -1;
     }
-    // 4float(pos) + 4float(texCoords) + 1float(4 bytes per color) = 9
-    pBaseVertex_ = (float*)ptrVM + (baseVertex * 9);
-
+    
+    pBaseVertex_ = (float*)ptrVM + (baseVertex * ATTRIB_PER_VERTEX);
     BuildTextVertices<T>(text);
-    staticVBO_.Unlock(vertexCount_);
+    vbo_[TT_Satic].Unlock(vertexCount_);
 
+#ifdef XFS_RENDER_OGL_3_2
     textInfo_.Append(TextRenderInfo(baseVertex, vertexCount_));
+#else
+    textInfo_.Append(TextRenderInfo(baseVertex, vertexCount_, currColor_));
+#endif
     return textInfo_.Count();
 }
 template<typename D> template<typename T>
@@ -440,43 +467,52 @@ INLINE void CSurfRender<D>::BuildTextVertices(const T* text)
         }
 #ifdef XFS_RENDER_OGL_3_2
         // writes quad positions
-        PosQuad4f(x, y, x + g->bitmapWidth, y + g->bitmapHeight);
-        TexCoord4f(g->texCoord);
-        Color4b(currTextColor_.Ptr());
+        Pointer4f(x, y, x + g->bitmapWidth, y + g->bitmapHeight);
+        Pointer4f(g->texCoord); // tex. coords
+        Pointer4ub(currColor_.Ptr());
+#else
+        const int& w = g->bitmapWidth;
+        const int& h = g->bitmapHeight;
+        Pointer4f(x,     y,     g->s,        g->t);
+        Pointer4f(x + w, y,     g->s + g->p, g->t);
+        Pointer4f(x + w, y + h, g->s + g->p, g->t + g->q);
+        Pointer4f(x,     y,     g->s,        g->t);
+        Pointer4f(x + w, y + h, g->s + g->p, g->t + g->q);
+        Pointer4f(x,     y + h, g->s,        g->t + g->q);
 #endif
-        ++vertexCount_;
+        vertexCount_ += VERTEX_PER_CHAR;
     }
 }
 
 // Vertices Builder
 template<typename D>
-INLINE void CSurfRender<D>::PosQuad4f(const float& x0, const float& y0, const float& x1, const float& y1) const
+INLINE void CSurfRender<D>::Pointer4f(const float& v0, const float& v1, const float& v2, const float& v3) const
 {
     float* p = pBaseVertex_;
-    *p++ = x0;
-    *p++ = y0;
-    *p++ = x1;
-    *p   = y1;
+    *p++ = v0;
+    *p++ = v1;
+    *p++ = v2;
+    *p   = v3;
     pBaseVertex_ += 4;
 }
 template<typename D>
-INLINE void CSurfRender<D>::TexCoord4f(const float* texCoords) const
+INLINE void CSurfRender<D>::Pointer4f(const float* arr4f) const
 {
     float* p = pBaseVertex_;
-    *p++ = texCoords[0];
-    *p++ = texCoords[1];
-    *p++ = texCoords[2];
-    *p   = texCoords[3];
+    *p++ = arr4f[0];
+    *p++ = arr4f[1];
+    *p++ = arr4f[2];
+    *p   = arr4f[3];
     pBaseVertex_ += 4;
 }
 template<typename D>
-INLINE void CSurfRender<D>::Color4b(const unsigned char* color) const
+INLINE void CSurfRender<D>::Pointer4ub(const unsigned char* arr4ub) const
 {
     unsigned char* p = reinterpret_cast<unsigned char*>(pBaseVertex_);
-    *p++ = *color;
-    *p++ = *(color + 1);
-    *p++ = *(color + 2);
-    *p   = *(color + 3);
+    *p++ = *arr4ub;
+    *p++ = *(arr4ub + 1);
+    *p++ = *(arr4ub + 2);
+    *p   = *(arr4ub + 3);
     pBaseVertex_ += 1;
 }
 } // End namespace xfs

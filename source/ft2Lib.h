@@ -1,4 +1,4 @@
-﻿// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
+﻿// Copyright (c) 2013 Vitaly Lyaschenko (scxv86@gmail.com)
 // Purpose: A FreeType2 wrapper
 //
 #ifndef ft2Lib_h__

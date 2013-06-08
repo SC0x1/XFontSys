@@ -1,4 +1,4 @@
-﻿// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
+﻿// Copyright (c) 2013 Vitaly Lyaschenko (scxv86@gmail.com)
 // Purpose: XFS Settings
 //
 #ifndef xfontConf_h__
@@ -7,8 +7,9 @@
 #pragma once
 
 #define XFS_RENDER_OGL_3_2
+//#define XFS_RENDER_OGL_2_0
 
-struct Config 
+struct Config
 {
     enum { MAX_LENGTH_STRING = 1024 };
 

@@ -1,4 +1,4 @@
-// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
+// Copyright (c) 2013 Vitaly Lyaschenko (scxv86@gmail.com)
 // Purpose: GLSL shaders wrapper
 //
 #ifndef shader_util_h__

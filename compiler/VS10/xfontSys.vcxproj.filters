@@ -13,14 +13,12 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Shaders\ogl_3">
-      <UniqueIdentifier>{42ca7548-4012-4301-9e69-250a30a8f7be}</UniqueIdentifier>
+    <Filter Include="Shaders\ogl_2">
+      <UniqueIdentifier>{7de0d993-210b-431e-9637-25b81d7096a8}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\source\shaders\shaders_gl3.inl">
-      <Filter>Shaders\ogl_3</Filter>
-    </None>
+    <Filter Include="Shaders\ogl_3">
+      <UniqueIdentifier>{64491342-7d96-441d-a85f-34cf943bb5ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\FontManager.cpp">
@@ -35,18 +33,16 @@
     <ClCompile Include="..\..\source\ft2Lib.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\shaders\shader_util.cpp">
-      <Filter>Shaders\ogl_3</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\xfontSys.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\xfontConf.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\source\shaders\ogl.cpp">
       <Filter>Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\shaders\shader_util.cpp">
+      <Filter>Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\xfontConf.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\FontManager.h">
@@ -70,29 +66,38 @@
     <ClInclude Include="..\..\source\ft2Lib.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\shaders\shader_util.h">
-      <Filter>Shaders\ogl_3</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\shaders\dvbuffer.h">
-      <Filter>Shaders\ogl_3</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\source\xfontSys.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\xfontTypes.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\xfontConf.h">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\source\xsurfRender.h">
       <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\shaders\xsurfRender_ogl3.h">
-      <Filter>Shaders\ogl_3</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\shaders\ogl.h">
       <Filter>Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\shaders\dvbuffer.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\shaders\shader_util.h">
+      <Filter>Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\shaders\xsurfRender_ogl2.h">
+      <Filter>Shaders\ogl_2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\shaders\xsurfRender_ogl3.h">
+      <Filter>Shaders\ogl_3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\xfontConf.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\source\shaders\shaders_gl2.inl">
+      <Filter>Shaders\ogl_2</Filter>
+    </None>
+    <None Include="..\..\source\shaders\shaders_gl3.inl">
+      <Filter>Shaders\ogl_3</Filter>
+    </None>
   </ItemGroup>
 </Project>

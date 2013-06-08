@@ -1,4 +1,4 @@
-// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
+// Copyright (c) 2013 Vitaly Lyaschenko (scxv86@gmail.com)
 // Purpose: Basic handler for an rgb set of colors
 // (fully inline)
 #ifndef color_h__

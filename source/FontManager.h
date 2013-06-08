@@ -1,4 +1,4 @@
-﻿// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
+﻿// Copyright (c) 2013 Vitaly Lyaschenko (scxv86@gmail.com)
 // Purpose: Functional for creation and manipulation of fonts
 //
 #ifndef FontManager_h__

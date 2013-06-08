@@ -1,8 +1,9 @@
-// Copyright © 2013 Vitaly Lyaschenko (scxv86@gmail.com)
+// Copyright (c) 2013 Vitaly Lyaschenko (scxv86@gmail.com)
 // Purpose:
 //
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "shaders/ogl.h"
 #include "shaders/shader_util.h"
