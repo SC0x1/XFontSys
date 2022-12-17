@@ -41,7 +41,7 @@ xfs::BuildAllFonts();
 
 The resulting texture for these ranges:
 
-![alt text](https://dl.dropbox.com/u/45284518/ShamanCode/TextRederSystem/FreeSans14.png "The font texture atlas")
+![alt text](https://3.bp.blogspot.com/-9D3EECHkULM/WcZ5FsJrBpI/AAAAAAAAJps/MUm-aGrw1jc4f8gD_xucgoLAkkoz71-uwCKgBGAs/s1600/FreeSans14.png "The font texture atlas")
 
 ####2. Text Rendering
 
@@ -88,7 +88,7 @@ while(true)
 
 As a result:
 
-![alt text](https://dl.dropbox.com/u/45284518/ShamanCode/TextRederSystem/scrHelloWorld.png "Rendering text result")
+![alt text](https://3.bp.blogspot.com/-UgBZ9bNj_DI/WcZ54HEn7kI/AAAAAAAAJqE/OTkYTaO5OZ0-F7xch9obiLZkP_IMHnqWQCKgBGAs/s1600/scrHelloWorld.png "Rendering text result")
 
 For any text you can get its bounding box (BBox).
 
@@ -109,7 +109,7 @@ xfs::PrintStaticText(textID);
 
 Result:
 
-![alt text](https://dl.dropbox.com/u/45284518/ShamanCode/TextRederSystem/scrMSL.png "Rendering text result")
+![alt text](https://4.bp.blogspot.com/-BVU7wCn_8kc/WcZ5_taQBxI/AAAAAAAAJqI/XmtWB5T1EEYEQQ802iBO0aXt7SgvW4WrwCKgBGAs/s1600/scrMSL.png "Rendering text result")
 
 ##License
 
